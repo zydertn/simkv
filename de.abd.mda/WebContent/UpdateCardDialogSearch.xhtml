@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder; margin-right:15px" value="Karte ändern" />
+				<h:outputText escape="false" style="color: red" value="#{actionController.requestMessage}" />		
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Kartendaten:" />
+				<h:panelGrid columns="4">
+					<h:outputText value="KartenNr.: " />
+					<h:panelGrid columns="3">
+						<h:inputText
+							value="#{createCardController.cardBean.cardNumberFirst}"
+							size="8" maxlength="12">
+						</h:inputText>
+
+						<h:outputText value="-" />
+						<h:inputText
+							value="#{createCardController.cardBean.cardNumberSecond}"
+							size="1" maxlength="4" />
+					</h:panelGrid>
+					<h:outputText/>
+					<h:commandButton value="Suchen"
+						action="#{createCardController.createCardSearch}" />
+
+					<h:outputText value="Rufnummer:" />
+					<h:panelGrid columns="3">
+						<h:inputText size="1" maxlength="3"
+							value="#{createCardController.cardBean.phoneNrFirst}" disabled="true" />
+						<h:outputText value="/" />
+						<h:inputText size="8" maxlength="9"
+							value="#{createCardController.cardBean.phoneNrSecond}" disabled="true" />
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
+					
+					<h:outputText value="Lieferant: " />
+					<h:panelGrid>
+						<h:selectOneMenu value="#{createCardController.cardBean.supplier}" disabled="true">
+							<f:selectItems value="#{actionController.model.supplierList}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
+
+					<h:outputText value="Status: " />
+					<h:panelGrid>
+						<h:selectOneMenu value="#{createCardController.cardBean.status}" disabled="true">
+							<f:selectItems value="#{actionController.model.statusList}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="3">
+				<h:commandButton value="Abbrechen"
+					action="#{actionController.cancel}"></h:commandButton>
+				<h:commandButton value="Speichern" disabled="true"
+					action="#{createCardController.updateCard}"></h:commandButton>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>

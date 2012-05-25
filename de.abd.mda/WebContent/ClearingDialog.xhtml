@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder" value="Freischaltung" />
+				<h:outputText escape="false" style="color: red"
+					value="#{actionController.requestMessage}" />
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Kartendaten:" />
+				<h:panelGrid columns="4">
+					<h:outputText value="KartenNr.: " />
+					<h:panelGrid columns="3">
+						<h:inputText disabled="true"
+							value="#{searchCardController.cardNumberFirst}" size="10">
+						</h:inputText>
+
+						<h:outputText value="-" />
+						<h:inputText disabled="true"
+							value="#{searchCardController.cardNumberSecond}" size="1" />
+					</h:panelGrid>
+					<h:outputText />
+					<h:outputText />
+
+					<h:outputText value="Rufnummer:" />
+					<h:panelGrid columns="3">
+						<h:inputText size="1" disabled="true"
+							value="#{searchCardController.phoneNrFirst}" />
+						<h:outputText value="/" />
+						<h:inputText size="8" disabled="true"
+							value="#{searchCardController.phoneNrSecond}" />
+					</h:panelGrid>
+					<h:outputText />
+					<h:commandButton value="Suchen"
+						action="#{searchCardController.searchCard}" disabled="true" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="2" bgcolor="LightGrey" width="800">
+				<h:panelGrid columns="3" cellpadding="3">
+					<h:outputText style="font-weight:bold" value="Kartendaten" />
+					<h:outputText value="Status:" />
+					<h:outputText value="#{searchCardController.card.status}" />
+
+					<h:outputText />
+					<h:outputText value="Laufende Nummer:" />
+					<h:outputText value="#{searchCardController.card.sequenceNumber}" />
+
+
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+
+					<h:outputText style="font-weight:bold" value="Auftragsdaten" />
+					<h:outputText value="Kundenbestellnummer:" />
+					<h:outputText
+						value="#{searchCardController.card.customerOrderNumber}" />
+
+					<h:outputText />
+					<h:outputText value="Auftragsnummer:" />
+					<h:outputText value="#{searchCardController.card.orderNumber}" />
+
+					<h:outputText />
+					<h:outputText value="Lieferscheindatum:" />
+					<h:outputText
+						value="#{searchCardController.card.deliverySlipDateString}" />
+
+					<h:outputText />
+					<h:outputText value="Lieferscheinnummer:" />
+					<h:outputText
+						value="#{searchCardController.card.deliverySlipNumber}" />
+
+					<h:outputText style="font-weight:bold" value="Kundendaten" />
+					<h:outputText value="Firmenname:" />
+					<h:outputText value="#{searchCardController.card.customer.name}" />
+
+					<h:outputText />
+					<h:outputText value="Niederlassung:" />
+					<h:outputText value="#{searchCardController.card.customer.branch}" />
+
+					<h:outputText />
+					<h:outputText value="Adresse:" />
+					<h:outputText
+						value="#{searchCardController.card.customer.address.addressString}" />
+
+					<h:outputText />
+					<h:outputText value="Kundennummer:" />
+					<h:outputText
+						value="#{searchCardController.card.customer.customernumber}" />
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid cellspacing="1" bgcolor="#FFFFCC" width="800">
+				<h:outputText style="font-weight:bold" value="Ansprechpartnerdaten:" />
+				<h:panelGrid columns="6">
+					<h:outputText value="Anrede: " />
+					<h:panelGrid>
+						<h:selectOneMenu
+							value="#{clearingController.card.contactPerson.gender}">
+							<f:selectItems value="#{actionController.model.genders}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					<h:outputText value="Vorname: " />
+					<h:inputText size="20"
+						value="#{clearingController.card.contactPerson.firstname}" />
+					<h:outputText value="Nachname: " />
+					<h:inputText size="20"
+						value="#{clearingController.card.contactPerson.name}" />
+
+					<h:outputText value="Rufnummer: " />
+					<h:panelGrid columns="3">
+						<h:inputText size="1" maxlength="3"
+							value="#{clearingController.card.contactPerson.phoneNrFirst}" />
+						<h:outputText value="/" />
+						<h:inputText size="8" maxlength="9"
+							value="#{clearingController.card.contactPerson.phoneNrSecond}" />
+					</h:panelGrid>
+
+					<h:outputText value="Email: " />
+					<h:inputText size="20"
+						value="#{clearingController.card.contactPerson.email}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Installationsadresse:" />
+				<h:panelGrid columns="4">
+					<h:outputText value="Straße:" />
+					<h:inputText size="12"
+						value="#{clearingController.card.installAddress.street}" />
+					<h:outputText value="Nr.:" />
+					<h:inputText size="3" maxlength="5"
+						value="#{clearingController.card.installAddress.housenumber}" />
+
+					<h:outputText value="PLZ:" />
+					<h:inputText size="4" maxlength="5"
+						value="#{clearingController.card.installAddress.postcode}" />
+					<h:outputText value="Ort: " />
+					<h:inputText size="15"
+						value="#{clearingController.card.installAddress.city}" />
+
+					<h:outputText value="Fabriknummer: " />
+					<h:inputText size="10" maxlength="15"
+						value="#{clearingController.card.factoryNumber}" />
+					<h:outputText value="VPN-Profil: " />
+					<h:inputText size="10" maxlength="15"
+						value="#{clearingController.card.vpnProfile}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="3">
+			<h:commandButton value="Freischalten" style="font-weight:bolder"
+				action="#{clearingController.clearCard}"></h:commandButton>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>
