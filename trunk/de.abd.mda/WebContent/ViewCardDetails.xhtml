@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder" value="Suche" />
+				<h:outputText escape="false" style="color: red"  value="#{actionController.requestMessage}" />		
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Kartensuche:" />
+				<h:panelGrid columns="4">
+					<h:outputText value="KartenNr.: " />
+					<h:panelGrid columns="3">
+						<h:inputText value="#{searchCardController.cardNumberFirst}" disabled="true"
+							size="10" maxlength="12">
+						</h:inputText>
+
+						<h:outputText value="-" />
+						<h:inputText value="#{searchCardController.cardNumberSecond}" disabled="true"
+							size="1" maxlength="4" />
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
+					<h:outputText value="Rufnummer:" />
+					<h:panelGrid columns="3">
+						<h:inputText size="1" maxlength="3" disabled="true"
+							value="#{searchCardController.phoneNrFirst}" />
+						<h:outputText value="/" />
+						<h:inputText size="8" maxlength="9" disabled="true"
+							value="#{searchCardController.phoneNrSecond}" />
+					</h:panelGrid>
+					<h:outputText/>
+										
+					<h:commandButton value="Suchen" disabled="true"
+						action="#{searchCardController.searchCardViewDetails}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="2" bgcolor="#FFFFCC" width="800">
+				<h:panelGrid columns="2">
+					<h:outputText style="font-weight:bold; margin-right:77px" value="Kommentar" ></h:outputText>
+					<h:inputTextarea rows="5" disabled="false" value="#{searchCardController.card.comment}" style="width: 632px;"></h:inputTextarea>
+					<h:outputText/>
+					<h:commandButton value="Speichern" action="#{searchCardController.saveComment}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="2" bgcolor="LightGrey" width="800">
+				<h:panelGrid columns="3" cellpadding="3">
+					<h:outputText style="font-weight:bold" value="Kartendaten" />
+					<h:outputText value="Status:" />
+					<h:outputText value="#{searchCardController.card.status}" />
+
+					<h:outputText />
+					<h:outputText value="Zulieferer:" />
+					<h:outputText value="#{searchCardController.card.supplier}" />
+
+					<h:outputText />
+					<h:outputText value="Laufende Nummer:" />
+					<h:outputText value="#{searchCardController.card.sequenceNumber}" />
+
+
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+
+
+					<h:outputText style="font-weight:bold" value="Auftragsdaten" />
+					<h:outputText value="Kundenbestellnummer:" />
+					<h:outputText
+						value="#{searchCardController.card.customerOrderNumber}" />
+
+					<h:outputText />
+					<h:outputText value="Auftragsnummer:" />
+					<h:outputText value="#{searchCardController.card.orderNumber}" />
+
+					<h:outputText />
+					<h:outputText value="Lieferscheindatum:" />
+					<h:outputText
+						value="#{searchCardController.card.deliverySlipDateString}" />
+
+					<h:outputText />
+					<h:outputText value="Lieferscheinnummer:" />
+					<h:outputText
+						value="#{searchCardController.card.deliverySlipNumber}" />
+
+					<h:outputText />
+					<h:outputText value="Kunde:" />
+					<h:outputText
+						value="#{searchCardController.card.customer.listString}" />
+
+
+					<h:outputText style="font-weight:bold" value="Ansprechpartnerdaten" />
+					<h:outputText value="Ansprechpartner:" />
+					<h:outputText value="#{searchCardController.card.contactPerson.nameString}" />
+
+					<h:outputText />
+					<h:outputText value="Rufnummer:" />
+					<h:outputText value="#{searchCardController.card.contactPerson.phoneNr}" />
+
+					<h:outputText />
+					<h:outputText value="Email:" />
+					<h:outputText value="#{searchCardController.card.contactPerson.email}" />
+
+
+					<h:outputText style="font-weight:bold" value="Karteninstallation" />
+					<h:outputText value="Adresse:" />
+					<h:outputText value="#{searchCardController.card.installAddress.addressString}" />
+
+					<h:outputText />
+					<h:outputText value="Fabriknummer:" />
+					<h:outputText value="#{searchCardController.card.factoryNumber}" />
+
+					<h:outputText />
+					<h:outputText value="VPN-Profil:" />
+					<h:outputText value="#{searchCardController.card.vpnProfile}" />
+
+
+					<h:outputText style="font-weight:bold" value="Kundendaten" />
+					<h:outputText value="Firmenname:" />
+					<h:outputText value="#{searchCardController.card.customer.name}" />
+
+					<h:outputText />
+					<h:outputText value="Niederlassung:" />
+					<h:outputText value="#{searchCardController.card.customer.branch}" />
+
+					<h:outputText />
+					<h:outputText value="Adresse:" />
+					<h:outputText value="#{searchCardController.card.customer.address.addressString}" />
+						
+					<h:outputText />
+					<h:outputText value="Kundennummer:" />
+					<h:outputText value="#{searchCardController.card.customer.customernumber}" />
+
+					<h:outputText />
+					<h:outputText value="Rechnungsadresse:" />
+					<h:outputText value="#{searchCardController.card.customer.contactPerson.nameString}" />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText value="#{searchCardController.card.customer.invoiceAddress.addressString}" />
+
+
+					<h:outputText style="font-weight:bold" value="Rechnungsdaten" />
+					<h:outputText value="Einzelpreis pro SIM-Karte:" />
+					<h:outputText value="#{searchCardController.card.customer.invoiceConfiguration.simPrice}" />
+
+					<h:outputText />
+					<h:outputText value="Aufpreis mit Datenoption:" />
+					<h:outputText value="#{searchCardController.card.customer.invoiceConfiguration.dataOptionSurcharge}" />
+
+					<h:outputText />
+					<h:outputText value="Rechnungsformat:" />
+					<h:outputText value="#{searchCardController.card.customer.invoiceConfiguration.format}" />
+
+					<h:outputText />
+					<h:outputText value="Frequenz:" />
+					<h:outputText value="#{searchCardController.card.customer.invoiceConfiguration.creationFrequency}" />
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.Person" table="PERSON">
+		<id name="id" type="int" column="PERSON_ID" >
+			<generator class="native"/>
+		</id>
+	 	<property type="string" name="name" column="PERSON_NAME" length="70" />
+	 	<property type="string" name="firstname" column="PERSON_FIRSTNAME" length="100" />
+	 	<property type="string" name="gender" column="PERSON_GENDER" length="5" />
+	 	<many-to-one name="address" class="de.abd.mda.persistence.dao.Address" column="PERSON_ADDRESS" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="ADDRESS_ID"></many-to-one>
+	 	<property type="string" name="phoneNrFirst" column="PERSON_PHONE_NR_FIRST" length="3" />
+	 	<property type="string" name="phoneNrSecond" column="PERSON_PHONE_NR_SECOND" length="9" />
+	 	<property type="string" name="email" column="PERSON_EMAIL" length="100" />
+	 </class>
+ </hibernate-mapping>

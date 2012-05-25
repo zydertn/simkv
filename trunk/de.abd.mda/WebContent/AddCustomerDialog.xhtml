@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<!-- 
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+	-->
+	<style type="text/css">
+.colStyle1 {
+	width: 460px;
+	background: red;
+}
+
+.colStyle2 {
+	width: 260px;
+	background: green;
+}
+</style>
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder; margin-right:15px" value="Kundendaten anlegen" />
+				<h:outputText escape="false" style="color: red"	value="#{actionController.requestMessage}" />
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Kundendaten:" />
+
+				<h:panelGrid columns="6">
+					<h:outputText value="Firmenname:" />
+					<h:inputText size="15"
+						value="#{addCustomerController.customer.name}"
+						style="margin-right: 34px;" />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+
+
+					<h:outputText value="Niederlassung:" />
+					<h:inputText size="15"
+						value="#{addCustomerController.customer.branch}" />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+
+					<h:outputText value="Straße:" />
+					<h:inputText size="15"
+						value="#{addCustomerController.customer.address.street}" />
+					<h:outputText value="Nr.:" />
+					<h:inputText size="3" maxlength="5"
+						value="#{addCustomerController.customer.address.housenumber}"
+						style="margin-left: 36px;  margin-right: 116px;" />
+					<h:outputText value="Postfach:" style="margin-right: 8px;"/>
+					<h:inputText size="12" maxlength="15"
+						value="#{addCustomerController.customer.address.postbox}" />
+
+					<h:outputText value="PLZ:" />
+					<h:inputText size="4" maxlength="5"
+						value="#{addCustomerController.customer.address.postcode}" />
+					<h:outputText value="Ort:" />
+					<h:inputText size="20"
+						value="#{addCustomerController.customer.address.city}"
+						style="margin-left: 36px;" />
+					<h:outputText/>
+					<h:outputText/>
+					<h:outputText value="Kundennummer:" />
+					<h:inputText size="12" maxlength="15"
+						value="#{addCustomerController.customer.customernumber}" />
+					
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Rechnungsadresse:" />
+				<h:panelGrid columns="6">
+					<h:outputText value="Anrede: " />
+					<h:selectOneMenu
+						value="#{addCustomerController.customer.contactPerson.gender}">
+						<f:selectItems value="#{actionController.model.genders}" />
+					</h:selectOneMenu>
+					<h:outputText value="Vorname:" />
+					<h:inputText size="20"
+						value="#{addCustomerController.customer.contactPerson.firstname}"
+						style="margin-right: 19px;">
+					</h:inputText>
+					<h:outputText value="Nachname:" />
+					<h:inputText size="20"
+						value="#{addCustomerController.customer.contactPerson.name}"
+						style="margin-left: 4px" />
+
+					<h:outputText value="Straße:" style="margin-right: 53px;" />
+					<h:inputText size="15"
+						value="#{addCustomerController.customer.invoiceAddress.street}"
+						style="margin-right: 34px;" />
+					<h:outputText value="Nr.:" />
+					<h:inputText size="3" maxlength="5"
+						value="#{addCustomerController.customer.invoiceAddress.housenumber}" />
+
+					<h:outputText value="Postfach:" />
+					<h:panelGrid>
+						<h:inputText size="12" maxlength="15"
+							value="#{addCustomerController.customer.invoiceAddress.postbox}" />
+					</h:panelGrid>
+
+					<h:outputText value="PLZ:" />
+					<h:inputText size="4" maxlength="5"
+						value="#{addCustomerController.customer.invoiceAddress.postcode}" />
+					<h:outputText value="Ort: " />
+					<h:inputText size="20"
+						value="#{addCustomerController.customer.invoiceAddress.city}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Rechnung:" />
+				<h:panelGrid columns="2">
+					<h:outputText value="Einzelpreis pro SIM-Karte: " />
+					<h:inputText size="5"
+						value="#{addCustomerController.customer.invoiceConfiguration.simPrice}"
+						style="margin-right: 20px;">
+					</h:inputText>
+
+					<h:outputText value="Aufpreis mit Datenoption: " />
+					<h:inputText size="5"
+						value="#{addCustomerController.customer.invoiceConfiguration.dataOptionSurcharge}">
+					</h:inputText>
+
+					<h:outputText value="Format: " />
+					<h:selectOneMenu
+						value="#{addCustomerController.customer.invoiceConfiguration.format}">
+						<f:selectItems value="#{actionController.model.invoiceFormats}" />
+					</h:selectOneMenu>
+
+					<h:outputText value="Frequenz: " />
+					<h:selectOneMenu
+						value="#{addCustomerController.customer.invoiceConfiguration.creationFrequency}">
+						<f:selectItems
+							value="#{actionController.model.invoiceCreationFrequencies}" />
+					</h:selectOneMenu>
+
+
+					<h:outputText value="Spalten:" />
+					<h:selectManyCheckbox
+						value="#{addCustomerController.customer.invoiceConfiguration.columns}"
+						layout="lineDirection">
+						<f:selectItem id="item1" itemLabel="Spalte1" itemValue="1" />
+						<f:selectItem id="item2" itemLabel="Spalte2" itemValue="2" />
+						<f:selectItem id="item3" itemLabel="Spalte3" itemValue="3" />
+						<f:selectItem id="item4" itemLabel="Spalte4" itemValue="4" />
+						<f:selectItem id="item5" itemLabel="Spalte5" itemValue="5" />
+					</h:selectManyCheckbox>
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+
+		<h:panelGrid>
+			<h:panelGrid columns="3">
+				<h:commandButton value="Abbrechen"
+					action="#{actionController.cancel}"></h:commandButton>
+				<h:commandButton value="Speichern und nächster Kunde"
+					action="#{addCustomerController.createCustomerNext}"></h:commandButton>
+				<h:commandButton value="Speichern und Ende"
+					action="#{addCustomerController.createCustomerFinish}"></h:commandButton>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+</html>
