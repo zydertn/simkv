@@ -8,7 +8,7 @@
 			<generator class="native"/>
 		</id>
 	 	<property name="street" column="ADDRESS_STREET" type="string" length="100" />
-	 	<property name="housenumber" column="ADDRESS_HOUSENUMBER" type="string" length="5" />
+	 	<property name="housenumber" column="ADDRESS_HOUSENUMBER" type="string" length="30" />
 	 	<property name="postbox" column="ADDRESS_POSTBOX" type="string" length="15" />
 	 	<property name="postcode" column="ADDRESS_POSTCODE" type="int" length="5" />
 	 	<property name="city" column="ADDRESS_CITY" type="string" length="70" />

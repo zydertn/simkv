@@ -43,7 +43,7 @@ public class ClearingController extends ActionController {
 						+ updateCard.getCardNumberFirst()
 						+ "' and card.cardNumberSecond = '"
 						+ updateCard.getCardNumberSecond() + "'";
-			}
+		}
 
 			List<CardBean> list = session.createQuery(select).list();
 			Iterator it = list.iterator();
@@ -53,8 +53,24 @@ public class ClearingController extends ActionController {
 
 				
 		if (searchCard != null) {
-			searchCard.setContactPerson(card.getContactPerson());
-			searchCard.setInstallAddress(card.getInstallAddress());
+//			searchCard.setContactPerson(card.getContactPerson());
+			Person scp = searchCard.getContactPerson();
+			Person cp = card.getContactPerson();
+			scp.setEmail(cp.getEmail());
+			scp.setFirstname(cp.getFirstname());
+			scp.setGender(cp.getGender());
+			scp.setName(cp.getName());
+			scp.setPhoneNrFirst(cp.getPhoneNrFirst());
+			scp.setPhoneNrSecond(cp.getPhoneNrSecond());
+			
+//			searchCard.setInstallAddress(card.getInstallAddress());
+			Address scia = searchCard.getInstallAddress();
+			Address cia = card.getInstallAddress();
+			scia.setCity(cia.getCity());
+			scia.setHousenumber(cia.getHousenumber());
+			scia.setPostcode(cia.getPostcode());
+			scia.setStreet(cia.getStreet());
+			
 			searchCard.setFactoryNumber(card.getFactoryNumber());
 			searchCard.setVpnProfile(card.getVpnProfile());
 		}
@@ -78,6 +94,8 @@ public class ClearingController extends ActionController {
 	}
 
 	public CardBean getCard() {
+		if (getRequest().getAttribute("searchedCard") != null)
+			card = (CardBean) getRequest().getAttribute("searchedCard");
 		return card;
 	}
 

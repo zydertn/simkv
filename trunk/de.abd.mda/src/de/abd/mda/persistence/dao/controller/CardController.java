@@ -46,13 +46,9 @@ public class CardController extends DaoController implements IDaoController {
 		
 		return cards;
 	}
-
+	
 	public CardBean searchCard(String cardNumFirst, String cardNumSecond, String phoneNrFirst, String phoneNrSecond, String searchCase) throws Exception {
 		String select = "select distinct card from CardBean card";
-//		if (searchCase.equals("details")) {
-//			select += " inner join card.contactPerson as contactPerson";
-//		}
-		
 		if (cardNumFirst != null && cardNumFirst.length() > 0 && cardNumSecond != null && cardNumSecond.length() > 0) {
 			select += " where card.cardNumberFirst = '" + cardNumFirst + "' and card.cardNumberSecond = '" + cardNumSecond +"'";
 		} else if (phoneNrFirst != null && phoneNrFirst.length() > 0 && phoneNrSecond != null && phoneNrSecond.length() > 0) {

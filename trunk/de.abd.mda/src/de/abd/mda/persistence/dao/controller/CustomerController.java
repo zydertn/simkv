@@ -1,6 +1,8 @@
 package de.abd.mda.persistence.dao.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,6 +15,8 @@ import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.CustomerComparator;
+
 
 public class CustomerController extends DaoController implements IDaoController {
 	
@@ -32,9 +36,13 @@ public class CustomerController extends DaoController implements IDaoController 
 			for (Iterator it=list.iterator();it.hasNext();) {
 				Customer customer = (Customer) it.next();
 				customers.add(customer);
-				System.out.println(customer.getCustomernumber());
 			}
+
 			tx.commit();
+			
+			Comparator<DaoObject> comparator = new CustomerComparator();
+			Collections.sort(customers, comparator);
+			
 		} catch (RuntimeException e) {
 			if (tx != null && tx.isActive()) {
 				try {
@@ -52,23 +60,24 @@ public class CustomerController extends DaoController implements IDaoController 
 		return customers;
 	}
 	
-	public Customer searchCard(String customerNumber) {
+	@SuppressWarnings("unchecked")
+	public List<DaoObject> searchCustomer(String customerNumber, String customerName) {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		Customer customer = null;
+		List<DaoObject> customers = null;
 		try {
 			tx = session.beginTransaction();
 			String whereClause = "";
 			if (customerNumber != null && customerNumber.length() > 0) {
 				whereClause = " where customer.customernumber = '" + customerNumber + "'";
+				if (customerName != null && customerName.length() > 0) {
+					whereClause += " && customer.name = '" + customerName + "'";
+				}
+			} else if (customerName != null && customerName.length() > 0) {
+				whereClause += " where customer.name = '" + customerName + "'";
 			}
 			
-			Query query = session.createQuery("select card from Customer as customer " + whereClause);
-			session.createQuery("from Customer as customer, Address as address, Person as person").list();
-			for (Iterator it=query.iterate();it.hasNext();) {
-				customer = (Customer) it.next();
-				System.out.println(customer.getName());
-			}
+			customers = session.createQuery("from Customer as customer" + whereClause).list();
 			tx.commit();
 		} catch (RuntimeException e) {
 			if (tx != null && tx.isActive()) {
@@ -83,6 +92,7 @@ public class CustomerController extends DaoController implements IDaoController 
 			}
 
 		}
-		return customer;
+		return customers;
 	}
+	
 }

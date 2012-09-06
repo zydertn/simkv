@@ -3,6 +3,7 @@ package de.abd.mda.controller;
 import java.util.List;
 
 import javax.faces.component.UIOutput;
+import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
@@ -69,6 +70,13 @@ public class ActionController implements ActionListener {
 		return "openAddCustomerDialog";
 	}
 
+	public String openUpdateCustomerDialog() {
+		getRequest().setAttribute("newCustomer", true);
+		getRequest().setAttribute("componentDisabled", true);
+		cardBean = new CardBean();
+		return "openUpdateCustomerDialog";
+	}
+
 	// ***************** Aktionen.xhtml actions end **************************
 
 	// ********* weitere Actions ****************
@@ -90,7 +98,8 @@ public class ActionController implements ActionListener {
 		// TODO Auto-generated method stub
 		getRequest().setAttribute("clearCard", true);
 		System.out.println("ID = " + event.getComponent().getId());
-		uiMessage.setRendered(false);
+		if (uiMessage != null)
+			uiMessage.setRendered(false);
 	}
 
 	/********* Weitere Methoden ****************/
@@ -135,4 +144,5 @@ public class ActionController implements ActionListener {
 	public void setCardBean(CardBean cardBean) {
 		this.cardBean = cardBean;
 	}
+	
 }

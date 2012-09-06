@@ -1,7 +1,7 @@
 CREATE TABLE `ADDRESS` (
   `ADDRESS_ID` int(11),
   `ADDRESS_STREET` varchar(250) default NULL,
-  `ADDRESS_HOUSENUMBER` varchar(10) default NULL,
+  `ADDRESS_HOUSENUMBER` varchar(15) default NULL,
   `ADDRESS_POSTCODE` int(5),
   `ADDRESS_CITY` varchar(50) default NULL,
   PRIMARY KEY  (`ADDRESS_ID`)

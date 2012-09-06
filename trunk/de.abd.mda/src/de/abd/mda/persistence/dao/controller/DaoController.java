@@ -20,6 +20,7 @@ public class DaoController implements IDaoController {
 	public String createObject(DaoObject d) {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		String message = "";
 		try {
 			tx = session.beginTransaction();
 			session.save(d);
@@ -28,11 +29,11 @@ public class DaoController implements IDaoController {
 		} catch (NonUniqueObjectException e) {
 			System.out.println("NonUniqueObjectException");
 			System.out.println(e.getStackTrace());
-			String message = "Fehler!! Karte existiert bereits und wurde nicht angelegt!";
+			message = "Fehler!! Objekt existiert bereits und wurde nicht angelegt!";
 			return message;
 		} catch (ConstraintViolationException e) {
 			if (e.getSQLException().getMessage().contains("Duplicate entry")) {
-				String message = "Fehler!! Karte existiert bereits und wurde nicht angelegt!";
+				message = "Fehler!! Objekt existiert bereits und wurde nicht angelegt!";
 				return message;
 			}
 		} catch (RuntimeException e) {
@@ -40,7 +41,7 @@ public class DaoController implements IDaoController {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
-					return "error";
+					return e.getMessage();
 				} catch (HibernateException e1) {
 					System.out.println("Error rolling back transaction");
 				}
@@ -48,7 +49,7 @@ public class DaoController implements IDaoController {
 				throw e;
 			}
 		}
-		return "";
+		return message;
 	}
 
 	@Override

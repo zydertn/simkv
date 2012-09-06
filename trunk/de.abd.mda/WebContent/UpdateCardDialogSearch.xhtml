@@ -29,26 +29,26 @@
 					<h:outputText value="KartenNr.: " />
 					<h:panelGrid columns="3">
 						<h:inputText
-							value="#{createCardController.cardBean.cardNumberFirst}"
+							value="#{cardController.cardBean.cardNumberFirst}"
 							size="8" maxlength="12">
 						</h:inputText>
 
 						<h:outputText value="-" />
 						<h:inputText
-							value="#{createCardController.cardBean.cardNumberSecond}"
+							value="#{cardController.cardBean.cardNumberSecond}"
 							size="1" maxlength="4" />
 					</h:panelGrid>
 					<h:outputText/>
 					<h:commandButton value="Suchen"
-						action="#{createCardController.createCardSearch}" />
+						action="#{cardController.createCardSearch}" />
 
 					<h:outputText value="Rufnummer:" />
 					<h:panelGrid columns="3">
 						<h:inputText size="1" maxlength="3"
-							value="#{createCardController.cardBean.phoneNrFirst}" disabled="true" />
+							value="#{cardController.cardBean.phoneNrFirst}" disabled="true" />
 						<h:outputText value="/" />
 						<h:inputText size="8" maxlength="9"
-							value="#{createCardController.cardBean.phoneNrSecond}" disabled="true" />
+							value="#{cardController.cardBean.phoneNrSecond}" disabled="true" />
 					</h:panelGrid>
 					<h:outputText/>
 					<h:outputText/>
@@ -56,7 +56,7 @@
 					
 					<h:outputText value="Lieferant: " />
 					<h:panelGrid>
-						<h:selectOneMenu value="#{createCardController.cardBean.supplier}" disabled="true">
+						<h:selectOneMenu value="#{cardController.cardBean.supplier}" disabled="true">
 							<f:selectItems value="#{actionController.model.supplierList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
@@ -66,7 +66,7 @@
 
 					<h:outputText value="Status: " />
 					<h:panelGrid>
-						<h:selectOneMenu value="#{createCardController.cardBean.status}" disabled="true">
+						<h:selectOneMenu value="#{cardController.cardBean.status}" disabled="true">
 							<f:selectItems value="#{actionController.model.statusList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
@@ -82,7 +82,9 @@
 				<h:commandButton value="Abbrechen"
 					action="#{actionController.cancel}"></h:commandButton>
 				<h:commandButton value="Speichern" disabled="true"
-					action="#{createCardController.updateCard}"></h:commandButton>
+					action="#{cardController.updateCard}"></h:commandButton>
+				<h:commandButton value="Löschen" disabled="true"
+					action="#{cardController.deleteCard}"></h:commandButton>
 			</h:panelGrid>
 		</h:panelGrid>
 
