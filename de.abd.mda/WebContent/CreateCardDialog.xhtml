@@ -29,35 +29,35 @@
 					<h:outputText value="KartenNr.: " />
 					<h:panelGrid columns="3">
 						<h:inputText
-							value="#{createCardController.cardBean.cardNumberFirst}"
+							value="#{cardController.cardBean.cardNumberFirst}"
 							size="8" maxlength="12">
 						</h:inputText>
 
 						<h:outputText value="-" />
 						<h:inputText
-							value="#{createCardController.cardBean.cardNumberSecond}"
+							value="#{cardController.cardBean.cardNumberSecond}"
 							size="1" maxlength="4" />
 					</h:panelGrid>
 
 					<h:outputText value="Rufnummer:" />
 					<h:panelGrid columns="3">
 						<h:inputText size="1" maxlength="3"
-							value="#{createCardController.cardBean.phoneNrFirst}" />
+							value="#{cardController.cardBean.phoneNrFirst}" />
 						<h:outputText value="/" />
 						<h:inputText size="8" maxlength="9"
-							value="#{createCardController.cardBean.phoneNrSecond}" />
+							value="#{cardController.cardBean.phoneNrSecond}" />
 					</h:panelGrid>
 					
 					<h:outputText value="Lieferant: " />
 					<h:panelGrid>
-						<h:selectOneMenu value="#{createCardController.cardBean.supplier}">
+						<h:selectOneMenu value="#{cardController.cardBean.supplier}">
 							<f:selectItems value="#{actionController.model.supplierList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
 					
 					<h:outputText value="Status: " />
 					<h:panelGrid>
-						<h:selectOneMenu value="#{createCardController.cardBean.status}">
+						<h:selectOneMenu value="#{cardController.cardBean.status}">
 							<f:selectItems value="#{actionController.model.statusList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
@@ -70,9 +70,9 @@
 				<h:commandButton value="Abbrechen"
 					action="#{actionController.cancel}"></h:commandButton>
 				<h:commandButton value="Speichern und nächste Karte"
-					action="#{createCardController.createCardNext}"></h:commandButton>
+					action="#{cardController.createCardNext}"></h:commandButton>
 				<h:commandButton value="Speichern und Ende"
-					action="#{createCardController.createCardFinish}"></h:commandButton>
+					action="#{cardController.createCardFinish}"></h:commandButton>
 			</h:panelGrid>
 		</h:panelGrid>
 

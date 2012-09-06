@@ -26,7 +26,7 @@ public class Customer extends DaoObject {
 	}
 	
 	public String getListString() {
-		return name + " - " + branch + "; " + address.getAddressString();
+		return name + " - " + branch + "; " + address.getAddressString() + "; " + customernumber;
 	}
 	
 	public String getName() {

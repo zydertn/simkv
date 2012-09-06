@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ace="http://www.icefaces.org/icefaces/components"
+    xmlns:ice="http://www.icesoft.com/icefaces/component"
+    xmlns:icecore="http://www.icefaces.org/icefaces/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+		<title>ICEfaces 2</title>
+		<link rel="stylesheet" type="text/css"
+			href="./xmlhttp/css/rime/rime.css" />
+	</h:head>
+	<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder; margin-right:15px" value="Kundendaten ändern" />
+				<h:outputText escape="false" style="color: red"	value="#{actionController.requestMessage}" />
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Kundendaten:" />
+
+				<h:panelGrid columns="6">
+					<h:outputText value="Firmenname:" />
+					<h:inputText size="15"
+						value="#{customerController.customer.name}"
+						style="margin-right: 34px;" />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+
+
+					<h:outputText value="Niederlassung:" />
+					<h:inputText size="15" binding="#{customerController.branchBinding}"
+						value="#{customerController.customer.branch}" disabled="#{customerController.componentDisabled}" />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+					<h:outputText />
+
+					<h:outputText value="Straße:" />
+					<h:inputText size="15" binding="#{customerController.streetBinding}"
+						value="#{customerController.customer.address.street}" disabled="#{customerController.componentDisabled}" />
+					<h:outputText value="Nr.:" />
+					<h:inputText size="3" binding="#{customerController.housenumberBinding}"
+						value="#{customerController.customer.address.housenumber}" disabled="#{customerController.componentDisabled}"
+						style="margin-left: 36px;  margin-right: 116px;" />
+					<h:outputText value="Postfach:" style="margin-right: 8px;"/>
+					<h:inputText size="12" maxlength="15" binding="#{customerController.postboxBinding}"
+						value="#{customerController.customer.address.postbox}" disabled="#{customerController.componentDisabled}" />
+
+					<h:outputText value="PLZ:" />
+					<h:inputText size="4" maxlength="5" binding="#{customerController.postcodeBinding}"
+						value="#{customerController.customer.address.postcode}" disabled="#{customerController.componentDisabled}" />
+					<h:outputText value="Ort:" />
+					<h:inputText size="20" binding="#{customerController.cityBinding}"
+						value="#{customerController.customer.address.city}" disabled="#{customerController.componentDisabled}"
+						style="margin-left: 36px;" />
+					<h:outputText/>
+					<h:outputText/>
+					<h:outputText value="Kundennummer:" />
+					<h:inputText size="12" maxlength="15" 
+						value="#{customerController.customer.customernumber}" />
+	            	<ice:commandButton value="Suchen" actionListener="#{customerController.searchCustomer}"></ice:commandButton>
+			
+					<ice:panelPopup visible="#{customerController.opened}"
+									rendered="#{customerController.opened}"
+									modal="true"
+									autoCentre="true">
+						<f:facet name="header">
+							<h:outputText value="Welcher Kunde soll geändert werden?"></h:outputText>
+						</f:facet>
+						<f:facet name="body">
+							<h:selectOneRadio value="#{customerController.selectedCustomer}" required="true" layout="pageDirection">
+								<f:selectItems itemLabel="#{customer.listString}" var="customer" value="#{customerController.customerList}"></f:selectItems>
+							</h:selectOneRadio>
+							<h:commandButton value="Submit" actionListener="#{customerController.selectCustomer}"></h:commandButton>
+						</f:facet>
+					</ice:panelPopup>
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Rechnungsadresse:" disabled="#{customerController.componentDisabled}" />
+				<h:panelGrid columns="6">
+					<h:outputText value="Anrede: " />
+					<h:selectOneMenu binding="#{customerController.contactGenderBinding}"
+						value="#{customerController.customer.contactPerson.gender}" disabled="#{customerController.componentDisabled}">
+						<f:selectItems value="#{actionController.model.genders}" />
+					</h:selectOneMenu>
+					<h:outputText value="Vorname:" />
+					<h:inputText size="20" binding="#{customerController.contactFirstnameBinding}"
+						value="#{customerController.customer.contactPerson.firstname}" disabled="#{customerController.componentDisabled}"
+						style="margin-right: 19px;">
+					</h:inputText>
+					<h:outputText value="Nachname:" />
+					<h:inputText size="20" binding="#{customerController.contactNameBinding}"
+						value="#{customerController.customer.contactPerson.name}" disabled="#{customerController.componentDisabled}"
+						style="margin-left: 4px" />
+
+					<h:outputText value="Straße:" style="margin-right: 53px;" />
+					<h:inputText size="15" binding="#{customerController.invoiceStreetBinding}"
+						value="#{customerController.customer.invoiceAddress.street}" disabled="#{customerController.componentDisabled}"
+						style="margin-right: 34px;" />
+					<h:outputText value="Nr.:" />
+					<h:inputText size="3" binding="#{customerController.invoiceHousenumberBinding}"
+						value="#{customerController.customer.invoiceAddress.housenumber}" />
+
+					<h:outputText value="Postfach:" />
+					<h:panelGrid>
+						<h:inputText size="12" maxlength="15" binding="#{customerController.invoicePostboxBinding}"
+							value="#{customerController.customer.invoiceAddress.postbox}" disabled="#{customerController.componentDisabled}" />
+					</h:panelGrid>
+
+					<h:outputText value="PLZ:" />
+					<h:inputText size="4" maxlength="5" binding="#{customerController.invoicePostcodeBinding}"
+						value="#{customerController.customer.invoiceAddress.postcode}" disabled="#{customerController.componentDisabled}" />
+					<h:outputText value="Ort: " />
+					<h:inputText size="20" binding="#{customerController.invoiceCityBinding}"
+						value="#{customerController.customer.invoiceAddress.city}" disabled="#{customerController.componentDisabled}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+				<h:outputText style="font-weight:bold" value="Rechnung:" />
+				<h:panelGrid columns="2">
+					<h:outputText value="Einzelpreis pro SIM-Karte: " />
+					<h:inputText size="5" binding="#{customerController.invoiceconfigSimpriceBinding}"
+						value="#{customerController.customer.invoiceConfiguration.simPrice}" disabled="#{customerController.componentDisabled}"
+						style="margin-right: 20px;">
+					</h:inputText>
+
+					<h:outputText value="Aufpreis mit Datenoption: " />
+					<h:inputText size="5" binding="#{customerController.invoiceconfigDataoptionBinding}"
+						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}" disabled="#{customerController.componentDisabled}">
+					</h:inputText>
+
+					<h:outputText value="Format: " />
+					<h:selectOneMenu binding="#{customerController.invoiceconfigFormatBinding}"
+						value="#{customerController.customer.invoiceConfiguration.format}" disabled="#{customerController.componentDisabled}">
+						<f:selectItems value="#{actionController.model.invoiceFormats}" />
+					</h:selectOneMenu>
+
+					<h:outputText value="Frequenz: " />
+					<h:selectOneMenu binding="#{customerController.invoiceconfigCreationFrequencyBinding}"
+						value="#{customerController.customer.invoiceConfiguration.creationFrequency}" disabled="#{customerController.componentDisabled}">
+						<f:selectItems
+							value="#{actionController.model.invoiceCreationFrequencies}" />
+					</h:selectOneMenu>
+
+
+					<h:outputText value="Spalten:" />
+					<h:selectManyCheckbox binding="#{customerController.invoiceconfigColumnsBinding}"
+						value="#{customerController.customer.invoiceConfiguration.columns}" disabled="#{customerController.componentDisabled}"
+						layout="lineDirection">
+						<f:selectItem id="item1" itemLabel="Spalte1" itemValue="1" />
+						<f:selectItem id="item2" itemLabel="Spalte2" itemValue="2" />
+						<f:selectItem id="item3" itemLabel="Spalte3" itemValue="3" />
+						<f:selectItem id="item4" itemLabel="Spalte4" itemValue="4" />
+						<f:selectItem id="item5" itemLabel="Spalte5" itemValue="5" />
+					</h:selectManyCheckbox>
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+
+		<h:panelGrid>
+			<h:panelGrid columns="3">
+				<h:commandButton value="Abbrechen"
+					action="#{actionController.cancel}"></h:commandButton>
+				<h:commandButton value="Änderungen speichern"
+					action="#{customerController.updateCustomer}"></h:commandButton>
+				<h:commandButton value="Löschen"
+					action="#{customerController.deleteCustomer}"></h:commandButton>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+</html>
