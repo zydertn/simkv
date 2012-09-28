@@ -146,7 +146,7 @@ public class ReportCalculator {
 				}
 			}
 			
-			//	Start- und Enddatum auf einen x Monate (increase) später setzen ==> (Neues Startdatum:1.2.2010, neues Enddatum: 1.3.2010); Vorsicht mit Jahreswechsel
+			//	Start- und Enddatum auf x Monate (increase) später setzen ==> (Neues Startdatum:1.2.2010, neues Enddatum: 1.3.2010); Vorsicht mit Jahreswechsel
 			if (startDate.get(Calendar.MONTH) + increase > 11) {
 				startDate.set(Calendar.MONTH, startDate.get(Calendar.MONTH) + increase - 12);
 				startDate.set(Calendar.YEAR, startDate.get(Calendar.YEAR) + 1);
@@ -266,7 +266,7 @@ public class ReportCalculator {
 					cardsForCalculation.add(card);
 				} else {
 					//	SONST:
-					//	WENN Monatszahl der letzten Berechnung = 11
+					//	WENN Monatszahl der letzten Berechnung = 11 (== Dezember)
 					Calendar lastCalculation = Calendar.getInstance();
 					lastCalculation.setTime(card.getLastCalculationDate());
 					if (lastCalculation.get(Calendar.MONTH) == 11) {
