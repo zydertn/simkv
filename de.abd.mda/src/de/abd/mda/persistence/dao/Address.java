@@ -17,7 +17,7 @@ public class Address extends DaoObject implements Serializable {
 	private int addressId;
 	private String street;
 	private String housenumber;
-	private int postcode;
+	private String postcode;
 	private String city;
 	private Country country;
 	private String postbox;
@@ -25,7 +25,7 @@ public class Address extends DaoObject implements Serializable {
 	public Address() {
 		this.street = "";
 		this.housenumber = "";
-		this.postcode = 0;
+		this.postcode = "";
 		this.city = "";
 		this.postbox = "";
 	}
@@ -35,7 +35,7 @@ public class Address extends DaoObject implements Serializable {
 		if (country != null) {
 			nameS += country.getShortName() + ", ";
 		}
-		if (postcode > 0 && city != null && city.length() > 0) {
+		if (postcode != null && postcode.length() > 0 && city != null && city.length() > 0) {
 			if (street != null && street.length() > 0 && housenumber != null && housenumber.length() > 0)
 				return nameS + street + " " + housenumber + ", " + postcode + " " + city;
 			else if (postbox != null && postbox.length() > 0)
@@ -60,11 +60,11 @@ public class Address extends DaoObject implements Serializable {
 		this.housenumber = housenumber;
 	}
 	
-	public int getPostcode() {
+	public String getPostcode() {
 		return postcode;
 	}
 	
-	public void setPostcode(int postcode) {
+	public void setPostcode(String postcode) {
 		this.postcode = postcode;
 	}
 	
