@@ -19,9 +19,9 @@
 	 	<property name="customerOrderNumber" type="string" column="CARD_CUSTOMER_ORDER_NUMBER" length="12" />
 	 	<property name="supplier" type="string" column="CARD_SUPPLIER" length="15" />
 	 	<property name="status" type="string" column="CARD_STATUS" length="15" />
-	 	<property name="activationDate" type="date" column="CARD_ACTIVATION_DATE" />
+	 	<property name="activationDate" type="timestamp" column="CARD_ACTIVATION_DATE" />
 	 	<property name="orderNumber" type="string" column="CARD_ORDER_NUMBER" length="12" />
-	 	<property name="deliverySlipDate" type="date" column="CARD_DELIVERY_SLIP_DATE" />
+	 	<property name="deliverySlipDate" type="timestamp" column="CARD_DELIVERY_SLIP_DATE" />
 	 	<property name="deliverySlipNumber" type="string" column="CARD_DELIVERY_SLIP_NUMBER" length="12" />
 	 	<many-to-one name="contactPerson" class="de.abd.mda.persistence.dao.Person" column="CARD_PERSON" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="PERSON_ID"></many-to-one>
 	 	<many-to-one name="customer" class="de.abd.mda.persistence.dao.Customer" column="CARD_CUSTOMER" lazy="false" not-null="false" cascade="save-update" foreign-key="CUSTOMER_ID"></many-to-one>
@@ -29,6 +29,6 @@
 	 	<property name="factoryNumber" type="string" column="CARD_INSTALL_FACTORY_NUMBER" length="15" />
 	 	<property name="vpnProfile" type="string" column="CARD_INSTALL_VPN_PROFILE" length="15" />
 	 	<property name="comment" type="string" column="CARD_COMMENT" />
-	 	<property name="lastCalculationDate" type="date" column="CARD_CALCULATION_DATE" />
+	 	<property name="lastCalculationDate" type="timestamp" column="CARD_CALCULATION_DATE" />
 	 </class>
  </hibernate-mapping>
