@@ -58,13 +58,20 @@ public class DeliveryBillController extends ActionController {
 				card.setOrderNumber(ccCardBean.getOrderNumber());
 				card.setDeliverySlipDate(ccCardBean.getDeliverySlipDate());
 				card.setDeliverySlipNumber(ccCardBean.getDeliverySlipNumber());
+
 				Iterator itrCust = customerList.iterator();
 				while (itrCust.hasNext()) {
 					Customer customerFromList = (Customer) itrCust.next();
 					if (customerFromList.toString().equals(customer)) {
 						System.out.println("Customer " + customerFromList.getName()
 								+ " equals my chosen customer!!!");
-						card.setCustomer(customerFromList);
+
+						String whereClause = "";
+						whereClause = " where customer.id = '" + customerFromList.getId() + "'";
+						
+						List<Customer> customerList = session.createQuery("from Customer as customer" + whereClause).list();
+						Customer dbCustomer = customerList.get(0);
+						card.setCustomer(dbCustomer);
 						break;
 					} else
 						System.out.println("kein Match");
