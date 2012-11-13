@@ -11,6 +11,9 @@ import javax.faces.event.ActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
