@@ -34,7 +34,11 @@ public class Person extends DaoObject {
 
 	public String getPhoneNr() {
 		if (phoneNrFirst != null && phoneNrFirst.length() > 0 && phoneNrSecond != null && phoneNrSecond.length() > 0)
-			return "0" + phoneNrFirst + phoneNrSecond;
+			if (phoneNrFirst.startsWith("0")) {
+				return phoneNrFirst + phoneNrSecond;
+			} else {
+				return "0" + phoneNrFirst + phoneNrSecond;
+		}
 		else return "";
 	}
 	

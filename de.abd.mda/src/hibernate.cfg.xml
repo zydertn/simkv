@@ -27,7 +27,7 @@
 	    -->
 	    <property name="current_session_context_class">thread</property>
 	    <!-- this will show us all sql statements -->
-	    <property name="hibernate.show_sql">true</property>
+	    <property name="hibernate.show_sql">false</property>
 	    <!-- this will create the database tables for us -->
 	    <property name="hibernate.hbm2ddl.auto">update</property>
 	    <mapping resource="de/abd/mda/persistence/dao/CardBean.hbm.xml" />

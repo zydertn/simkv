@@ -3,6 +3,8 @@ package de.abd.mda.controller;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -15,8 +17,10 @@ import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 
 public class CardActionController extends ActionController {
 
+	private final static Logger LOGGER = Logger.getLogger(CardActionController.class .getName()); 
+	
 	public CardBean ccCardBean;
-
+	
 	public CardBean getCcCardBean() {
 		return ccCardBean;
 	}
@@ -92,6 +96,7 @@ public class CardActionController extends ActionController {
 	}
 	
 	public String updateCard() {
+		LOGGER.debug("Meine erste Log-Ausgabe! Juhu!");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		CardBean card = null;
