@@ -44,6 +44,7 @@ public class ReportGenerator {
 	private static int MAX_ROW_FIRST_PAGE = 25;
 	private static int FULL_PAGE_SIZE = 39;
 	private int pos = 0;
+	private int extraLineBreaks = 0;
 
 
 	
@@ -116,10 +117,10 @@ public class ReportGenerator {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 			
 			
-			Chunk logoChunk = new Chunk(logo, 180, -20);
+			Chunk logoChunk = new Chunk(logo, -25, -20);
 			Phrase phrase = new Phrase(logoChunk);
-			Chunk senderChunk = new Chunk(sender, -307, -90);
-			phrase.add(senderChunk);
+//			Chunk senderChunk = new Chunk(sender, -307, -90);
+//			phrase.add(senderChunk);
 			
 			header = new HeaderFooter(phrase, false);
 			header.setAlignment(Element.ALIGN_RIGHT);
@@ -166,13 +167,16 @@ public class ReportGenerator {
 
 	private boolean generateBody(PdfWriter writer, Document doc, HashMap<String, List<CardBean>> cardMap, Customer customer, Calendar calcMonth) {
 		try {
+			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
+
+			Chunk senderChunk = new Chunk(sender, 0, -80);
+			Phrase headPhrase = new Phrase(senderChunk);
+			doc.add(headPhrase);
+			
 			int x = 60;
-			int y = 710;
+			int y = 700;
 
-			// SiwalTec GmbH mit Unterstrich links oben
 			PdfContentByte cb = writer.getDirectContent();
-
-			y = y - 10;
 
 			// Firma
 			cb.beginText();
@@ -304,12 +308,19 @@ public class ReportGenerator {
 //			tableRowList = addDummyRows(tableRowList);
 			
 			ArrayList<PdfPTable> tables = prepareTables(tableRowList);
-			Iterator<PdfPTable> tableIt = tables.iterator();
-			while (tableIt.hasNext()) {
-				doc.add(tableIt.next());
-				if (tableIt.hasNext()){
-					doc.add(new Phrase(new Chunk("\n\n\n\n\n")));
+			int i = 0;
+			while (i < tables.size()) {
+				doc.add(tables.get(i));
+				if (i+1 < tables.size()){
+					String lineBreaks = "\n\n\n\n\n";
+					if (i+2 == tables.size()) {
+						for (int j = 0; j < extraLineBreaks; j++) {
+							lineBreaks += "\n";
+						}
+					}
+					doc.add(new Phrase(new Chunk(lineBreaks)));
 				}
+				i++;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -497,27 +508,27 @@ public class ReportGenerator {
 		tableRowList.add(r57);
 		tableRowList.add(r58);
 		tableRowList.add(r59);
-		tableRowList.add(r60);
-		tableRowList.add(r61);
-		tableRowList.add(r62);
-		tableRowList.add(r63);
-		tableRowList.add(r64);
-		tableRowList.add(r65);
-		tableRowList.add(r66);
-		tableRowList.add(r67);
-		tableRowList.add(r68);
-		tableRowList.add(r69);
-		tableRowList.add(r70);
-		tableRowList.add(r71);
-		tableRowList.add(r72);
-		tableRowList.add(r73);
-		tableRowList.add(r74);
-		tableRowList.add(r75);
-		tableRowList.add(r76);
-		tableRowList.add(r77);
-		tableRowList.add(r78);
-		tableRowList.add(r79);
-		tableRowList.add(r80);
+//		tableRowList.add(r60);
+//		tableRowList.add(r61);
+//		tableRowList.add(r62);
+//		tableRowList.add(r63);
+//		tableRowList.add(r64);
+//		tableRowList.add(r65);
+//		tableRowList.add(r66);
+//		tableRowList.add(r67);
+//		tableRowList.add(r68);
+//		tableRowList.add(r69);
+//		tableRowList.add(r70);
+//		tableRowList.add(r71);
+//		tableRowList.add(r72);
+//		tableRowList.add(r73);
+//		tableRowList.add(r74);
+//		tableRowList.add(r75);
+//		tableRowList.add(r76);
+//		tableRowList.add(r77);
+//		tableRowList.add(r78);
+//		tableRowList.add(r79);
+//		tableRowList.add(r80);
 		tableRowList.add(r81);
 		tableRowList.add(r82);
 		tableRowList.add(r83);
@@ -543,8 +554,14 @@ public class ReportGenerator {
 		ArrayList<String[]> firstPageList = new ArrayList<String[]>();
 		int i = 0;
 		while (i < MAX_ROW_FIRST_PAGE) {
-			firstPageList.add(tableRowList.get(i));
-			i++;
+			if (i+6 < tableRowList.size()) {
+				firstPageList.add(tableRowList.get(i));
+				i++;
+			} else {
+				extraLineBreaks = (MAX_ROW_FIRST_PAGE) - i;
+				break;
+			}
+
 		}
 		tableList.add(createTable(firstPageList, false));
 		
@@ -552,8 +569,13 @@ public class ReportGenerator {
 		for (int j=1; j<fullTableCount+1; j++) {
 			ArrayList<String[]> otherFullTableList = new ArrayList<String[]>();
 			while (i < (MAX_ROW_FIRST_PAGE + j*FULL_PAGE_SIZE)) {
-				otherFullTableList.add(tableRowList.get(i));
-				i++;
+				if (i+6 < tableRowList.size()) {
+					otherFullTableList.add(tableRowList.get(i));
+					i++;
+				} else {
+					extraLineBreaks = (MAX_ROW_FIRST_PAGE + j*FULL_PAGE_SIZE) - i;
+					break;
+				}
 			}
 			tableList.add(createTable(otherFullTableList, false));
 		}
