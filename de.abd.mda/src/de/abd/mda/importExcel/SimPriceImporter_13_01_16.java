@@ -21,6 +21,7 @@ import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
+import de.abd.mda.persistence.dao.InvoiceConfiguration;
 import de.abd.mda.persistence.dao.Person;
 import de.abd.mda.persistence.dao.SequenceNumber;
 import de.abd.mda.persistence.dao.controller.CardController;
@@ -67,15 +68,41 @@ public class SimPriceImporter_13_01_16 {
 			Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 			split = zeile.split(";");
 			
-			if (split.length > 5) {
-				logger.debug("split[5] == " + split[5]);
-				if (split[5].length() > 0) {
-					List<DaoObject> cusList = this.searchCustomer(split[5], null);
+			if (split.length > 7) {
+				logger.debug("split[7] == " + split[7]);
+				if (split[7].length() > 0) {
+					List<DaoObject> cusList = this.searchCustomer(split[7], null);
 					if (cusList != null && cusList.size() > 0) {
 						Customer c = (Customer) cusList.get(0);
 						logger.info("Kunde " + c.getCustomernumber() + " existiert!");
 					} else {
-						logger.warn("Kunde " + split[5] + " gibt es nicht in der DB!");
+						logger.warn("Kunde " + split[7] + " gibt es nicht in der DB!");
+						Customer c = new Customer();
+						c.setCustomernumber(split[7]);
+						c.setName(split[0]);
+						Address a = new Address();
+						if (split[2] != null && split[2].length() > 0) {
+							a.setStreet(split[2]);
+						}
+						if (split[3] != null && split[3].length() > 0) {
+							a.setHousenumber(split[3]);
+						}
+						if (split[4] != null && split[4].length() > 0) {
+							a.setPostcode(split[4]);
+						}
+						if (split[5] != null && split[5].length() > 0) {
+							a.setCity(split[5]);
+						}
+						c.setAddress(a);
+						if (split[6] != null && split[6].length() > 0) {
+							InvoiceConfiguration ic = new InvoiceConfiguration();
+							ic.setSimPrice(new Integer(split[6]));
+							c.setInvoiceConfiguration(ic);
+						}
+
+						CustomerController cc = new CustomerController();
+						cc.createObject(c);
+
 					}
 				}
 			}
