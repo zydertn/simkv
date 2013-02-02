@@ -16,6 +16,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import de.abd.mda.controller.CustomerActionController;
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.CardBean;
@@ -63,6 +64,8 @@ public class SimPriceImporter_13_01_16 {
 	public void readDataFromFile(FileReader file) throws IOException {
 		BufferedReader data = new BufferedReader(file);
 		int i = 0;
+		CustomerActionController cac = new CustomerActionController();
+		CustomerController cc = new CustomerController();
 		while ((zeile = data.readLine()) != null) {
 			Transaction tx = null;
 			Session session = SessionFactoryUtil.getInstance().getCurrentSession();
@@ -72,37 +75,44 @@ public class SimPriceImporter_13_01_16 {
 				logger.debug("split[7] == " + split[7]);
 				if (split[7].length() > 0) {
 					List<DaoObject> cusList = this.searchCustomer(split[7], null);
+					boolean customerExists = false;
+					Customer c = null;
 					if (cusList != null && cusList.size() > 0) {
-						Customer c = (Customer) cusList.get(0);
-						logger.info("Kunde " + c.getCustomernumber() + " existiert!");
+						c = (Customer) cusList.get(0);
+						customerExists = true;
 					} else {
 						logger.warn("Kunde " + split[7] + " gibt es nicht in der DB!");
-						Customer c = new Customer();
-						c.setCustomernumber(split[7]);
-						c.setName(split[0]);
-						Address a = new Address();
-						if (split[2] != null && split[2].length() > 0) {
-							a.setStreet(split[2]);
-						}
-						if (split[3] != null && split[3].length() > 0) {
-							a.setHousenumber(split[3]);
-						}
-						if (split[4] != null && split[4].length() > 0) {
-							a.setPostcode(split[4]);
-						}
-						if (split[5] != null && split[5].length() > 0) {
-							a.setCity(split[5]);
-						}
-						c.setAddress(a);
-						if (split[6] != null && split[6].length() > 0) {
-							InvoiceConfiguration ic = new InvoiceConfiguration();
-							ic.setSimPrice(new Integer(split[6]));
-							c.setInvoiceConfiguration(ic);
-						}
+						c = new Customer();
+					}
 
-						CustomerController cc = new CustomerController();
+					c.setCustomernumber(split[7]);
+					c.setName(split[0]);
+					Address a = new Address();
+					if (split[2] != null && split[2].length() > 0) {
+						a.setStreet(split[2]);
+					}
+					if (split[3] != null && split[3].length() > 0) {
+						a.setHousenumber(split[3]);
+					}
+					if (split[4] != null && split[4].length() > 0) {
+						a.setPostcode(split[4]);
+					}
+					if (split[5] != null && split[5].length() > 0) {
+						a.setCity(split[5]);
+					}
+					c.setAddress(a);
+					if (split[6] != null && split[6].length() > 0) {
+						InvoiceConfiguration ic = new InvoiceConfiguration();
+						ic.setSimPrice(new Integer(split[6]));
+						c.setInvoiceConfiguration(ic);
+					}
+
+					if (customerExists) {
+						logger.info("Kunde " + c.getCustomernumber() + " existiert!");
+						cac.setCustomer(c);
+						cac.updateCustomer();
+					} else {
 						cc.createObject(c);
-
 					}
 				}
 			}
