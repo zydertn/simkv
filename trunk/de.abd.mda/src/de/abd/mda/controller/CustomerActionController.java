@@ -8,6 +8,7 @@ import java.util.List;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
 import org.hibernate.HibernateException;
@@ -25,6 +26,7 @@ import de.abd.mda.persistence.dao.Person;
 import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.FacesUtil;
 
 public class CustomerActionController extends ActionController {
 
@@ -48,8 +50,8 @@ public class CustomerActionController extends ActionController {
 	private HtmlInputText invoicePostboxBinding;
 	private HtmlInputText invoicePostcodeBinding;
 	private HtmlInputText invoiceCityBinding;
-	private HtmlInputText invoiceconfigSimpriceBinding;
-	private HtmlInputText invoiceconfigDataoptionBinding;
+	private HtmlSelectOneMenu invoiceconfigSimpriceBinding;
+	private HtmlSelectOneMenu invoiceconfigDataoptionBinding;
 	private HtmlSelectOneMenu invoiceconfigFormatBinding;
 	private HtmlSelectOneMenu invoiceconfigCreationFrequencyBinding;
 	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
@@ -96,7 +98,7 @@ public class CustomerActionController extends ActionController {
 		}
 	}
 	
-	public String updateCustomer() {
+	public String updateCustomer(Customer customer) {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
@@ -162,27 +164,29 @@ public class CustomerActionController extends ActionController {
 			}
 		}
 
-		getRequest().setAttribute("message", "Änderung gespeichert!");
+		FacesUtil.writeAttributeToRequest("message", "Änderung gespeichert!");
 		customer = new Customer();
-		branchBinding.setDisabled(true);
-		streetBinding.setDisabled(true);
-		housenumberBinding.setDisabled(true);
-		postboxBinding.setDisabled(true);
-		postcodeBinding.setDisabled(true);
-		cityBinding.setDisabled(true);
-		contactGenderBinding.setDisabled(true);
-		contactFirstnameBinding.setDisabled(true);
-		contactNameBinding.setDisabled(true);
-		invoiceStreetBinding.setDisabled(true);
-		invoiceHousenumberBinding.setDisabled(true);
-		invoicePostboxBinding.setDisabled(true);
-		invoicePostcodeBinding.setDisabled(true);
-		invoiceCityBinding.setDisabled(true);
-		invoiceconfigSimpriceBinding.setDisabled(true);
-		invoiceconfigDataoptionBinding.setDisabled(true);
-		invoiceconfigFormatBinding.setDisabled(true);
-		invoiceconfigCreationFrequencyBinding.setDisabled(true);
-		invoiceconfigColumnsBinding.setDisabled(true);
+		if (FacesContext.getCurrentInstance() != null) {
+			branchBinding.setDisabled(true);
+			streetBinding.setDisabled(true);
+			housenumberBinding.setDisabled(true);
+			postboxBinding.setDisabled(true);
+			postcodeBinding.setDisabled(true);
+			cityBinding.setDisabled(true);
+			contactGenderBinding.setDisabled(true);
+			contactFirstnameBinding.setDisabled(true);
+			contactNameBinding.setDisabled(true);
+			invoiceStreetBinding.setDisabled(true);
+			invoiceHousenumberBinding.setDisabled(true);
+			invoicePostboxBinding.setDisabled(true);
+			invoicePostcodeBinding.setDisabled(true);
+			invoiceCityBinding.setDisabled(true);
+			invoiceconfigSimpriceBinding.setDisabled(true);
+			invoiceconfigDataoptionBinding.setDisabled(true);
+			invoiceconfigFormatBinding.setDisabled(true);
+			invoiceconfigCreationFrequencyBinding.setDisabled(true);
+			invoiceconfigColumnsBinding.setDisabled(true);
+		}
 
 		
 		return "openUpdateCustomerDialog";
@@ -406,25 +410,25 @@ public class CustomerActionController extends ActionController {
 		this.invoiceCityBinding = invoiceCityBinding;
 	}
 
-	public HtmlInputText getInvoiceconfigSimpriceBinding() {
+	public HtmlSelectOneMenu getInvoiceconfigSimpriceBinding() {
 		if (invoiceconfigSimpriceBinding != null && getRequest().getAttribute("componentDisabled") != null)
 			invoiceconfigSimpriceBinding.setDisabled(true);
 		return invoiceconfigSimpriceBinding;
 	}
 
 	public void setInvoiceconfigSimpriceBinding(
-			HtmlInputText invoiceconfigSimpriceBinding) {
+			HtmlSelectOneMenu invoiceconfigSimpriceBinding) {
 		this.invoiceconfigSimpriceBinding = invoiceconfigSimpriceBinding;
 	}
 
-	public HtmlInputText getInvoiceconfigDataoptionBinding() {
+	public HtmlSelectOneMenu getInvoiceconfigDataoptionBinding() {
 		if (invoiceconfigDataoptionBinding != null && getRequest().getAttribute("componentDisabled") != null)
 			invoiceconfigDataoptionBinding.setDisabled(true);
 		return invoiceconfigDataoptionBinding;
 	}
 
 	public void setInvoiceconfigDataoptionBinding(
-			HtmlInputText invoiceconfigDataoptionBinding) {
+			HtmlSelectOneMenu invoiceconfigDataoptionBinding) {
 		this.invoiceconfigDataoptionBinding = invoiceconfigDataoptionBinding;
 	}
 

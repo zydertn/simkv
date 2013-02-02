@@ -20,6 +20,7 @@ import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.report.ReportCalculator;
 import de.abd.mda.report.ReportGenerator2;
+import de.abd.mda.report.ReportRunnable;
 
 public class ActionController implements ActionListener {
 
@@ -34,11 +35,17 @@ public class ActionController implements ActionListener {
 	public ActionController() {
 		model = new Model();
 		model.createModel();
-		getSession().setAttribute("model", model);
+		if (getSession() != null) {
+			getSession().setAttribute("model", model);
+		}
 	}
 	
 	// ***************************** Aktionen.xhtml actions (navigation)
 	// **********************
+	public String openConfigDialog() {
+		return "openConfigureDialog";
+	}
+	
 	public String openCreateNewCardDialog() {
 		cardBean = new CardBean();
 		return "createCard";
@@ -62,8 +69,10 @@ public class ActionController implements ActionListener {
 	}
 
 	public String generateReport() {
-		ReportCalculator rc = new ReportCalculator();
-		rc.calculate();
+//		ReportCalculator rc = new ReportCalculator();
+//		rc.calculate();
+		
+//		(new Thread(new ReportCalculator())).start();
 		
 		return "Report";
 	}
@@ -107,8 +116,12 @@ public class ActionController implements ActionListener {
 
 	/********* Weitere Methoden ****************/
 	protected HttpSession getSession() {
-		return (HttpSession) FacesContext.getCurrentInstance()
-				.getExternalContext().getSession(false);
+		if (FacesContext.getCurrentInstance() != null) {
+			return (HttpSession) FacesContext.getCurrentInstance()
+					.getExternalContext().getSession(false);
+		} else {
+			return null;
+		}
 	}
 
 	protected HttpServletRequest getRequest() {

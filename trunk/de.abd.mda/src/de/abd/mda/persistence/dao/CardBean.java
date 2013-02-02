@@ -31,6 +31,7 @@ public class CardBean extends DaoObject {
 	private String vpnProfile;
 	private String comment;
 	private Date lastCalculationDate;
+	private String project;
 	
 	public Date getLastCalculationDate() {
 		return lastCalculationDate;
@@ -58,6 +59,7 @@ public class CardBean extends DaoObject {
 		this.factoryNumber = "";
 		this.vpnProfile = "";
 		this.comment = "";
+		this.project = "";
 	}
 	
 	public CardBean(String cNFirst, String cNSecond, String country, String phoneFirst, String phoneSecond, int seqNum) {
@@ -79,6 +81,7 @@ public class CardBean extends DaoObject {
 		this.factoryNumber = "";
 		this.vpnProfile = "";
 		this.comment = "";
+		this.project = "";
 	}
 
 	public String getCardNumber() {
@@ -259,6 +262,14 @@ public class CardBean extends DaoObject {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public String getProject() {
+		return project;
+	}
+
+	public void setProject(String project) {
+		this.project = project;
 	}
 
 

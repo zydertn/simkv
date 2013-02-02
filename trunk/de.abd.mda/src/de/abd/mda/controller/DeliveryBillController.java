@@ -25,8 +25,7 @@ public class DeliveryBillController extends ActionController {
 	private List<DaoObject> customerList;
 	private String customer;
 	private Customer customerObject;
-	private Date deliverySlipDate;
-
+	
 	public DeliveryBillController() {
 		if (getRequest().getAttribute("searchedCard") != null)
 			ccCardBean = (CardBean) getRequest().getAttribute("searchedCard");
@@ -147,11 +146,18 @@ public class DeliveryBillController extends ActionController {
 	}
 
 	public Date getDeliverySlipDate() {
-		return deliverySlipDate;
+		if (getRequest().getAttribute("newDateSet") == null && ccCardBean != null) {
+			if (ccCardBean.getDeliverySlipNumber() == null || (ccCardBean.getDeliverySlipNumber() != null && ccCardBean.getDeliverySlipNumber().length() == 0)) {
+				ccCardBean.setDeliverySlipDate(new Date());
+			}
+		}
+
+		return ccCardBean.getDeliverySlipDate();
 	}
 
 	public void setDeliverySlipDate(Date deliverySlipDate) {
-		this.deliverySlipDate = deliverySlipDate;
+		ccCardBean.setDeliverySlipDate(deliverySlipDate);
+		getRequest().setAttribute("newDateSet", true);
 	}
 
 	public Customer getCustomerObject() {

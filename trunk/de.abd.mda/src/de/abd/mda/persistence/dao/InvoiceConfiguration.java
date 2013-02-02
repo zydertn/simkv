@@ -7,15 +7,13 @@ public class InvoiceConfiguration extends DaoObject {
 	 */
 	private static final long serialVersionUID = 46437276670900355L;
 	private int id;
-	private double simPrice;
-	private double dataOptionSurcharge;
+	private int simPrice;
+	private int dataOptionSurcharge;
 	private String format;
 	private String[] columns;
 	private String creationFrequency;
 	
 	public InvoiceConfiguration() {
-		this.simPrice = 0.0;
-		this.dataOptionSurcharge = 0.0;
 		this.format = "Hochformat";
 		this.columns = new String[5];
 //		columns[0] = "1";
@@ -23,19 +21,19 @@ public class InvoiceConfiguration extends DaoObject {
 		this.creationFrequency = "monatlich";
 	}
 
-	public double getSimPrice() {
+	public int getSimPrice() {
 		return simPrice;
 	}
 
-	public void setSimPrice(double simPrice) {
+	public void setSimPrice(int simPrice) {
 		this.simPrice = simPrice;
 	}
 
-	public double getDataOptionSurcharge() {
+	public int getDataOptionSurcharge() {
 		return dataOptionSurcharge;
 	}
 
-	public void setDataOptionSurcharge(double dataOptionSurcharge) {
+	public void setDataOptionSurcharge(int dataOptionSurcharge) {
 		this.dataOptionSurcharge = dataOptionSurcharge;
 	}
 

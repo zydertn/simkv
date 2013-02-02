@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="de.abd.mda.persistence.dao.Configuration"
+		table="CONFIGURATION">
+		<id name="id" type="int" column="C_ID">
+			<generator class="native" />
+		</id>
+		<map name="simPrices" table="simPrices">
+			<key column="C_ID" not-null="true" />
+			<map-key column="sim_id" type="int" />
+			<element column="sim_price" type="double" />
+		</map>
+		<map name="dataOptionPrices" table="dataOptionPrices">
+			<key column="C_ID" not-null="true" />
+			<map-key column="dataOption_id" type="int" />
+			<element column="dataOption_price" type="double" />
+		</map>
+		<property name="reportProgress" type="int" column="REPORT_PROGRESS" length="3" not-null="false" />
+		<property name="customer" type="int" column="REPORT_CUSTOMER" length="5" not-null="false"  />
+		<property name="lastReportUpdate" type="long" column="REPORT_LAST_UPDATE" />
+	</class>
+</hibernate-mapping>

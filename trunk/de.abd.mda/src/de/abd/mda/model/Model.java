@@ -3,8 +3,14 @@ package de.abd.mda.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.model.SelectItem;
+
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
+import de.abd.mda.persistence.dao.controller.ConfigurationController;
+import de.abd.mda.util.FacesUtil;
 
 public class Model {
 
@@ -18,6 +24,7 @@ public class Model {
 	public static String STATUS_DUMMY = "Dummy";
 	
 	public static String SUPPLIER_TELEKOM = "Telekom";
+	public static String SUPPLIER_TELEKOM_AUSTRIA = "Telekom Austria";
 	
 	public static String FORMAT_HOCHFORMAT = "Hochformat";
 	public static String FORMAT_QUERFORMAT = "Querformat";
@@ -30,6 +37,9 @@ public class Model {
 	public static String GENDER_MAN = "Herr";
 	public static String GENDER_WOMAN = "Frau";
 	public static String GENDER_COMPANY = "Firma";
+
+	public Set<Integer> simPrices;
+	public Set<Integer> dataOptionSurcharges;
 	
 	public List<String> getSupplierList() {
 		return supplierList;
@@ -57,6 +67,7 @@ public class Model {
 		
 		supplierList = new ArrayList<String>();
 		supplierList.add(Model.SUPPLIER_TELEKOM);
+		supplierList.add(Model.SUPPLIER_TELEKOM_AUSTRIA);
 		
 		invoiceFormats = new ArrayList<String>();
 		invoiceFormats.add(Model.FORMAT_HOCHFORMAT);
@@ -105,7 +116,7 @@ public class Model {
 		genders.add(new SelectItem(Model.GENDER_COMPANY));
 		return genders;
 	}
-
+	
 	public List<Country> getCountries() {
 		return countries;
 	}
@@ -137,6 +148,22 @@ public class Model {
 	public void setInvoiceCreationFrequencies(
 			List<String> invoiceCreationFrequencies) {
 		this.invoiceCreationFrequencies = invoiceCreationFrequencies;
+	}
+
+	public Set<Integer> getSimPrices() {
+		if (simPrices == null || (simPrices != null && simPrices.size() == 0) || (FacesUtil.getAttributeFromRequest("updateSimPrices") != null)) {
+			ConfigurationController c = new ConfigurationController();
+			simPrices = c.getSimPricesFromDB().keySet();
+		}
+		return simPrices;
+	}
+
+	public Set<Integer> getDataOptionSurcharges() {
+		if (dataOptionSurcharges == null || (dataOptionSurcharges != null && dataOptionSurcharges.size() == 0)  || (FacesUtil.getAttributeFromRequest("updateDataOptions") != null)) {
+			ConfigurationController c = new ConfigurationController();
+			dataOptionSurcharges = c.getDataOptionPricesFromDB().keySet();
+		}
+		return dataOptionSurcharges;
 	}
 
 }

@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder; margin-right:15px" value="Konfiguration" />
+				<h:outputText escape="false" style="color: red" value="#{actionController.requestMessage}" />		
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid>
+			<h:panelGrid columns="3" bgcolor="#FFFFCC" cellspacing="1" width="830">
+					<h:outputText value="SIM Profil: " />
+					<ice:selectOneMenu partialSubmit="true" immediate="true" valueChangeListener="#{configurationController.changeSimKeyValue}"
+						value="#{configurationController.simPriceKey}">
+						<f:selectItems value="#{actionController.model.simPrices}" />
+					</ice:selectOneMenu>
+					<h:inputText size="6" value="#{configurationController.simPrice}" />
+
+					<h:outputText value="Datenoption Profil: " />
+					<ice:selectOneMenu partialSubmit="true" immediate="true" valueChangeListener="#{configurationController.changeDataOptionKeyValue}"
+						value="#{configurationController.dataOptionKey}">
+						<f:selectItems value="#{actionController.model.dataOptionSurcharges}" />
+					</ice:selectOneMenu>
+					<h:inputText size="6" value="#{configurationController.dataOptionPrice}" />
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="4">
+				<h:commandButton value="Abbrechen"
+					action="#{actionController.cancel}"></h:commandButton>
+				<h:commandButton value="Speichern"
+					action="#{configurationController.updateConfiguration}"></h:commandButton>
+				<h:commandButton value="Neues SIM-Profil"
+					action="#{configurationController.addSimPriceProfile}"></h:commandButton>
+				<h:commandButton value="Neues Datenoptions-Profil"
+					action="#{configurationController.addDataOptionProfile}"></h:commandButton>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>

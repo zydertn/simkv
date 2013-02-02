@@ -1,12 +1,14 @@
 package de.abd.mda.report;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+
+import javax.faces.FactoryFinder;
+import javax.faces.application.ApplicationFactory;
+import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -14,14 +16,49 @@ import org.hibernate.Transaction;
 
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
+import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.FacesUtil;
 
-public class ReportCalculator {
+public class ReportCalculator implements Runnable {
 	static final Logger logger = Logger.getLogger(ReportCalculator.class);
-
+	HttpSession facesSession;
+	private boolean taskRunning = true;
+	
+	public ReportCalculator() {
+		facesSession = (new FacesUtil()).getSession();
+	}
+	
 	public boolean calculate() {
+		if (facesSession != null && facesSession.getAttribute("reportProgress") != null) {
+			System.out.println("Reporterstellung läuft bereits!");
+			return false;
+		}
+		if (facesSession != null)
+			facesSession.setAttribute("reportProgress", 0);
+
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		tx = session.beginTransaction();
+		String select = "from Configuration";
+
+		List<Configuration> list = session.createQuery(select).list();
+		Configuration c = null;
+		if (list.size() > 0) {
+			c = list.get(0);
+		} else {
+			c = new Configuration();
+		}
+		
+		c.setReportProgress(0);
+		tx.commit();
+
+		
+		
+		
+		
 		Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(System.currentTimeMillis());
 		// Um den Fehlerfall auszuschließen, wenn jemand exakt am 1. eines Monats um 0 Uhr auf den Knopf drückt (damit dieser Monat auch berechnet wird):
@@ -41,10 +78,12 @@ public class ReportCalculator {
 		}
 
 		/***** 2. Für jeden Kunden die Karten ermitteln *****/
-		Iterator cusIt = customers.iterator();
+		Iterator<DaoObject> cusIt = customers.iterator();
 		int i = 0;
+		int cusNum = 0;
 
 		while (cusIt.hasNext()) {
+			cusNum++;
 			Calendar calcMonth = Calendar.getInstance();
 			calcMonth.set(2000, Calendar.JANUARY, 1, 0, 0, 0);
 			
@@ -56,45 +95,28 @@ public class ReportCalculator {
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
 			while (calcMonth.before(now) || calcMonth.equals(now)) {
-				Session session = SessionFactoryUtil.getInstance()
-						.getCurrentSession();
-				Transaction tx = createTransaction(session);
+				session = SessionFactoryUtil.getInstance().getCurrentSession();
+				tx = createTransaction(session);
+				
 				List<DaoObject> customerCards = searchCards(customer, calcMonth, tx, session);
 
-				HashMap<String, List<CardBean>> cardMap = new HashMap<String, List<CardBean>>();
-				Iterator<DaoObject> cardIt = customerCards.iterator();
-				while (cardIt.hasNext()) {
-					CardBean card = (CardBean) cardIt.next();
-					if (card.getInstallAddress() != null) {
-						if (cardMap.containsKey(card.getInstallAddress().getAddressString())) {
-							cardMap.get(card.getInstallAddress().getAddressString()).add(card);
-						} else {
-							List<CardBean> cardList = new ArrayList<CardBean>();
-							cardList.add(card);
-							if (card.getInstallAddress().getAddressString().length() > 0) {
-								cardMap.put(card.getInstallAddress().getAddressString(), cardList);
-							} else {
-								cardMap.put(""+card.getInstallAddress().getAddressId(), cardList);
-							}
-						}
-					}
+				Calendar cal = Calendar.getInstance();
+				cal.set(2012, 8, 1);
+				
+				if (customer.getCustomernumber().equals("20074") && calcMonth.after(cal)) {
+					System.out.println(sdf.format(calcMonth.getTime()));
+					
 				}
-
-				if (cardMap.size() > 0) {
+				
+				if (customerCards != null && customerCards.size() > 0) {
 					i++;
 					ReportGenerator rp = new ReportGenerator();
-					boolean generatedWithoutError = rp.generateReport(cardMap, customer, calcMonth);
+					boolean generatedWithoutError = rp.generateReport(customerCards, customer, calcMonth);
 					if (generatedWithoutError) {
-						Set<String> keys = cardMap.keySet();
-						Iterator<String> kIt = keys.iterator();
-						while (kIt.hasNext()) {
-							String key = kIt.next();
-							List<CardBean> cards = cardMap.get(key);
-							Iterator<CardBean> cIt = cards.iterator();
-							while (cIt.hasNext()) {
-								CardBean card = cIt.next();
-								card.setLastCalculationDate(calcMonth.getTime());
-							}
+						Iterator<DaoObject> cIt = customerCards.iterator();
+						while (cIt.hasNext()) {
+							CardBean card = (CardBean) cIt.next();
+							card.setLastCalculationDate(calcMonth.getTime());
 						}
 					} else {
 						// Aus der Schleife für diesen Kunden aussteigen
@@ -109,13 +131,46 @@ public class ReportCalculator {
 				calcMonth = raiseMonth(calcMonth, customer);
 			}
 
+			Double prog = (new Double(cusNum) / new Double(customers.size())) * 100.0;
+			int progress = prog.intValue();
+			if (facesSession != null)
+				facesSession.setAttribute("reportProgress", prog.intValue());
+			
+			session = SessionFactoryUtil.getInstance().getCurrentSession();
+			tx = session.beginTransaction();
+
+			list = null;
+			list = session.createQuery(select).list();
+			c = null;
+			if (list.size() > 0) {
+				c = list.get(0);
+			} else {
+				c = new Configuration();
+			}
+			
+			c.setReportProgress(prog.intValue());
+			c.setCustomer(new Integer(customer.getCustomernumber()));
+			c.setLastReportUpdate(System.currentTimeMillis());
+			tx.commit();
 		}
 
 		System.out.println(i + " Reports wurden erstellt!");
+		if (facesSession != null)
+			facesSession.removeAttribute("reportProgress");
 
 		return true;
 	}
 
+	public int getProgress() {
+		if (new FacesUtil().getSession().getAttribute("reportProgress") != null) {
+			System.out.println("" + new FacesUtil().getSession().getAttribute("reportProgress") + " %");
+			return (Integer) new FacesUtil().getSession().getAttribute("reportProgress");
+		} else {
+			System.out.println("-1 %");
+			return -1;
+		}
+	}
+	
 	private Calendar raiseMonth(Calendar calcMonth, Customer customer) {
 		String creationFrequency = null;
 		if (customer.getInvoiceConfiguration() != null) {
@@ -158,11 +213,9 @@ public class ReportCalculator {
 		Calendar maxLastCalculationDate = Calendar.getInstance();
 		maxLastCalculationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		System.out.println("maxActivationDate = " + sdf.format(maxActivationDate.getTime()));
-//		System.out.println("maxLastCalculationDate = " + sdf.format(maxLastCalculationDate.getTime()));
 		String select = "select distinct card from CardBean card where card.customer = '"
 				+ customer.getId() + "' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (card.lastCalculationDate IS NULL or card.lastCalculationDate < '" + sdf.format(maxLastCalculationDate.getTime()) + "')";
-				
+		
 		return searchObjects(select, tx, session);
 	}
 
@@ -172,11 +225,31 @@ public class ReportCalculator {
 		return tx;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<DaoObject> searchObjects(String select, Transaction tx,
 			Session session) {
 		List<DaoObject> objects = null;
-		objects = session.createQuery(select).list();
+		objects = (List<DaoObject>) session.createQuery(select).list();
 		return objects;
+	}
+
+	@Override
+	public void run() {
+		this.calculate();
+	}
+
+	public void startTask(ActionEvent event) {
+		(new Thread(this)).start();
+		ProgressBarTaskManager threadBean = (ProgressBarTaskManager) FacesUtil.getManagedBean(ProgressBarTaskManager.BEAN_NAME);
+		threadBean.startThread(10, 10, 100);
+	}
+	
+	public boolean getTaskRunning() {
+		return taskRunning;
+	}
+
+	public void setTaskRunning(boolean taskRunning) {
+		this.taskRunning = taskRunning;
 	}
 	
 }
