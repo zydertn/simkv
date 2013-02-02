@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -34,7 +35,10 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.abd.mda.persistence.dao.CardBean;
+import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Customer;
+import de.abd.mda.persistence.dao.DaoObject;
+import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.DateUtils;
 
 public class ReportGenerator {
@@ -52,7 +56,7 @@ public class ReportGenerator {
 		loadBaseFonts();
 	}
 
-	public boolean generateReport(HashMap<String, List<CardBean>> cardMap, Customer customer, Calendar calcMonth) {
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth) {
 		try {
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
 			String month = "";
@@ -89,7 +93,7 @@ public class ReportGenerator {
 
 			document.open();
 
-			boolean generatedWithErrors = generateBody(writer, document, cardMap, customer, calcMonth);
+			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth);
 			if (generatedWithErrors) {
 				return false;
 			}
@@ -165,7 +169,7 @@ public class ReportGenerator {
 		return footer;
 	}
 
-	private boolean generateBody(PdfWriter writer, Document doc, HashMap<String, List<CardBean>> cardMap, Customer customer, Calendar calcMonth) {
+	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth) {
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 
@@ -284,26 +288,38 @@ public class ReportGenerator {
 			cell.setBorder(Rectangle.NO_BORDER);
 			
 			ArrayList<String[]> tableRowList = new ArrayList<String[]>();
-			Set<String> keySet = cardMap.keySet();
-			Iterator<String> keyIt = keySet.iterator();
-			while (keyIt.hasNext()) {
-				String key = keyIt.next();
-				List<CardBean> cardList = cardMap.get(key);
-
-				int amount = cardList.size();
-				
-				Iterator<CardBean> iter = cardList.iterator();			
-				CardBean card = null;
-				String factoryNumbers = "";
-				while (iter.hasNext()) {
-					card = (CardBean) iter.next();
-					factoryNumbers = factoryNumbers + card.getFactoryNumber() + ";";
+			Iterator<DaoObject> iter = customerCards.iterator();			
+			ConfigurationController cc = new ConfigurationController();
+			Map<Integer, Double> simPrices = cc.getSimPricesFromDB();
+			Map<Integer, Double> dataOptionPrices = cc.getDataOptionPricesFromDB();
+			
+			while (iter.hasNext()) {
+				CardBean card = (CardBean) iter.next();
+				Double simPrice = 0.0;
+				if (simPrices.get(customer.getInvoiceConfiguration().getSimPrice()) != null) {
+					simPrice = simPrices.get(customer.getInvoiceConfiguration().getSimPrice());
+				} else {
+					logger.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
 				}
-				String[] invoiceRow = { ""+ amount, card.getInstallAddress().getAddressString(), factoryNumbers, "" + (customer.getInvoiceConfiguration().getSimPrice() + customer.getInvoiceConfiguration().getDataOptionSurcharge()), "" + amount * (customer.getInvoiceConfiguration().getSimPrice() + customer.getInvoiceConfiguration().getDataOptionSurcharge()) };
+
+				Double dataOptionPrice = 0.0;
+				if (dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge()) != null) {
+					dataOptionPrice += dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge());
+				} else {
+					logger.warn("DataOptionSurcharge Key == " + customer.getInvoiceConfiguration().getDataOptionSurcharge() + ", ==> Key gibt es nicht in DataOptionSurcharge-Konfigurations-Map!");
+				}
+
+				String[] invoiceRow = { "1", card.getInstallAddress().getAddressString(), card.getFactoryNumber(), "" + (simPrice + dataOptionPrice), "" + (simPrice + dataOptionPrice) };
 				tableRowList.add(invoiceRow);
 			}
 
-			tableRowList = addCalculationRows(tableRowList, cardMap, customer);
+			if (customer.getCustomernumber().equals("20074")) {
+				if (calcMonth.get(Calendar.YEAR) == 2012 && calcMonth.get(Calendar.MONTH) == 9) {
+					System.out.println(DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
+				}
+			}
+			
+			tableRowList = addCalculationRows(tableRowList, customerCards, customer);
 			
 //			tableRowList = addDummyRows(tableRowList);
 			
@@ -332,21 +348,18 @@ public class ReportGenerator {
 	
 	private ArrayList<String[]> addCalculationRows(
 			ArrayList<String[]> tableRowList,
-			HashMap<String, List<CardBean>> cardMap, Customer customer) {
+			List<DaoObject> customerCards, Customer customer) {
 
-		double simPrice = customer.getInvoiceConfiguration().getSimPrice();
-		double dataOptionSurcharge = customer.getInvoiceConfiguration().getDataOptionSurcharge();
+		ConfigurationController cc = new ConfigurationController();
+		Map<Integer, Double> simPrices = cc.getSimPricesFromDB();
+		Map<Integer, Double> dataOptionPrices = cc.getDataOptionPricesFromDB();
+		
+		double simPrice = simPrices.get(customer.getInvoiceConfiguration().getSimPrice());
+		double dataOptionSurcharge = dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge());
 		
 		double price = simPrice + dataOptionSurcharge;
 		
-		Set<String> keys = cardMap.keySet();
-		Iterator<String> keyIt = keys.iterator();
-		int cardCount = 0;
-		while (keyIt.hasNext()) {
-			String key = keyIt.next();
-			cardCount = cardCount + cardMap.get(key).size();
-		}
-		double nettoSum = cardCount * price;
+		double nettoSum = customerCards.size() * price;
 		DecimalFormat df = new DecimalFormat("#0.00");
 		
 		String[] cr1 = { "", "", "", "Netto Summe €", df.format(nettoSum) };

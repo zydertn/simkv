@@ -7,11 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
@@ -70,11 +68,8 @@ public class CustomerController extends DaoController implements IDaoController 
 			String whereClause = "";
 			if (customerNumber != null && customerNumber.length() > 0) {
 				whereClause = " where customer.customernumber = '" + customerNumber + "'";
-				if (customerName != null && customerName.length() > 0) {
-					whereClause += " && customer.name = '" + customerName + "'";
-				}
 			} else if (customerName != null && customerName.length() > 0) {
-				whereClause += " where customer.name = '" + customerName + "'";
+				whereClause += " where customer.name LIKE '" + customerName + "%'";
 			}
 			
 			customers = session.createQuery("from Customer as customer" + whereClause).list();

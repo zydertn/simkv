@@ -27,7 +27,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Kundendaten:" />
 
 				<h:panelGrid columns="6">
@@ -94,7 +94,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Rechnungsadresse:" disabled="#{customerController.componentDisabled}" />
 				<h:panelGrid columns="6">
 					<h:outputText value="Anrede: " />
@@ -137,19 +137,20 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Rechnung:" />
 				<h:panelGrid columns="2">
-					<h:outputText value="Einzelpreis pro SIM-Karte: " />
-					<h:inputText size="5" binding="#{customerController.invoiceconfigSimpriceBinding}"
-						value="#{customerController.customer.invoiceConfiguration.simPrice}" disabled="#{customerController.componentDisabled}"
-						style="margin-right: 20px;">
-					</h:inputText>
+					<h:outputText value="SIM Profil: " />
+					<h:selectOneMenu binding="#{customerController.invoiceconfigSimpriceBinding}"
+						value="#{customerController.customer.invoiceConfiguration.simPrice}">
+						<f:selectItems value="#{actionController.model.simPrices}" />
+					</h:selectOneMenu>
 
-					<h:outputText value="Aufpreis mit Datenoption: " />
-					<h:inputText size="5" binding="#{customerController.invoiceconfigDataoptionBinding}"
-						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}" disabled="#{customerController.componentDisabled}">
-					</h:inputText>
+					<h:outputText value="Datenoption Profil: " />
+					<h:selectOneMenu binding="#{customerController.invoiceconfigDataoptionBinding}"
+						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">
+						<f:selectItems value="#{actionController.model.dataOptionSurcharges}" />
+					</h:selectOneMenu>
 
 					<h:outputText value="Format: " />
 					<h:selectOneMenu binding="#{customerController.invoiceconfigFormatBinding}"

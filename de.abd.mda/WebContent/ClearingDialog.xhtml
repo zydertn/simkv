@@ -24,7 +24,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Kartendaten:" />
 				<h:panelGrid columns="4">
 					<h:outputText value="KartenNr.: " />
@@ -56,8 +56,8 @@
 		</h:panelGrid>
 
 		<h:panelGrid>
-			<h:panelGrid columns="2" bgcolor="LightGrey" width="800">
-				<h:panelGrid columns="3" cellpadding="3">
+			<h:panelGrid columns="2" width="830">
+				<h:panelGrid columns="3" bgcolor="LightGrey" cellpadding="3">
 					<h:outputText style="font-weight:bold" value="Kartendaten" />
 					<h:outputText value="Status:" />
 					<h:outputText value="#{searchCardController.card.status}" />
@@ -75,10 +75,6 @@
 					<h:outputText value="Kundenbestellnummer:" />
 					<h:outputText
 						value="#{searchCardController.card.customerOrderNumber}" />
-
-					<h:outputText />
-					<h:outputText value="Auftragsnummer:" />
-					<h:outputText value="#{searchCardController.card.orderNumber}" />
 
 					<h:outputText />
 					<h:outputText value="Lieferscheindatum:" />
@@ -109,11 +105,55 @@
 						value="#{searchCardController.card.customer.customernumber}" />
 
 				</h:panelGrid>
+				
+				<h:panelGrid columns="2" cellpadding="3" bgcolor="#FFFFCC">
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText value="Auftragsnummer:" />
+					<h:inputText size="9" maxlength="12" disabled="false"
+						value="#{clearingController.card.orderNumber}" />
+
+					<h:outputText value="Projekt:" />
+					<h:inputText size="9" maxlength="12" disabled="false"
+						value="#{clearingController.card.project}" />
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText value="Kommentar:" style="margin-top:15px"/>
+					<h:inputTextarea rows="5" disabled="false" value="#{clearingController.card.comment}" style="width: 200px;"></h:inputTextarea>
+				</h:panelGrid>				
+				
 			</h:panelGrid>
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid cellspacing="1" bgcolor="#FFFFCC" width="800">
+			<h:panelGrid cellspacing="1" bgcolor="#FFFFCC" width="830">
 				<h:outputText style="font-weight:bold" value="Ansprechpartnerdaten:" />
 				<h:panelGrid columns="6">
 					<h:outputText value="Anrede: " />
@@ -147,7 +187,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Installationsadresse:" />
 				<h:panelGrid columns="4">
 					<h:outputText value="Straße:" />
@@ -165,7 +205,7 @@
 						value="#{clearingController.card.installAddress.city}" />
 
 					<h:outputText value="Fabriknummer: " />
-					<h:inputText size="10" maxlength="15"
+					<h:inputText size="10"
 						value="#{clearingController.card.factoryNumber}" />
 					<h:outputText value="VPN-Profil: " />
 					<h:inputText size="10" maxlength="15"

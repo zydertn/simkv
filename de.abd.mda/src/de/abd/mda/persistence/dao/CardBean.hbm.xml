@@ -26,9 +26,10 @@
 	 	<many-to-one name="contactPerson" class="de.abd.mda.persistence.dao.Person" column="CARD_PERSON" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="PERSON_ID"></many-to-one>
 	 	<many-to-one name="customer" class="de.abd.mda.persistence.dao.Customer" column="CARD_CUSTOMER" lazy="false" not-null="false" cascade="save-update" foreign-key="CUSTOMER_ID"></many-to-one>
 	 	<many-to-one name="installAddress" class="de.abd.mda.persistence.dao.Address" column="CARD_INSTALL_ADDRESS" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="ADDRESS_ID"></many-to-one>
-	 	<property name="factoryNumber" type="string" column="CARD_INSTALL_FACTORY_NUMBER" length="50" />
+	 	<property name="factoryNumber" type="string" column="CARD_INSTALL_FACTORY_NUMBER" length="200" />
 	 	<property name="vpnProfile" type="string" column="CARD_INSTALL_VPN_PROFILE" length="15" />
 	 	<property name="comment" type="string" column="CARD_COMMENT" />
 	 	<property name="lastCalculationDate" type="timestamp" column="CARD_CALCULATION_DATE" />
+	 	<property name="project" type="string" column="CARD_PROJECT" length="50" />
 	 </class>
  </hibernate-mapping>

@@ -73,6 +73,9 @@ public class ClearingController extends ActionController {
 			
 			searchCard.setFactoryNumber(card.getFactoryNumber());
 			searchCard.setVpnProfile(card.getVpnProfile());
+			searchCard.setOrderNumber(card.getOrderNumber());
+			searchCard.setProject(card.getProject());
+			searchCard.setComment(card.getComment());
 		}
 		
 		if (!searchCard.getStatus().equals(Model.STATUS_ACTIVE)) {

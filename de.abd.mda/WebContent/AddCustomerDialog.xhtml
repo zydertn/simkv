@@ -37,7 +37,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Kundendaten:" />
 
 				<h:panelGrid columns="6">
@@ -88,7 +88,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Rechnungsadresse:" />
 				<h:panelGrid columns="6">
 					<h:outputText value="Anrede: " />
@@ -131,19 +131,20 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Rechnung:" />
 				<h:panelGrid columns="2">
-					<h:outputText value="Einzelpreis pro SIM-Karte: " />
-					<h:inputText size="5"
-						value="#{customerController.customer.invoiceConfiguration.simPrice}"
-						style="margin-right: 20px;">
-					</h:inputText>
+					<h:outputText value="SIM Profil: " />
+					<h:selectOneMenu
+						value="#{customerController.customer.invoiceConfiguration.simPrice}">
+						<f:selectItems value="#{actionController.model.simPrices}" />
+					</h:selectOneMenu>
 
-					<h:outputText value="Aufpreis mit Datenoption: " />
-					<h:inputText size="5"
+					<h:outputText value="Datenoption Profil: " />
+					<h:selectOneMenu
 						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">
-					</h:inputText>
+						<f:selectItems value="#{actionController.model.dataOptionSurcharges}" />
+					</h:selectOneMenu>
 
 					<h:outputText value="Format: " />
 					<h:selectOneMenu

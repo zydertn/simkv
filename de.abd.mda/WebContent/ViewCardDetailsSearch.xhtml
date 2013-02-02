@@ -23,7 +23,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="800">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
 				<h:outputText style="font-weight:bold" value="Kartensuche:" />
 				<h:panelGrid columns="4">
 					<h:outputText value="KartenNr.: " />
@@ -56,7 +56,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid>
-			<h:panelGrid bgcolor="LightGrey" width="800">
+			<h:panelGrid bgcolor="LightGrey" width="830">
 				<h:panelGrid columns="2">
 					<h:outputText style="font-weight:bold; margin-right:77px" value="Kommentar" ></h:outputText>
 					<h:inputTextarea rows="5" disabled="true" value="#{searchCardController.card.comment}" style="width: 632px;"></h:inputTextarea>
@@ -67,7 +67,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid>
-			<h:panelGrid columns="2" bgcolor="LightGrey" width="800">
+			<h:panelGrid columns="2" bgcolor="LightGrey" width="830">
 				<h:panelGrid columns="3" cellpadding="3">
 					<h:outputText style="font-weight:bold" value="Kartendaten" />
 					<h:outputText value="Status:" />
@@ -95,6 +95,10 @@
 					<h:outputText />
 					<h:outputText value="Auftragsnummer:" />
 					<h:outputText value="#{searchCardController.card.orderNumber}" />
+
+					<h:outputText />
+					<h:outputText value="Projekt:" />
+					<h:outputText value="#{searchCardController.card.project}" />
 
 					<h:outputText />
 					<h:outputText value="Lieferscheindatum:" />
