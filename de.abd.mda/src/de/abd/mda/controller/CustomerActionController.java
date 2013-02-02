@@ -98,7 +98,7 @@ public class CustomerActionController extends ActionController {
 		}
 	}
 	
-	public String updateCustomer(Customer customer) {
+	public String updateCustomer() {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
