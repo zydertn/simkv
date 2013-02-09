@@ -106,24 +106,18 @@
 
 				</h:panelGrid>
 				
-				<h:panelGrid columns="2" cellpadding="3" bgcolor="#FFFFCC">
+				<h:panelGrid columns="2" bgcolor="#FFFFCC">
 					<h:outputText/>
 					<h:outputText/>
 
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
+					<h:outputText value="Freischaltungsdatum"/>
+					<ice:selectInputDate
+						value="#{clearingController.cardBean.activationDate}"
+						disabled="false"
+						renderAsPopup="true" highlightClass="newyear"
+						highlightUnit="DAY_OF_YEAR" highlightValue="1">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</ice:selectInputDate>
 
 					<h:outputText/>
 					<h:outputText/>
