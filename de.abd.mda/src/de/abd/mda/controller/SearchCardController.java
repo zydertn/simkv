@@ -65,10 +65,6 @@ public class SearchCardController extends ActionController {
 		System.out.println("cardNumberFirst == " + cardNumberFirst);
 		System.out.println("cardNumberSecond == " + cardNumberSecond);
 		
-//		InputStream input = SearchCardController.class.getResourceAsStream("Example1.jrxml");
-//		InputStream input2 = SearchCardController.class.getResourceAsStream("/Example1.jrxml");
-		
-
 		CardController cardController = new CardController();
 		card = cardController.searchCard(cardNumberFirst, cardNumberSecond, phoneNrFirst, phoneNrSecond, searchCase);
 		if (card != null) {
@@ -79,6 +75,13 @@ public class SearchCardController extends ActionController {
 			getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden! Prüfen Sie die Eingabe!");
 			return card;
 		}
+	}
+	
+	public List<CardBean> performSearch(Integer customerID) {
+		CardController cardController = new CardController();
+		List<CardBean> cards = cardController.searchCustomerCards(customerID);
+		
+		return cards;
 	}
 	
 	public String saveComment() {

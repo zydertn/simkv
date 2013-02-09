@@ -153,7 +153,7 @@ public class CardBean extends DaoObject {
 	}
 
 	public String getPhoneString() {
-		return "0" + phoneNrFirst + "" + phoneNrSecond;
+		return phoneNrFirst + "" + phoneNrSecond;
 	}
 	
 	public String getCardnumberString() {

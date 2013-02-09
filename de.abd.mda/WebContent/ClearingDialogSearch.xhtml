@@ -111,20 +111,14 @@
 					<h:outputText/>
 					<h:outputText/>
 
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
-
-					<h:outputText/>
-					<h:outputText/>
+					<h:outputText value="Freischaltungsdatum"/>
+					<ice:selectInputDate
+						value="#{clearingController.cardBean.activationDate}"
+						disabled="true"
+						renderAsPopup="true" highlightClass="newyear"
+						highlightUnit="DAY_OF_YEAR" highlightValue="1">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</ice:selectInputDate>
 
 					<h:outputText/>
 					<h:outputText/>
@@ -133,7 +127,7 @@
 					<h:outputText/>
 
 					<h:outputText value="Auftragsnummer:" />
-					<h:inputText size="9" maxlength="12" disabled="true"
+					<h:inputText size="9" disabled="true"
 						value="#{clearingController.card.orderNumber}" />
 
 					<h:outputText value="Projekt:" />
