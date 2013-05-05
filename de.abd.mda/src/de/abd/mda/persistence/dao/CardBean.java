@@ -3,6 +3,9 @@ package de.abd.mda.persistence.dao;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.abd.mda.model.Country;
+import de.abd.mda.model.Model;
+
 
 public class CardBean extends DaoObject {
 	/**
@@ -12,6 +15,7 @@ public class CardBean extends DaoObject {
 	private String cardNumberFirst;
 	private String cardNumberSecond;
 	private String countryCode;
+	private String country;
 	private String phoneNrFirst;
 	private String phoneNrSecond;
 	private int sequenceNumber;
@@ -45,6 +49,7 @@ public class CardBean extends DaoObject {
 		this.cardNumberFirst = "";
 		this.cardNumberSecond = "";
 		this.countryCode = "";
+		this.country = "";
 		this.phoneNrFirst = "";
 		this.phoneNrSecond = "";
 		this.status = "Inaktiv";
@@ -62,10 +67,11 @@ public class CardBean extends DaoObject {
 		this.project = "";
 	}
 	
-	public CardBean(String cNFirst, String cNSecond, String country, String phoneFirst, String phoneSecond, int seqNum) {
+	public CardBean(String cNFirst, String cNSecond, String countryCode, String country, String phoneFirst, String phoneSecond, int seqNum) {
 		this.cardNumberFirst = cNFirst;
 		this.cardNumberSecond = cNSecond;
-		this.countryCode = country;
+		this.countryCode = countryCode;
+		this.country = country;
 		this.phoneNrFirst = phoneFirst;
 		this.phoneNrSecond = phoneSecond;
 		this.sequenceNumber = seqNum;
@@ -146,10 +152,6 @@ public class CardBean extends DaoObject {
 
 	public String getCountryCode() {
 		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
 	}
 
 	public String getPhoneString() {
@@ -271,6 +273,27 @@ public class CardBean extends DaoObject {
 	public void setProject(String project) {
 		this.project = project;
 	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountryDates(Country country) {
+		if (country != null) {
+			setCountry(country.getShortName());
+			setCountryCode(country.getInternationalAreaCode());
+		}
+	}
+
+	private void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	private void setCountry(String country) {
+		this.country = country;
+	}
+
+	
 
 
 }
