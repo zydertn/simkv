@@ -16,6 +16,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import de.abd.mda.model.Country;
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.CardBean;
@@ -107,11 +108,16 @@ public class ExcelImporter_13_04_25_Schindler_Austria {
 			}
 			if (split.length > 2) {
 				logger.debug("split[2] == " + split[2]);
+				Country country = new Country("Österreich", "AT", "+43");
 				if (split[2].length() > 0) {
 					if (existingCard != null) {
 						existingCard.setPhoneNrFirst(split[2]);
+						existingCard.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
+						existingCard.setCountryDates(country);
 					} else {
 						card.setPhoneNrFirst(split[2]);
+						card.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
+						card.setCountryDates(country);
 					}
 				}
 			}
@@ -365,7 +371,8 @@ public class ExcelImporter_13_04_25_Schindler_Austria {
 				}
 			}
 			
-
+			
+			
 			CardController cardController = new CardController();
 
 			String select = "select sequenceNumber from SequenceNumber sequenceNumber";

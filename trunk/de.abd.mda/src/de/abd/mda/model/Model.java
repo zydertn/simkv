@@ -19,6 +19,9 @@ public class Model {
 	private List<String> statusList;
 	private List<String> supplierList;
 		
+	public static String COUNTRY_GERMANY = "DE";
+	public static String COUNTRY_AUSTRIA = "AT";
+	
 	public static String STATUS_ACTIVE = "Aktiv";
 	public static String STATUS_INACTIVE = "Inaktiv";
 	public static String STATUS_DUMMY = "Dummy";
@@ -57,8 +60,8 @@ public class Model {
 
 	public void createModel() {
 		countries = new ArrayList<Country>();
-		countries.add(new Country("Deutschland", "D", "+49"));
-		countries.add(new Country("Österreich", "A", "+43"));
+		countries.add(new Country("Deutschland", "DE", "+49"));
+		countries.add(new Country("Österreich", "AT", "+43"));
 		
 		statusList = new ArrayList<String>();
 		statusList.add(Model.STATUS_ACTIVE);
