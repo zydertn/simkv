@@ -93,6 +93,28 @@ public class CustomerActionController extends ActionController {
 			} else {
 				customer = (Customer) customers.get(0);
 			}
+			
+			branchBinding.setDisabled(false);
+			streetBinding.setDisabled(false);
+			housenumberBinding.setDisabled(false);
+			postboxBinding.setDisabled(false);
+			postcodeBinding.setDisabled(false);
+			cityBinding.setDisabled(false);
+			contactGenderBinding.setDisabled(false);
+			contactFirstnameBinding.setDisabled(false);
+			contactNameBinding.setDisabled(false);
+			invoiceStreetBinding.setDisabled(false);
+			invoiceHousenumberBinding.setDisabled(false);
+			invoicePostboxBinding.setDisabled(false);
+			invoicePostcodeBinding.setDisabled(false);
+			invoiceCityBinding.setDisabled(false);
+			invoiceconfigSimpriceBinding.setDisabled(false);
+			invoiceconfigDataoptionBinding.setDisabled(false);
+			invoiceconfigFormatBinding.setDisabled(false);
+			invoiceconfigCreationFrequencyBinding.setDisabled(false);
+			invoiceconfigColumnsBinding.setDisabled(false);
+			getRequest().setAttribute("componentDisabled", false);
+
 		} else {
 			System.out.println("Kein Customer gefunden");
 		}
