@@ -108,15 +108,16 @@ public class ExcelImporter_13_06_06_BIM {
 			}
 			if (split.length > 2) {
 				logger.debug("split[2] == " + split[2]);
-				Country country = new Country("Österreich", "AT", "+43");
+//				Country country = new Country("Österreich", "AT", "+43");
+				Country country = new Country("Deutschland", "DE", "+49");
 				if (split[2].length() > 0) {
 					if (existingCard != null) {
 						existingCard.setPhoneNrFirst(split[2]);
-						existingCard.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
+						existingCard.setSupplier(Model.SUPPLIER_TELEKOM);
 						existingCard.setCountryDates(country);
 					} else {
 						card.setPhoneNrFirst(split[2]);
-						card.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
+						card.setSupplier(Model.SUPPLIER_TELEKOM);
 						card.setCountryDates(country);
 					}
 				}
