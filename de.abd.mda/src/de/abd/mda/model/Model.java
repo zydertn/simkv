@@ -1,8 +1,11 @@
 package de.abd.mda.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
@@ -41,8 +44,8 @@ public class Model {
 	public static String GENDER_WOMAN = "Frau";
 	public static String GENDER_COMPANY = "Firma";
 
-	public Set<Integer> simPrices;
-	public Set<Integer> dataOptionSurcharges;
+	public Map<Integer, Double> simPrices;
+	public Map<Integer, Double> dataOptionSurcharges;
 	
 	public List<String> getSupplierList() {
 		return supplierList;
@@ -153,18 +156,18 @@ public class Model {
 		this.invoiceCreationFrequencies = invoiceCreationFrequencies;
 	}
 
-	public Set<Integer> getSimPrices() {
+	public Map<Integer, Double> getSimPrices() {
 		if (simPrices == null || (simPrices != null && simPrices.size() == 0) || (FacesUtil.getAttributeFromRequest("updateSimPrices") != null)) {
 			ConfigurationController c = new ConfigurationController();
-			simPrices = c.getSimPricesFromDB().keySet();
+			simPrices = c.getSimPricesFromDB();
 		}
 		return simPrices;
 	}
-
-	public Set<Integer> getDataOptionSurcharges() {
+	
+	public Map<Integer, Double> getDataOptionSurcharges() {
 		if (dataOptionSurcharges == null || (dataOptionSurcharges != null && dataOptionSurcharges.size() == 0)  || (FacesUtil.getAttributeFromRequest("updateDataOptions") != null)) {
 			ConfigurationController c = new ConfigurationController();
-			dataOptionSurcharges = c.getDataOptionPricesFromDB().keySet();
+			dataOptionSurcharges = c.getDataOptionPricesFromDB();
 		}
 		return dataOptionSurcharges;
 	}

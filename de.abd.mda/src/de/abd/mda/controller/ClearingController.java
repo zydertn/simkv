@@ -15,6 +15,7 @@ import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Person;
 import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.DateUtils;
 
 public class ClearingController extends ActionController {
 
@@ -24,38 +25,110 @@ public class ClearingController extends ActionController {
 		card = new CardBean();
 	}
 
+	public String unclearCard() {
+		
+		return changeActivationStatus(false);
+	}
+
+	
 	public String clearCard() {
-		CardBean updateCard = null;
+		return changeActivationStatus(true);
+	}
+	
+	public String changeActivationStatus(boolean activate) {
+		CardBean screenCard = null;
 		if (getSession().getAttribute("cardToUpdate") != null) {
-			updateCard = (CardBean) getSession().getAttribute("cardToUpdate");
-			getSession().removeAttribute("cardToUpdate");
+			screenCard = (CardBean) getSession().getAttribute("cardToUpdate");
 		}
 
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		CardBean searchCard = null;
+		CardBean dbCard = null;
 		try {
 			tx = session.beginTransaction();
 			String select = "select distinct card from CardBean card";
-			if (updateCard.getCardNumberFirst() != null
-					&& updateCard.getCardNumberFirst().length() > 0) {
+			if (screenCard.getCardNumberFirst() != null
+					&& screenCard.getCardNumberFirst().length() > 0) {
 				select += " where card.cardNumberFirst = '"
-						+ updateCard.getCardNumberFirst()
+						+ screenCard.getCardNumberFirst()
 						+ "' and card.cardNumberSecond = '"
-						+ updateCard.getCardNumberSecond() + "'";
+						+ screenCard.getCardNumberSecond() + "'";
 		}
 
 			List<CardBean> list = session.createQuery(select).list();
 			Iterator it = list.iterator();
 	
 			if (list.size() > 0)
-				searchCard = (CardBean) list.get(0);
+				dbCard = (CardBean) list.get(0);
 
+		String message = "";
 				
-		if (searchCard != null) {
-//			searchCard.setContactPerson(card.getContactPerson());
-			Person scp = searchCard.getContactPerson();
-			Person cp = card.getContactPerson();
+		if (screenCard != null && dbCard != null) {
+			if (activate) {
+				// Aktivierung wurde geklickt
+				if (screenCard.getActivationDate() != null) {
+					if (dbCard.getActivationDate() == null) {
+						// Erstmalige Aktivierung
+						dbCard = activateCard(dbCard);
+					} else {
+						// Karte wurde schon einmal aktiviert
+						if (dbCard.getDeactivationDate() == null) {
+							// Karte wurde bisher nur aktiviert
+							dbCard = activateCard(dbCard);
+						} else {
+							// Karte wurde bereits einmal deaktiviert
+							if (screenCard.getActivationDate().after(dbCard.getDeactivationDate())) {
+								dbCard = activateCard(dbCard);
+							} else {
+								message = "Aktivierung fehlgeschlagen! Aktivierungsdatum muss zeitlich nach Deaktivierungsdatum liegen!";
+								getRequest().setAttribute("message", message);
+								return "";
+							}
+						}
+					}
+				} else {
+					message = "Kein Aktivierungsdatum angegeben! Bitte prüfen Sie Ihre Eingabe!";
+					getRequest().setAttribute("message", message);
+					return "";
+				}
+			} else {
+				// Deaktivierung wurde geklickt
+				if (screenCard.getDeactivationDate() != null) {
+					if (dbCard.getStatus().equals(Model.STATUS_ACTIVE)) {
+						if (screenCard.getDeactivationDate().after(dbCard.getActivationDate())) {
+							// Deaktivierung ist ok
+							dbCard = deactivate(dbCard);
+						} else  {
+							message = "Aktivierung fehlgeschlagen! Deaktivierungsdatum muss zeitlich nach Aktivierungsdatum liegen!";
+							getRequest().setAttribute("message", message);
+							return "";
+						}
+					} else {
+						if (dbCard.getStatus().equals(Model.STATUS_INACTIVE)) {
+							if (screenCard.getDeactivationDate().after(dbCard.getActivationDate())) {
+								// Deaktivierung ist ok
+								dbCard = deactivate(dbCard);
+							} else {
+								message = "Aktivierung fehlgeschlagen! Deaktivierungsdatum muss zeitlich nach Aktivierungsdatum liegen!";
+								getRequest().setAttribute("message", message);
+								return "";
+							}							
+						} else {
+							message = "Karte ist Dummy! Keine Deaktivierung möglich!";
+							getRequest().setAttribute("message", message);
+							return "";
+						}
+					}
+				} else {
+					message = "Kein Aktivierungsdatum angegeben! Bitte prüfen Sie Ihre Eingabe!";
+					getRequest().setAttribute("message", message);
+					return "";
+				}
+			}
+			
+			//			searchCard.setContactPerson(card.getContactPerson());
+			Person scp = dbCard.getContactPerson();
+			Person cp = screenCard.getContactPerson();
 			scp.setEmail(cp.getEmail());
 			scp.setFirstname(cp.getFirstname());
 			scp.setGender(cp.getGender());
@@ -64,36 +137,56 @@ public class ClearingController extends ActionController {
 			scp.setPhoneNrSecond(cp.getPhoneNrSecond());
 			
 //			searchCard.setInstallAddress(card.getInstallAddress());
-			Address scia = searchCard.getInstallAddress();
-			Address cia = card.getInstallAddress();
+			Address scia = dbCard.getInstallAddress();
+			Address cia = screenCard.getInstallAddress();
 			scia.setCity(cia.getCity());
 			scia.setHousenumber(cia.getHousenumber());
 			scia.setPostcode(cia.getPostcode());
 			scia.setStreet(cia.getStreet());
 			
-			searchCard.setFactoryNumber(card.getFactoryNumber());
-			searchCard.setVpnProfile(card.getVpnProfile());
-			searchCard.setOrderNumber(card.getOrderNumber());
-			searchCard.setProject(card.getProject());
-			searchCard.setComment(card.getComment());
+			dbCard.setFactoryNumber(screenCard.getFactoryNumber());
+			dbCard.setVpnProfile(screenCard.getVpnProfile());
+			dbCard.setOrderNumber(screenCard.getOrderNumber());
+			dbCard.setProject(screenCard.getProject());
+			dbCard.setComment(screenCard.getComment());
+			
+//			dbCard.setDeactivationDate(new Date());
+		} else {
+			message = "Karte für Aktivierung wurde nicht gefunden!";
+			getRequest().setAttribute("message", message);
+			return "";
 		}
 		
-		if (!searchCard.getStatus().equals(Model.STATUS_ACTIVE)) {
-			searchCard.setStatus(Model.STATUS_ACTIVE);
-			searchCard.setActivationDate(new Date());
-		}
 		
 		tx.commit();
 		
-		String message = "Karte " + card.getCardnumberString() + " wurde aktiviert!";
-		getRequest().setAttribute("message", message);
+//		getRequest().setAttribute("message", message);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "failure";
+			return "";
 		}
 		
 		return "success";
+	}
+
+	
+	private CardBean deactivate(CardBean dbCard) {
+		dbCard.setStatus(Model.STATUS_INACTIVE);
+		dbCard.setDeactivationDate(card.getDeactivationDate());
+		String message = "Karte " + card.getCardnumberString() + " wurde deaktiviert!";
+		getRequest().setAttribute("message", message);
+		getSession().removeAttribute("cardToUpdate");
+		return dbCard;
+	}
+
+	private CardBean activateCard(CardBean dbCard) {
+		dbCard.setStatus(Model.STATUS_ACTIVE);
+		dbCard.setActivationDate(card.getActivationDate());
+		String message = "Karte " + card.getCardnumberString() + " wurde aktiviert!";
+		getRequest().setAttribute("message", message);
+		getSession().removeAttribute("cardToUpdate");
+		return dbCard;
 	}
 
 	public CardBean getCard() {
@@ -106,4 +199,35 @@ public class ClearingController extends ActionController {
 		this.card = card;
 	}
 
+	public Date getActivationDate() {
+		if (getRequest().getAttribute("newActivationDateSet") == null && card != null) {
+			if (card.getActivationDate() == null) {
+				return null;
+			}
+		}
+
+		return card.getActivationDate();
+	}
+
+	public void setActivationDate(Date activationDate) {
+		card.setActivationDate(activationDate);
+		getRequest().setAttribute("newActivationDateSet", true);
+	}
+
+	public Date getDeactivationDate() {
+		if (getRequest().getAttribute("newDeactivationDateSet") == null && card != null) {
+			if (card.getDeactivationDate() == null) {
+				return null;
+			}
+		}
+
+		return card.getDeactivationDate();
+	}
+
+	public void setDeactivationDate(Date deactivationDate) {
+		card.setDeactivationDate(deactivationDate);
+		getRequest().setAttribute("newDeactivationDateSet", true);
+	}
+
+	
 }

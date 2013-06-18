@@ -4,16 +4,16 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -35,7 +35,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.abd.mda.persistence.dao.CardBean;
-import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
@@ -118,7 +117,7 @@ public class ReportGenerator {
 		try {
 
 			Image logo = Image.getInstance("images/SiwalTec_Logo.wmf");
-			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
+//			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 			
 			
 			Chunk logoChunk = new Chunk(logo, -25, -20);
@@ -197,11 +196,11 @@ public class ReportGenerator {
 					y - d, 0);
 
 			// Firmenstrasse
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getAddress().getStreet() + " " + customer.getAddress().getHousenumber(),
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
 					x, y - 2 * d, 0);
 
 			// Firmenort
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getAddress().getPostcode() + " " + customer.getAddress().getCity(), x,
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
 					y - 4 * d, 0);
 			cb.endText();
 
@@ -292,16 +291,24 @@ public class ReportGenerator {
 			ConfigurationController cc = new ConfigurationController();
 			Map<Integer, Double> simPrices = cc.getSimPricesFromDB();
 			Map<Integer, Double> dataOptionPrices = cc.getDataOptionPricesFromDB();
+
+			BigDecimal calcSum = new BigDecimal(0.0);
 			
 			while (iter.hasNext()) {
 				CardBean card = (CardBean) iter.next();
-				Double simPrice = 0.0;
-				if (simPrices.get(customer.getInvoiceConfiguration().getSimPrice()) != null) {
-					simPrice = simPrices.get(customer.getInvoiceConfiguration().getSimPrice());
+				BigDecimal simPrice = new BigDecimal(0.0);
+				if (!card.getStandardPrice()) {
+					simPrice = new BigDecimal(card.getSimPrice());
 				} else {
-					logger.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
+					if (simPrices.get(customer.getInvoiceConfiguration().getSimPrice()) != null) {
+						simPrice = new BigDecimal(simPrices.get(customer.getInvoiceConfiguration().getSimPrice()));
+					} else {
+						logger.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
+					}
 				}
 
+				calcSum = calcSum.add(simPrice);
+				
 				Double dataOptionPrice = 0.0;
 				if (dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge()) != null) {
 					dataOptionPrice += dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge());
@@ -309,17 +316,23 @@ public class ReportGenerator {
 					logger.warn("DataOptionSurcharge Key == " + customer.getInvoiceConfiguration().getDataOptionSurcharge() + ", ==> Key gibt es nicht in DataOptionSurcharge-Konfigurations-Map!");
 				}
 
-				String[] invoiceRow = { "1", card.getInstallAddress().getAddressString(), card.getFactoryNumber(), "" + (simPrice + dataOptionPrice), "" + (simPrice + dataOptionPrice) };
+				calcSum = calcSum.add(new BigDecimal(dataOptionPrice));
+				
+				if (customer.getCustomernumber().equals("20074")) {
+					if (calcMonth.get(Calendar.YEAR) == 2013 && calcMonth.get(Calendar.MONTH) == 2) {
+						if (card.getCardNumberFirst().equals("72264689") && card.getCardNumberSecond().equals("5")) {
+							System.out.println(DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
+						}
+					}
+				}
+
+				
+				
+				String[] invoiceRow = { "1", card.getInstallAddress().getAddressString(), card.getFactoryNumber(), "" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2), "" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2) };
 				tableRowList.add(invoiceRow);
 			}
 
-			if (customer.getCustomernumber().equals("20074")) {
-				if (calcMonth.get(Calendar.YEAR) == 2012 && calcMonth.get(Calendar.MONTH) == 9) {
-					System.out.println(DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
-				}
-			}
-			
-			tableRowList = addCalculationRows(tableRowList, customerCards, customer);
+			tableRowList = addCalculationRows(tableRowList, customerCards, customer, calcSum);
 			
 //			tableRowList = addDummyRows(tableRowList);
 			
@@ -338,6 +351,10 @@ public class ReportGenerator {
 				}
 				i++;
 			}
+			
+			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Zahlungsziel: Sofort rein Netto nach Rechnungserhalt.", timeframeFont);
+			doc.add(new Phrase(paymentDueDate));
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return true;
@@ -348,204 +365,22 @@ public class ReportGenerator {
 	
 	private ArrayList<String[]> addCalculationRows(
 			ArrayList<String[]> tableRowList,
-			List<DaoObject> customerCards, Customer customer) {
+			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum) {
 
-		ConfigurationController cc = new ConfigurationController();
-		Map<Integer, Double> simPrices = cc.getSimPricesFromDB();
-		Map<Integer, Double> dataOptionPrices = cc.getDataOptionPricesFromDB();
-		
-		double simPrice = simPrices.get(customer.getInvoiceConfiguration().getSimPrice());
-		double dataOptionSurcharge = dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge());
-		
-		double price = simPrice + dataOptionSurcharge;
-		
-		double nettoSum = customerCards.size() * price;
 		DecimalFormat df = new DecimalFormat("#0.00");
+
+		BigDecimal mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
 		
 		String[] cr1 = { "", "", "", "Netto Summe €", df.format(nettoSum) };
-		String[] cr2 = { "", "", "", "19% MWST. €", df.format(nettoSum * 0.19) };
+		String[] cr2 = { "", "", "", "19% MWST. €", "" + mwst };
 		String[] cr3 = { "", "", "", "", "" };
-		String[] cr4 = { "", "", "", "Endbetrag €", df.format(nettoSum + nettoSum * 0.19) };
+		String[] cr4 = { "", "", "", "Endbetrag €", df.format(mwst.add(nettoSum)) };
 
 		tableRowList.add(cr1);
 		tableRowList.add(cr2);
 		tableRowList.add(cr3);
 		tableRowList.add(cr4);
 		
-		return tableRowList;
-	}
-
-	private ArrayList<String[]> addDummyRows(ArrayList<String[]> tableRowList) {
-		String[] r1 = { "1", "Johannesstr. 65, 70176 Stuttgart", "22 480", "9,50 €", "9,50 €" };
-		String[] r2 = { "1", "Silberburgstr. 144, 70176 Stuttgart", "13 28 214", "9,50 €", "9,50 €" };
-		String[] r3 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r4 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r5 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r6 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r7 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r8 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r9 = { "1", "Johannesstr. 65, 70176 Stuttgart", "22 480", "9,50 €", "9,50 €" };
-		String[] r10 = { "1", "Silberburgstr. 144, 70176 Stuttgart", "13 28 214", "9,50 €", "9,50 €" };
-		String[] r11 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r12 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r13 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r14 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r15 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r16 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r17 = { "1", "Johannesstr. 65, 70176 Stuttgart", "22 480", "9,50 €", "9,50 €" };
-		String[] r18 = { "1", "Silberburgstr. 144, 70176 Stuttgart", "13 28 214", "9,50 €", "9,50 €" };
-		String[] r19 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r20 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r21 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r22 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209,210,211,212,213,214", "9,50 €", "9,50 €" };
-		String[] r23 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r24 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r25 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r26 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r27 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r28 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r29 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r30 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r31 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r32 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r33 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r34 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r35 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r36 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r37 = { "1", "Johannesstr. 65, 70176 Stuttgart", "22 480", "9,50 €", "9,50 €" };
-		String[] r38 = { "1", "Silberburgstr. 144, 70176 Stuttgart", "13 28 214", "9,50 €", "9,50 €" };
-		String[] r39 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r40 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r41 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r42 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209,210,211,212,213,214", "9,50 €", "9,50 €" };
-		String[] r43 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r44 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r45 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r46 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r47 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r48 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r49 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r50 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r51 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r52 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r53 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r54 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r55 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r56 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r57 = { "1", "Johannesstr. 65, 70176 Stuttgart", "22 480", "9,50 €", "9,50 €" };
-		String[] r58 = { "1", "Silberburgstr. 144, 70176 Stuttgart", "13 28 214", "9,50 €", "9,50 €" };
-		String[] r59 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r60 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r61 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r62 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209,210,211,212,213,214", "9,50 €", "9,50 €" };
-		String[] r63 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r64 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r65 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r66 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r67 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r68 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r69 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r70 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r71 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r72 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r73 = { "1", "Obere Paulusstr. 126, 70197 Stuttgart", "14 078", "9,50 €", "9,50 €" };
-		String[] r74 = { "1", "Oppenheimer Str., 70449 Stuttgart", "277 060 206, 207,208,209", "9,50 €", "9,50 €" };
-		String[] r75 = { "1", "Danneker Str. 48 C, 70182 Stuttgart", "270 064 177", "9,50 €", "9,50 €" };
-		String[] r76 = { "1", "Kirchstr. 3, 70839 Gerlingen", "85 / 2204", "9,50 €", "9,50 €" };
-		String[] r77 = { "1", "Johannesstr. 65, 70176 Stuttgart", "22 480", "9,50 €", "9,50 €" };
-		String[] r78 = { "1", "Silberburgstr. 144, 70176 Stuttgart", "13 28 214", "9,50 €", "9,50 €" };
-		String[] r79 = { "1", "Alexanderstr. 87, 70182 Stuttgart", "13 25 778", "9,50 €", "9,50 €" };
-		String[] r80 = { "1", "Onstmettinger Weg 17, 70567 Stuttgart-Möhringen", "4657", "9,50 €", "9,50 €" };
-		String[] r81 = { "", "", "", "Netto Summe €", "218,50 €" };
-		String[] r82 = { "", "", "", "19% MWST. €", "41,52 €" };
-		String[] r83 = { "", "", "", "", "" };
-		String[] r84 = { "", "", "", "Endbetrag €", "260,02 €" };
-		
-		
-		tableRowList.add(r1);
-		tableRowList.add(r2);
-		tableRowList.add(r3);
-		tableRowList.add(r4);
-		tableRowList.add(r5);
-		tableRowList.add(r6);
-		tableRowList.add(r7);
-		tableRowList.add(r8);
-		tableRowList.add(r9);
-		tableRowList.add(r10);
-		tableRowList.add(r11);
-		tableRowList.add(r12);
-		tableRowList.add(r13);
-		tableRowList.add(r14);
-		tableRowList.add(r15);
-		tableRowList.add(r16);
-		tableRowList.add(r17);
-		tableRowList.add(r18);
-		tableRowList.add(r19);
-		tableRowList.add(r20);
-		tableRowList.add(r21);
-		tableRowList.add(r22);
-		tableRowList.add(r23);
-		tableRowList.add(r24);
-		tableRowList.add(r25);
-		tableRowList.add(r26);
-		tableRowList.add(r27);
-		tableRowList.add(r28);
-		tableRowList.add(r29);
-		tableRowList.add(r30);
-		tableRowList.add(r31);
-		tableRowList.add(r32);
-		tableRowList.add(r33);
-		tableRowList.add(r34);
-		tableRowList.add(r35);
-		tableRowList.add(r36);
-		tableRowList.add(r37);
-		tableRowList.add(r38);
-		tableRowList.add(r39);
-		tableRowList.add(r40);
-		tableRowList.add(r41);
-		tableRowList.add(r42);
-		tableRowList.add(r43);
-		tableRowList.add(r44);
-		tableRowList.add(r45);
-		tableRowList.add(r46);
-		tableRowList.add(r47);
-		tableRowList.add(r48);
-		tableRowList.add(r49);
-		tableRowList.add(r50);
-		tableRowList.add(r51);
-		tableRowList.add(r52);
-		tableRowList.add(r53);
-		tableRowList.add(r54);
-		tableRowList.add(r55);
-		tableRowList.add(r56);
-		tableRowList.add(r57);
-		tableRowList.add(r58);
-		tableRowList.add(r59);
-//		tableRowList.add(r60);
-//		tableRowList.add(r61);
-//		tableRowList.add(r62);
-//		tableRowList.add(r63);
-//		tableRowList.add(r64);
-//		tableRowList.add(r65);
-//		tableRowList.add(r66);
-//		tableRowList.add(r67);
-//		tableRowList.add(r68);
-//		tableRowList.add(r69);
-//		tableRowList.add(r70);
-//		tableRowList.add(r71);
-//		tableRowList.add(r72);
-//		tableRowList.add(r73);
-//		tableRowList.add(r74);
-//		tableRowList.add(r75);
-//		tableRowList.add(r76);
-//		tableRowList.add(r77);
-//		tableRowList.add(r78);
-//		tableRowList.add(r79);
-//		tableRowList.add(r80);
-		tableRowList.add(r81);
-		tableRowList.add(r82);
-		tableRowList.add(r83);
-		tableRowList.add(r84);
 		return tableRowList;
 	}
 
