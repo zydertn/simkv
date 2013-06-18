@@ -35,13 +35,30 @@ public class Address extends DaoObject implements Serializable {
 		if (country != null) {
 			nameS += country.getShortName() + ", ";
 		}
-		if (postcode != null && postcode.length() > 0 && city != null && city.length() > 0) {
-			if (street != null && street.length() > 0 && housenumber != null && housenumber.length() > 0)
-				return nameS + street + " " + housenumber + ", " + postcode + " " + city;
-			else if (postbox != null && postbox.length() > 0)
-				return nameS + "Postfach " + postbox + ", " + postcode + " " + city;
+		if (street != null && street.length() > 0) {
+			nameS += street;
+			if (housenumber != null && housenumber.length() > 0) {
+				nameS += " " + housenumber;
+			}
 		}
-		return "";
+		if (postcode != null && postcode.length() > 0 && city != null && city.length() > 0) {
+			if (street != null && street.length() > 0) {
+				nameS += ", ";
+			}
+			nameS += postcode + " " + city;
+		} else if (postbox != null && postbox.length() > 0 && city != null && city.length() > 0) {
+			if (street != null && street.length() > 0) {
+				nameS += ", ";
+			}
+			nameS += postbox + " " + city;
+		} else if (city != null && city.length() > 0) {
+			if (street != null && street.length() > 0) {
+				nameS += ", ";
+			}
+			nameS += city;
+		}
+		
+		return nameS;
 	}
 	
 	public String getStreet() {

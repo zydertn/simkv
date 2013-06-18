@@ -3,6 +3,12 @@ package de.abd.mda.controller;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.faces.component.html.HtmlInputHidden;
+import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.hibernate.HibernateException;
@@ -20,6 +26,9 @@ public class CardActionController extends ActionController {
 	private final static Logger LOGGER = Logger.getLogger(CardActionController.class .getName()); 
 	
 	public CardBean ccCardBean;
+	private HtmlSelectOneMenu invoiceconfigSimpriceBinding;
+	private HtmlInputHidden cardPriceHidden;
+	private boolean selected = true;
 	
 	public CardBean getCcCardBean() {
 		return ccCardBean;
@@ -114,6 +123,8 @@ public class CardActionController extends ActionController {
 				card.setPhoneNrSecond(ccCardBean.getPhoneNrSecond());
 				card.setSupplier(ccCardBean.getSupplier());
 				card.setStatus(ccCardBean.getStatus());
+				card.setStandardPrice(ccCardBean.getStandardPrice());
+				card.setSimPrice(ccCardBean.getSimPrice());
 			} else
 				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			tx.commit();
@@ -188,4 +199,46 @@ public class CardActionController extends ActionController {
 		this.ccCardBean = cardBean;
 	}
 
+	public HtmlSelectOneMenu getInvoiceconfigSimpriceBinding() {
+		return invoiceconfigSimpriceBinding;
+	}
+
+	public void setInvoiceconfigSimpriceBinding(
+			HtmlSelectOneMenu invoiceconfigSimpriceBinding) {
+		this.invoiceconfigSimpriceBinding = invoiceconfigSimpriceBinding;
+	}
+	
+	public void priceCheckboxAction(ValueChangeEvent evt) {
+		invoiceconfigSimpriceBinding.setDisabled(false);
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
+	}
+
+	public String getBoxValueDescription() {
+		if (ccCardBean.getStandardPrice())
+			return "selected";
+		else
+			return "unselected";
+	}
+	
+	public void processClickEvent(AjaxBehaviorEvent e) {
+		Boolean b = (Boolean) e.getComponent().getAttributes().get("standardPriceCheckvalue");
+		invoiceconfigSimpriceBinding.setDisabled(b);
+		ccCardBean.setStandardPrice(false);
+		invoiceconfigSimpriceBinding.setRendered(false);
+	}
+
+	public HtmlInputHidden getCardPriceHidden() {
+		return cardPriceHidden;
+	}
+
+	public void setCardPriceHidden(HtmlInputHidden cardPriceHidden) {
+		this.cardPriceHidden = cardPriceHidden;
+	}
 }

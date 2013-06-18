@@ -1,5 +1,6 @@
 package de.abd.mda.persistence.dao;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -23,6 +24,7 @@ public class CardBean extends DaoObject {
 
 	private String status;
 	private Date activationDate;
+	private Date deactivationDate;
 
 	private String customerOrderNumber;
 	private String orderNumber;
@@ -36,6 +38,8 @@ public class CardBean extends DaoObject {
 	private String comment;
 	private Date lastCalculationDate;
 	private String project;
+	private Boolean standardPrice;
+	private int simPrice;
 	
 	public Date getLastCalculationDate() {
 		return lastCalculationDate;
@@ -65,6 +69,8 @@ public class CardBean extends DaoObject {
 		this.vpnProfile = "";
 		this.comment = "";
 		this.project = "";
+		this.standardPrice = true;
+		this.simPrice = 0;
 	}
 	
 	public CardBean(String cNFirst, String cNSecond, String countryCode, String country, String phoneFirst, String phoneSecond, int seqNum) {
@@ -88,6 +94,8 @@ public class CardBean extends DaoObject {
 		this.vpnProfile = "";
 		this.comment = "";
 		this.project = "";
+		this.standardPrice = true;
+		this.simPrice = 0;
 	}
 
 	public String getCardNumber() {
@@ -291,6 +299,30 @@ public class CardBean extends DaoObject {
 
 	private void setCountry(String country) {
 		this.country = country;
+	}
+
+	public Boolean getStandardPrice() {
+		return standardPrice;
+	}
+
+	public void setStandardPrice(Boolean standardPrice) {
+		this.standardPrice = standardPrice;
+	}
+
+	public int getSimPrice() {
+		return simPrice;
+	}
+
+	public void setSimPrice(int simPrice) {
+		this.simPrice = simPrice;
+	}
+
+	public Date getDeactivationDate() {
+		return deactivationDate;
+	}
+
+	public void setDeactivationDate(Date deactivationDate) {
+		this.deactivationDate = deactivationDate;
 	}
 
 	

@@ -26,6 +26,7 @@ public class ReportCalculator implements Runnable {
 	static final Logger logger = Logger.getLogger(ReportCalculator.class);
 	HttpSession facesSession;
 	private boolean taskRunning = true;
+	Thread thread;
 	
 	public ReportCalculator() {
 		facesSession = (new FacesUtil()).getSession();
@@ -103,7 +104,7 @@ public class ReportCalculator implements Runnable {
 				Calendar cal = Calendar.getInstance();
 				cal.set(2012, 8, 1);
 				
-				if (customer.getCustomernumber().equals("20074") && calcMonth.after(cal)) {
+				if (customer.getCustomernumber().equals("20190") && calcMonth.after(cal)) {
 					System.out.println(sdf.format(calcMonth.getTime()));
 					
 				}
@@ -197,7 +198,14 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private List<DaoObject> searchCustomers() {
-		String select = "select distinct customer from Customer customer where customer.customernumber != ''";
+//		String select = "select distinct customer from Customer customer where customer.customernumber != ''";
+		String select = "select distinct customer from Customer customer where customer.customernumber IN (" +
+//		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20190')";
+				"'20166', '20120', '20016', '20190', '20074', '20208', '20206', '20216', '20198'" +
+//				", '20200', '20039', '20128', '20157'" +
+//				", '20012', '20105', '20197', '20060', '20218', '20066', '20209', '20107', '20094'" +
+//				", '20069', '20112', '20201', '20079', '20098', '20165', '20214'" +
+				")";
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
 		List<DaoObject> customerList = searchObjects(select, tx, session);
@@ -214,7 +222,7 @@ public class ReportCalculator implements Runnable {
 		maxLastCalculationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String select = "select distinct card from CardBean card where card.customer = '"
-				+ customer.getId() + "' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (card.lastCalculationDate IS NULL or card.lastCalculationDate < '" + sdf.format(maxLastCalculationDate.getTime()) + "')";
+				+ customer.getId() + "' and card.status = 'Aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (card.lastCalculationDate IS NULL or card.lastCalculationDate < '" + sdf.format(maxLastCalculationDate.getTime()) + "')";
 		
 		return searchObjects(select, tx, session);
 	}
@@ -239,10 +247,12 @@ public class ReportCalculator implements Runnable {
 	}
 
 	public void startTask(ActionEvent event) {
-		(new Thread(this)).start();
+		thread = new Thread(this);
+		thread.start();
 		ProgressBarTaskManager threadBean = (ProgressBarTaskManager) FacesUtil.getManagedBean(ProgressBarTaskManager.BEAN_NAME);
 		threadBean.startThread(10, 10, 100);
 	}
+	
 	
 	public boolean getTaskRunning() {
 		return taskRunning;
@@ -250,6 +260,14 @@ public class ReportCalculator implements Runnable {
 
 	public void setTaskRunning(boolean taskRunning) {
 		this.taskRunning = taskRunning;
+	}
+
+	public Thread getThread() {
+		return thread;
+	}
+
+	public void setThread(Thread thread) {
+		this.thread = thread;
 	}
 	
 }

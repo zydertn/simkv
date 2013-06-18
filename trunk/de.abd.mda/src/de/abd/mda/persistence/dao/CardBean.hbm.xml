@@ -20,6 +20,7 @@
 	 	<property name="supplier" type="string" column="CARD_SUPPLIER" length="15" />
 	 	<property name="status" type="string" column="CARD_STATUS" length="15" />
 	 	<property name="activationDate" type="timestamp" column="CARD_ACTIVATION_DATE" />
+	 	<property name="deactivationDate" type="timestamp" column="CARD_DEACTIVATION_DATE" />
 	 	<property name="orderNumber" type="string" column="CARD_ORDER_NUMBER" length="200" />
 	 	<property name="deliverySlipDate" type="timestamp" column="CARD_DELIVERY_SLIP_DATE" />
 	 	<property name="deliverySlipNumber" type="string" column="CARD_DELIVERY_SLIP_NUMBER" length="12" />
@@ -33,5 +34,7 @@
 	 	<property name="project" type="string" column="CARD_PROJECT" length="50" />
 	 	<property name="countryCode" type="string" column="CARD_COUNTRY_CODE" length="3" />
 		<property name="country" type="string" column="CARD_COUNTRY" length="2" />
+		<property name="simPrice" type="int" column="CARD_ALT_SIM_PRICE" />
+		<property name="standardPrice" type="boolean" column="CARD_STANDARD_PRICE" />
 	 </class>
  </hibernate-mapping>

@@ -130,8 +130,10 @@ public class ActionController implements ActionListener {
 	}
 
 	public String getRequestMessage() {
-		if (getRequest().getAttribute("message") != null)
-			return "" + getRequest().getAttribute("message");
+		if (getRequest().getAttribute("message") != null) {
+			String message = "" + getRequest().getAttribute("message"); 
+			return message;
+		}
 		return "";
 	}
 
