@@ -143,13 +143,13 @@
 					<h:outputText value="SIM Profil: " />
 					<h:selectOneMenu binding="#{customerController.invoiceconfigSimpriceBinding}"
 						value="#{customerController.customer.invoiceConfiguration.simPrice}">
-						<f:selectItems value="#{actionController.model.simPrices}" />
+						<f:selectItems value="#{actionController.model.simPrices.entrySet()}" var="simPriceVar" itemLabel="#{simPriceVar.key} - #{simPriceVar.value} €" itemValue="#{simPriceVar.key}" />
 					</h:selectOneMenu>
 
 					<h:outputText value="Datenoption Profil: " />
 					<h:selectOneMenu binding="#{customerController.invoiceconfigDataoptionBinding}"
 						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">
-						<f:selectItems value="#{actionController.model.dataOptionSurcharges}" />
+						<f:selectItems value="#{actionController.model.dataOptionSurcharges.entrySet()}" var="dataOptionVar" itemLabel="#{dataOptionVar.key} - #{dataOptionVar.value}" itemValue="#{dataOptionVar.key}" />
 					</h:selectOneMenu>
 
 					<h:outputText value="Format: " />

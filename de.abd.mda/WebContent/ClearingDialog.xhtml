@@ -60,11 +60,11 @@
 				<h:panelGrid columns="3" bgcolor="LightGrey" cellpadding="3">
 					<h:outputText style="font-weight:bold" value="Kartendaten" />
 					<h:outputText value="Status:" />
-					<h:outputText value="#{searchCardController.card.status}" />
+					<h:outputText value="#{clearingController.card.status}" />
 
 					<h:outputText />
 					<h:outputText value="Laufende Nummer:" />
-					<h:outputText value="#{searchCardController.card.sequenceNumber}" />
+					<h:outputText value="#{clearingController.card.sequenceNumber}" />
 
 
 					<h:outputText />
@@ -74,35 +74,35 @@
 					<h:outputText style="font-weight:bold" value="Auftragsdaten" />
 					<h:outputText value="Kundenbestellnummer:" />
 					<h:outputText
-						value="#{searchCardController.card.customerOrderNumber}" />
+						value="#{clearingController.card.customerOrderNumber}" />
 
 					<h:outputText />
 					<h:outputText value="Lieferscheindatum:" />
 					<h:outputText
-						value="#{searchCardController.card.deliverySlipDateString}" />
+						value="#{clearingController.card.deliverySlipDateString}" />
 
 					<h:outputText />
 					<h:outputText value="Lieferscheinnummer:" />
 					<h:outputText
-						value="#{searchCardController.card.deliverySlipNumber}" />
+						value="#{clearingController.card.deliverySlipNumber}" />
 
 					<h:outputText style="font-weight:bold" value="Kundendaten" />
 					<h:outputText value="Firmenname:" />
-					<h:outputText value="#{searchCardController.card.customer.name}" />
+					<h:outputText value="#{clearingController.card.customer.name}" />
 
 					<h:outputText />
 					<h:outputText value="Niederlassung:" />
-					<h:outputText value="#{searchCardController.card.customer.branch}" />
+					<h:outputText value="#{clearingController.card.customer.branch}" />
 
 					<h:outputText />
 					<h:outputText value="Adresse:" />
 					<h:outputText
-						value="#{searchCardController.card.customer.address.addressString}" />
+						value="#{clearingController.card.customer.address.addressString}" />
 
 					<h:outputText />
 					<h:outputText value="Kundennummer:" />
 					<h:outputText
-						value="#{searchCardController.card.customer.customernumber}" />
+						value="#{clearingController.card.customer.customernumber}" />
 
 				</h:panelGrid>
 				
@@ -112,7 +112,16 @@
 
 					<h:outputText value="Freischaltungsdatum"/>
 					<ice:selectInputDate
-						value="#{clearingController.cardBean.activationDate}"
+						value="#{clearingController.activationDate}"
+						disabled="false"
+						renderAsPopup="true" highlightClass="newyear"
+						highlightUnit="DAY_OF_YEAR" highlightValue="1">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</ice:selectInputDate>
+
+					<h:outputText value="Deaktivierungsdatum"/>
+					<ice:selectInputDate
+						value="#{clearingController.deactivationDate}"
 						disabled="false"
 						renderAsPopup="true" highlightClass="newyear"
 						highlightUnit="DAY_OF_YEAR" highlightValue="1">
@@ -211,6 +220,8 @@
 		<h:panelGrid columns="3">
 			<h:commandButton value="Freischalten" style="font-weight:bolder"
 				action="#{clearingController.clearCard}"></h:commandButton>
+			<h:commandButton value="Deaktivieren" style="font-weight:bolder"
+				action="#{clearingController.unclearCard}"></h:commandButton>
 		</h:panelGrid>
 
 	</h:form>
