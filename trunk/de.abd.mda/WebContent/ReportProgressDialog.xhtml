@@ -31,7 +31,9 @@
             
             <!-- ace:progressBar id="myProgressBar" value="#{longtask.progress}"/-->
                                
-            <h:commandLink id="start" actionListener="#{reportCalculator.startTask}"  value="start"></h:commandLink>
+            <h:commandLink id="start" actionListener="#{reportCalculator.startTask}" rendered="#{!longtask.taskRunning}" value="start"></h:commandLink>
+
+            <h:commandLink id="zurücksetzen" rendered="#{!longtask.taskRunning}" value="Zurücksetzen"></h:commandLink>
 		</h:panelGrid>
 	</h:form>
 </h:body>

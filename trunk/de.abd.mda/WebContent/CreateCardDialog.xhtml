@@ -12,7 +12,17 @@
 	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
 </h:head>
 <h:body styleClass="ice-skin-rime">
-	<h:form>
+	<script type="text/javascript">
+		function hideOrShow(show) {
+			document.getElementById("createCardForm:simPriceSelector").disabled = show;
+			document.getElementById("createCardForm:myCheckHidden").value = document.getElementById("createCardForm:simPriceSelector").value;
+		}
+
+		function updateValue(val) {
+			document.getElementById("createCardForm:myCheckHidden").value = val;
+		}
+	</script>
+	<h:form id="createCardForm">
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
 		<p>
@@ -46,6 +56,15 @@
 						<h:outputText value="/" />
 						<h:inputText size="8" maxlength="9"
 							value="#{cardController.cardBean.phoneNrSecond}" />
+					</h:panelGrid>
+
+					<h:outputText value="Standard-Preis: " />
+					<h:panelGrid id="checkPanel" columns="3">
+						<h:selectBooleanCheckbox id="myCheckbox" onclick="hideOrShow(this.checked);" value="#{cardController.cardBean.standardPrice}" />
+						<h:selectOneMenu id="simPriceSelector" onchange="updateValue(this.value)" disabled="#{cardController.cardBean.standardPrice}" value="#{cardController.cardBean.simPrice}">
+							<f:selectItems value="#{actionController.model.simPrices.entrySet()}" var="simPriceVar" itemLabel="#{simPriceVar.key} - #{simPriceVar.value} €" itemValue="#{simPriceVar.key}" />
+						</h:selectOneMenu>
+						<h:inputHidden id="myCheckHidden" binding="#{cardController.cardPriceHidden}" value="#{cardController.cardBean.simPrice}"></h:inputHidden>
 					</h:panelGrid>
 					
 					<h:outputText value="Lieferant: " />

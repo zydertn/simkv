@@ -53,6 +53,16 @@
 					<h:outputText/>
 					<h:outputText/>
 					
+					<h:outputText value="Standard-Preis: " />
+					<h:panelGrid id="checkPanel" columns="2">
+						<h:selectBooleanCheckbox id="myCheckbox" disabled="true" onclick="hideOrShow(this.checked);" value="#{cardController.cardBean.standardPrice}" />
+						<h:selectOneMenu id="simPriceSelector" disabled="true" value="#{cardController.cardBean.simPrice}">
+							<f:selectItems value="#{actionController.model.simPrices.entrySet()}" var="simPriceVar" itemLabel="#{simPriceVar.key} - #{simPriceVar.value} €" itemValue="#{simPriceVar.key}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
 					
 					<h:outputText value="Lieferant: " />
 					<h:panelGrid>
