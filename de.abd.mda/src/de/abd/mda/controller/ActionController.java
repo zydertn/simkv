@@ -19,7 +19,6 @@ import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.report.ReportCalculator;
-import de.abd.mda.report.ReportGenerator2;
 import de.abd.mda.report.ReportRunnable;
 
 public class ActionController implements ActionListener {
