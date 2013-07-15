@@ -36,5 +36,17 @@
 		<property name="country" type="string" column="CARD_COUNTRY" length="2" />
 		<property name="simPrice" type="int" column="CARD_ALT_SIM_PRICE" />
 		<property name="standardPrice" type="boolean" column="CARD_STANDARD_PRICE" />
+	 	<property name="anlagenNr" type="string" column="CARD_ANLAGEN_NR" length="50" />
+	 	<property name="equipmentNr" type="string" column="CARD_EQUIPMENT_NR" length="50" />
+	 	<property name="vertrag" type="string" column="CARD_VERTRAG" length="50" />
+	 	<property name="soNr" type="string" column="CARD_SO_NR" length="50" />
+	 	<property name="leitstand" type="string" column="CARD_LEINSTAND" length="50" />
+	 	<property name="lokation" type="string" column="CARD_LOKATION" length="50" />
+	 	<property name="we" type="string" column="CARD_WE" length="50" />
+	 	<property name="sachkonto" type="string" column="CARD_SACHKONTO" length="50" />
+	 	<property name="auftragsNr" type="string" column="CARD_AUFTRAGS_NR" length="50" />
+	 	<property name="notrufNr" type="string" column="CARD_NOTRUF_NR" length="50" />
+	 	<property name="kostenstelle" type="string" column="CARD_KOSTENSTELLE" length="50" />
+	 	<property name="einsatzort" type="string" column="CARD_EINSATZORT" length="50" />
 	 </class>
  </hibernate-mapping>
