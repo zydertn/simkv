@@ -6,11 +6,9 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
-import de.abd.mda.report.ReportGenerator2;
 
 public class SearchCardController extends ActionController {
 

@@ -125,6 +125,20 @@ public class CardActionController extends ActionController {
 				card.setStatus(ccCardBean.getStatus());
 				card.setStandardPrice(ccCardBean.getStandardPrice());
 				card.setSimPrice(ccCardBean.getSimPrice());
+				card.setAnlagenNr(ccCardBean.getAnlagenNr());
+				card.setAuftragsNr(ccCardBean.getAuftragsNr());
+				card.setEinsatzort(ccCardBean.getEinsatzort());
+				card.setEquipmentNr(ccCardBean.getEquipmentNr());
+				card.setFactoryNumber(ccCardBean.getFactoryNumber());
+				card.setKostenstelle(ccCardBean.getKostenstelle());
+				card.setLeitstand(ccCardBean.getLeitstand());
+				card.setLokation(ccCardBean.getLokation());
+				card.setNotrufNr(ccCardBean.getNotrufNr());
+				card.setOrderNumber(ccCardBean.getOrderNumber());
+				card.setSachkonto(ccCardBean.getSachkonto());
+				card.setSoNr(ccCardBean.getSoNr());
+				card.setVertrag(ccCardBean.getVertrag());
+				card.setWe(ccCardBean.getWe());
 			} else
 				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			tx.commit();

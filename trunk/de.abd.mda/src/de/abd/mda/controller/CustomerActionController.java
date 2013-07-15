@@ -54,7 +54,7 @@ public class CustomerActionController extends ActionController {
 	private HtmlSelectOneMenu invoiceconfigDataoptionBinding;
 	private HtmlSelectOneMenu invoiceconfigFormatBinding;
 	private HtmlSelectOneMenu invoiceconfigCreationFrequencyBinding;
-	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
+//	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
 	
 	public CustomerActionController() {
 		customer = new Customer();
@@ -112,7 +112,7 @@ public class CustomerActionController extends ActionController {
 			invoiceconfigDataoptionBinding.setDisabled(false);
 			invoiceconfigFormatBinding.setDisabled(false);
 			invoiceconfigCreationFrequencyBinding.setDisabled(false);
-			invoiceconfigColumnsBinding.setDisabled(false);
+//			invoiceconfigColumnsBinding.setDisabled(false);
 			getRequest().setAttribute("componentDisabled", false);
 
 		} else {
@@ -207,7 +207,7 @@ public class CustomerActionController extends ActionController {
 			invoiceconfigDataoptionBinding.setDisabled(true);
 			invoiceconfigFormatBinding.setDisabled(true);
 			invoiceconfigCreationFrequencyBinding.setDisabled(true);
-			invoiceconfigColumnsBinding.setDisabled(true);
+//			invoiceconfigColumnsBinding.setDisabled(true);
 		}
 
 		
@@ -257,7 +257,7 @@ public class CustomerActionController extends ActionController {
 		invoiceconfigDataoptionBinding.setDisabled(false);
 		invoiceconfigFormatBinding.setDisabled(false);
 		invoiceconfigCreationFrequencyBinding.setDisabled(false);
-		invoiceconfigColumnsBinding.setDisabled(false);
+//		invoiceconfigColumnsBinding.setDisabled(false);
 		getRequest().setAttribute("componentDisabled", false);
 		opened = !opened;
 	}
@@ -476,16 +476,16 @@ public class CustomerActionController extends ActionController {
 		this.invoiceconfigCreationFrequencyBinding = invoiceconfigCreationFrequencyBinding;
 	}
 
-	public HtmlSelectManyCheckbox getInvoiceconfigColumnsBinding() {
-		if (invoiceconfigColumnsBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceconfigColumnsBinding.setDisabled(true);
-		return invoiceconfigColumnsBinding;
-	}
+//	public HtmlSelectManyCheckbox getInvoiceconfigColumnsBinding() {
+//		if (invoiceconfigColumnsBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceconfigColumnsBinding.setDisabled(true);
+//		return invoiceconfigColumnsBinding;
+//	}
 
-	public void setInvoiceconfigColumnsBinding(
-			HtmlSelectManyCheckbox invoiceconfigColumnsBinding) {
-		this.invoiceconfigColumnsBinding = invoiceconfigColumnsBinding;
-	}
+//	public void setInvoiceconfigColumnsBinding(
+//			HtmlSelectManyCheckbox invoiceconfigColumnsBinding) {
+//		this.invoiceconfigColumnsBinding = invoiceconfigColumnsBinding;
+//	}
 
 	public HtmlInputText getStreetBinding() {
 		if (streetBinding != null && getRequest().getAttribute("componentDisabled") != null)
