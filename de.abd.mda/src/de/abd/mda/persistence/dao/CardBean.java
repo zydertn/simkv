@@ -41,6 +41,19 @@ public class CardBean extends DaoObject {
 	private Boolean standardPrice;
 	private int simPrice;
 	
+	private String anlagenNr;
+	private String equipmentNr;
+	private String vertrag;
+	private String soNr;
+	private String leitstand;
+	private String lokation;
+	private String we;
+	private String sachkonto;
+	private String auftragsNr;
+	private String notrufNr;
+	private String kostenstelle;
+	private String einsatzort;
+	
 	public Date getLastCalculationDate() {
 		return lastCalculationDate;
 	}
@@ -71,6 +84,18 @@ public class CardBean extends DaoObject {
 		this.project = "";
 		this.standardPrice = true;
 		this.simPrice = 0;
+		this.anlagenNr = "";
+		this.equipmentNr = "";
+		this.vertrag = "";
+		this.soNr = "";
+		this.leitstand = "";
+		this.lokation = "";
+		this.we = "";
+		this.sachkonto = "";
+		this.auftragsNr = "";
+		this.notrufNr = "";
+		this.kostenstelle = "";
+		this.einsatzort = "";
 	}
 	
 	public CardBean(String cNFirst, String cNSecond, String countryCode, String country, String phoneFirst, String phoneSecond, int seqNum) {
@@ -96,6 +121,18 @@ public class CardBean extends DaoObject {
 		this.project = "";
 		this.standardPrice = true;
 		this.simPrice = 0;
+		this.anlagenNr = "";
+		this.equipmentNr = "";
+		this.vertrag = "";
+		this.soNr = "";
+		this.leitstand = "";
+		this.lokation = "";
+		this.we = "";
+		this.sachkonto = "";
+		this.auftragsNr = "";
+		this.notrufNr = "";
+		this.kostenstelle = "";
+		this.einsatzort = "";
 	}
 
 	public String getCardNumber() {
@@ -323,6 +360,102 @@ public class CardBean extends DaoObject {
 
 	public void setDeactivationDate(Date deactivationDate) {
 		this.deactivationDate = deactivationDate;
+	}
+
+	public String getAnlagenNr() {
+		return anlagenNr;
+	}
+
+	public void setAnlagenNr(String anlagenNr) {
+		this.anlagenNr = anlagenNr;
+	}
+
+	public String getEquipmentNr() {
+		return equipmentNr;
+	}
+
+	public void setEquipmentNr(String equipmentNr) {
+		this.equipmentNr = equipmentNr;
+	}
+
+	public String getVertrag() {
+		return vertrag;
+	}
+
+	public void setVertrag(String vertrag) {
+		this.vertrag = vertrag;
+	}
+
+	public String getSoNr() {
+		return soNr;
+	}
+
+	public void setSoNr(String soNr) {
+		this.soNr = soNr;
+	}
+
+	public String getLeitstand() {
+		return leitstand;
+	}
+
+	public void setLeitstand(String leitstand) {
+		this.leitstand = leitstand;
+	}
+
+	public String getLokation() {
+		return lokation;
+	}
+
+	public void setLokation(String lokation) {
+		this.lokation = lokation;
+	}
+
+	public String getWe() {
+		return we;
+	}
+
+	public void setWe(String we) {
+		this.we = we;
+	}
+
+	public String getSachkonto() {
+		return sachkonto;
+	}
+
+	public void setSachkonto(String sachkonto) {
+		this.sachkonto = sachkonto;
+	}
+
+	public String getAuftragsNr() {
+		return auftragsNr;
+	}
+
+	public void setAuftragsNr(String auftragsNr) {
+		this.auftragsNr = auftragsNr;
+	}
+
+	public String getNotrufNr() {
+		return notrufNr;
+	}
+
+	public void setNotrufNr(String notrufNr) {
+		this.notrufNr = notrufNr;
+	}
+
+	public String getKostenstelle() {
+		return kostenstelle;
+	}
+
+	public void setKostenstelle(String kostenstelle) {
+		this.kostenstelle = kostenstelle;
+	}
+
+	public String getEinsatzort() {
+		return einsatzort;
+	}
+
+	public void setEinsatzort(String einsatzort) {
+		this.einsatzort = einsatzort;
 	}
 
 	
