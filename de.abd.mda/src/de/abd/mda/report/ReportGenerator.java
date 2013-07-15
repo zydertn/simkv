@@ -9,12 +9,17 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
+
+import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +38,9 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
+import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
@@ -57,7 +64,7 @@ public class ReportGenerator {
 
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth) {
 		try {
-			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
+			Document document = new Document(PageSize.A4.rotate(), 60, 25, 40, 40);
 			String month = "";
 			if ((calcMonth.get(Calendar.MONTH) + 1) > 9) {
 				month = month + (calcMonth.get(Calendar.MONTH) + 1);
@@ -328,7 +335,38 @@ public class ReportGenerator {
 
 				
 				
-				String[] invoiceRow = { "1", card.getInstallAddress().getAddressString(), card.getFactoryNumber(), "" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2), "" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2) };
+				System.out.println("Jetzt: Kunde " + customer.getCustomernumber());
+				
+				ArrayList<String> invoiceRowList = new ArrayList<String>();
+	
+				if (customer.getCustomernumber().equals("20074")) {
+					System.out.println("Kunde 20074");
+				}
+				
+				List<String> columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
+				if (columns.contains(Model.COLUMN_AMOUNT)) {
+					invoiceRowList.add("1");
+				}
+				if (columns.contains(Model.COLUMN_DESCRIPTION)) {
+					invoiceRowList.add(card.getInstallAddress().getAddressString());
+				}
+				if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
+					invoiceRowList.add(card.getFactoryNumber());
+				}
+				if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
+					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
+				}
+				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
+					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
+				}
+
+				if (!(invoiceRowList != null && invoiceRowList.size() > 0)) {
+					throw new Exception("Keine Rechnungsspalten definiert!");
+				}
+				String[] invoiceRow = new String[invoiceRowList.size()];
+				for (int i = 0; i < invoiceRowList.size(); i++) {
+					invoiceRow[i] = invoiceRowList.get(i);
+				}
 				tableRowList.add(invoiceRow);
 			}
 
@@ -336,7 +374,7 @@ public class ReportGenerator {
 			
 //			tableRowList = addDummyRows(tableRowList);
 			
-			ArrayList<PdfPTable> tables = prepareTables(tableRowList);
+			ArrayList<PdfPTable> tables = prepareTables(tableRowList, customer);
 			int i = 0;
 			while (i < tables.size()) {
 				doc.add(tables.get(i));
@@ -352,7 +390,7 @@ public class ReportGenerator {
 				i++;
 			}
 			
-			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Zahlungsziel: Sofort rein Netto nach Rechnungserhalt.", timeframeFont);
+			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den oben stehenden Betrag innerhalb von 14 Tagen nach Rechnungsdatum.", timeframeFont);
 			doc.add(new Phrase(paymentDueDate));
 			
 		} catch (Exception ex) {
@@ -370,11 +408,14 @@ public class ReportGenerator {
 		DecimalFormat df = new DecimalFormat("#0.00");
 
 		BigDecimal mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
+	
+		int firstcols = customer.getInvoiceConfiguration().getColumns().length - 2;
+	
 		
-		String[] cr1 = { "", "", "", "Netto Summe €", df.format(nettoSum) };
-		String[] cr2 = { "", "", "", "19% MWST. €", "" + mwst };
-		String[] cr3 = { "", "", "", "", "" };
-		String[] cr4 = { "", "", "", "Endbetrag €", df.format(mwst.add(nettoSum)) };
+		String[] cr1 = createCalcRow(firstcols, "Netto Summe €", df.format(nettoSum));;
+		String[] cr2 = createCalcRow(firstcols, "19% MWST. €", "" + mwst);
+		String[] cr3 = createCalcRow(firstcols, "", "");
+		String[] cr4 = createCalcRow(firstcols, "Endbetrag €", df.format(mwst.add(nettoSum)));
 
 		tableRowList.add(cr1);
 		tableRowList.add(cr2);
@@ -384,12 +425,25 @@ public class ReportGenerator {
 		return tableRowList;
 	}
 
-	private ArrayList<PdfPTable> prepareTables(ArrayList<String[]> tableRowList) {
+	private String[] createCalcRow(int firstcols, String text, String value) {
+		String[] row = new String[firstcols+2];
+		int i = 0;
+		while (i < firstcols) {
+			row[i] = "";
+			i++;
+		}
+		row[i] = text;
+		i++;
+		row[i] = value;
+		return row;
+	}
+
+	private ArrayList<PdfPTable> prepareTables(ArrayList<String[]> tableRowList, Customer customer) throws Exception {
 		ArrayList<PdfPTable> tableList = new ArrayList<PdfPTable>();
 		
 		// check, ob alles inkl. Tabellenende auf 1 Seite passt
 		if (tableRowList.size() < MAX_ROW_FIRST_PAGE) {
-			tableList.add(createTable(tableRowList, true));
+			tableList.add(createTable(tableRowList, true, customer));
 			return tableList;
 		}
 		
@@ -411,7 +465,7 @@ public class ReportGenerator {
 			}
 
 		}
-		tableList.add(createTable(firstPageList, false));
+		tableList.add(createTable(firstPageList, false, customer));
 		
 		// create tables for other full pages
 		for (int j=1; j<fullTableCount+1; j++) {
@@ -425,7 +479,7 @@ public class ReportGenerator {
 					break;
 				}
 			}
-			tableList.add(createTable(otherFullTableList, false));
+			tableList.add(createTable(otherFullTableList, false, customer));
 		}
 		
 		// create last table
@@ -434,27 +488,31 @@ public class ReportGenerator {
 			lastTable.add(tableRowList.get(i));
 			i++;
 		}
-		tableList.add(createTable(lastTable, true));
+		tableList.add(createTable(lastTable, true, customer));
 		
 		return tableList;
 	}
 
-	private PdfPTable createTable(ArrayList<String[]> currentRowList, boolean lastPage) {
-		PdfPTable table = createTableHeader();
-		if (lastPage) {
-			ArrayList<String[]> bodyList = new ArrayList<String[]>();
-			ArrayList<String[]> endList = new ArrayList<String[]>();
-			for (int i = 0; i < (currentRowList.size() - 4); i++) {
-				bodyList.add(currentRowList.get(i));
+	private PdfPTable createTable(ArrayList<String[]> currentRowList, boolean lastPage, Customer customer) throws Exception {
+		PdfPTable table = createTableHeader(customer);
+		if (table != null) {
+			if (lastPage) {
+				ArrayList<String[]> bodyList = new ArrayList<String[]>();
+				ArrayList<String[]> endList = new ArrayList<String[]>();
+				for (int i = 0; i < (currentRowList.size() - 4); i++) {
+					bodyList.add(currentRowList.get(i));
+				}
+				for (int i = (currentRowList.size() - 4); i < currentRowList.size(); i++) {
+					endList.add(currentRowList.get(i));
+				}
+				table = createTableBody(table, bodyList);
+				table = createTableEnd(table, endList);
+			} else {
+				table = createTableBody(table, currentRowList);
+				
 			}
-			for (int i = (currentRowList.size() - 4); i < currentRowList.size(); i++) {
-				endList.add(currentRowList.get(i));
-			}
-			table = createTableBody(table, bodyList);
-			table = createTableEnd(table, endList);
 		} else {
-			table = createTableBody(table, currentRowList);
-			
+			return null;
 		}
 		return table;
 	}
@@ -505,38 +563,80 @@ public class ReportGenerator {
 		return table;
 	}
 
-	private PdfPTable createTableHeader() {
-		// Tabelle erstellen mit Default-Parameter
-		PdfPTable tableHeader = new PdfPTable(new float[] { 1.5f, 2, 12.5f, 9, 4, 4 });
+	private PdfPTable createTableHeader(Customer customer) throws Exception {
+		List<String> columns = null;
+		if (customer != null) {
+			columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
+		} else {
+			logger.error("Customer is NULL!");
+			throw new Exception("Customer is NULL");
+		}
+
+		if (columns.size() < 1) {
+			logger.warn("Customer " + customer.getCustomernumber() + " hat keine Rechnungsspalten konfiguriert!");
+			throw new Exception("Customer " + customer.getCustomernumber() + " hat keine Rechnungsspalten konfiguriert!");
+		}
+		
+		int anzahl_mandatory_spalten = 1;
+		
+		// Tabelle erstellen mit Default-Parameter ; +1 wegen Pos-Spalte
+		float[] colSizes = new float[columns.size() + anzahl_mandatory_spalten];
+		
+		Model model = new Model();
+		model.createModel();
+		HashMap<String, Float> columnSizes = model.getColumnSize();
+		colSizes[0] = columnSizes.get(Model.COLUMN_POS);
+		for (int i = 0; i < columns.size(); i++) {
+			colSizes[i+anzahl_mandatory_spalten] = columnSizes.get(columns.get(i));
+		}
+		
+		
+		PdfPTable tableHeader = new PdfPTable(colSizes);
 		tableHeader.setWidthPercentage(100f);
 		tableHeader.getDefaultCell().setBackgroundColor(null);
 		tableHeader.getDefaultCell().setBorder(0);
 
-		// Table Header
-		Font tableFont = new Font(bf_arial, 8);
-		PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
-		cell.setPaddingTop(10);
-		cell.setPaddingBottom(10);
-		cell.setBorderWidthTop(0.5f);
-		cell.setBorderWidthBottom(0.5f);
-		cell.setBorder(Rectangle.TOP | Rectangle.BOTTOM);
-		tableHeader.addCell(cell);
-		cell.setPhrase(new Phrase("Menge", tableFont));
-		tableHeader.addCell(cell);
-		cell.setPhrase(new Phrase("Bezeichnung", tableFont));
-		tableHeader.addCell(cell);
-		cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
-		tableHeader.addCell(cell);
-		cell.setPhrase(new Phrase("Einzelpreis", tableFont));
-		tableHeader.addCell(cell);
-		cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
-		tableHeader.addCell(cell);
+		
+		if (columns != null) {
+			// Table Header
+			Font tableFont = new Font(bf_arial, 8);
+			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
+			cell.setPaddingTop(10);
+			cell.setPaddingBottom(10);
+			cell.setBorderWidthTop(0.5f);
+			cell.setBorderWidthBottom(0.5f);
+			cell.setBorder(Rectangle.TOP | Rectangle.BOTTOM);
+			tableHeader.addCell(cell);
+			if (columns.contains(Model.COLUMN_AMOUNT)) {
+				cell.setPhrase(new Phrase("Menge", tableFont));
+				tableHeader.addCell(cell);
+			}
+			if (columns.contains(Model.COLUMN_DESCRIPTION)) {
+				cell.setPhrase(new Phrase("Bezeichnung", tableFont));
+				tableHeader.addCell(cell);
+			}
+			if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
+				cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
+				tableHeader.addCell(cell);
+			}
+			if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
+				cell.setPhrase(new Phrase("Einzelpreis", tableFont));
+				tableHeader.addCell(cell);
+			}
+			if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
+				cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
+				tableHeader.addCell(cell);
+			}
 
-		cell.setPaddingTop(1);
-		cell.setPaddingBottom(5);
-		cell.setBorder(Rectangle.NO_BORDER);
+			cell.setPaddingTop(1);
+			cell.setPaddingBottom(5);
+			cell.setBorder(Rectangle.NO_BORDER);
 
-		return tableHeader;
+			return tableHeader;
+		} else {
+			logger.warn("Bei Kunde " + customer.getCustomernumber() + " sind keine Rechnungsspalten selektiert!");
+			throw new Exception("Bei Kunde " + customer.getCustomernumber() + " sind keine Rechnungsspalten selektiert!");
+		}
 	}
 	
 	private String addNewLines(int x) {
