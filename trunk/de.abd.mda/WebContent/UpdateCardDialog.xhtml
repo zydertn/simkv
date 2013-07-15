@@ -74,16 +74,17 @@
 					<h:outputText/>
 					<h:outputText/>
 					
+				</h:panelGrid>
 					
+				<h:panelGrid columns="5">				
 					<h:outputText value="Lieferant: " />
 					<h:panelGrid>
 						<h:selectOneMenu value="#{cardController.cardBean.supplier}">
 							<f:selectItems value="#{actionController.model.supplierList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
-					<h:outputText/>
-					<h:outputText/>
-					
+
+					<h:outputText style="margin-right:100px"/>								
 
 					<h:outputText value="Status: " />
 					<h:panelGrid>
@@ -91,9 +92,132 @@
 							<f:selectItems value="#{actionController.model.statusList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
-					<h:outputText/>
-					<h:outputText/>
 
+					<h:outputText value="Anlagen-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.anlagenNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>		
+					
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Fabrik-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.factoryNumber}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Equipment-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.equipmentNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+					
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Vertrag: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.vertrag}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="So-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.soNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+					
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Leitstand: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.leitstand}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Bestell-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.orderNumber}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Lokation: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.lokation}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="WE: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.we}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Sachkonto: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.sachkonto}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Auftrags-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.auftragsNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="zugel. Notruf-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.notrufNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Kostenstelle: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.kostenstelle}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Einsatzort: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.einsatzort}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>

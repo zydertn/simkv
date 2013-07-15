@@ -161,15 +161,17 @@
 
 
 					<h:outputText value="Spalten:" />
-					<h:selectManyCheckbox
-						value="#{customerController.customer.invoiceConfiguration.columns}"
-						layout="lineDirection">
-						<f:selectItem id="item1" itemLabel="Spalte1" itemValue="1" />
-						<f:selectItem id="item2" itemLabel="Spalte2" itemValue="2" />
-						<f:selectItem id="item3" itemLabel="Spalte3" itemValue="3" />
-						<f:selectItem id="item4" itemLabel="Spalte4" itemValue="4" />
-						<f:selectItem id="item5" itemLabel="Spalte5" itemValue="5" />
-					</h:selectManyCheckbox>
+					<ice:panelGroup style="overflow-y:auto; width:200px; height:150px;">
+						<ice:selectManyCheckbox layout="pageDirection"
+							value="#{customerController.customer.invoiceConfiguration.columns}">
+							<!-- f:selectItem id="item1" itemLabel="Spalte1" itemValue="1" />
+							<f:selectItem id="item2" itemLabel="Spalte2" itemValue="2" />
+							<f:selectItem id="item3" itemLabel="Spalte3" itemValue="3" />
+							<f:selectItem id="item4" itemLabel="Spalte4" itemValue="4" />
+							<f:selectItem id="item5" itemLabel="Spalte5" itemValue="5" /-->
+							<f:selectItems value="#{actionController.model.invoiceColumns}"/>
+						</ice:selectManyCheckbox>
+					</ice:panelGroup>
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
