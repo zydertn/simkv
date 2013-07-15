@@ -2,6 +2,7 @@ package de.abd.mda.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +41,14 @@ public class Model {
 	public static String FREQUENCY_HALFYEARLY = "halbjährlich";
 	public static String FREQUENCY_YEARLY = "jährlich";
 	
+	public static String COLUMN_POS = "Pos.";
+	public static String COLUMN_AMOUNT = "Menge";
+	public static String COLUMN_DESCRIPTION = "Bezeichnung";
+	public static String COLUMN_PLANT_NUMBER = "Anlagen Nr.";
+	public static String COLUMN_SINGLE_PRICE = "Einzelpreis";
+	public static String COLUMN_TOTAL_PRICE = "Gesamtpreis";
+	
+	
 	public static String GENDER_MAN = "Herr";
 	public static String GENDER_WOMAN = "Frau";
 	public static String GENDER_COMPANY = "Firma";
@@ -55,8 +64,10 @@ public class Model {
 		this.supplierList = supplierList;
 	}
 
+	private HashMap<String, Float> columnSize;
 	private List<String> invoiceFormats;
 	private List<String> invoiceCreationFrequencies;
+	private List<String> invoiceColumns;
 
 	public Model() {
 	}
@@ -84,6 +95,22 @@ public class Model {
 		invoiceCreationFrequencies.add(Model.FREQUENCY_QUARTERLY);
 		invoiceCreationFrequencies.add(Model.FREQUENCY_HALFYEARLY);
 		invoiceCreationFrequencies.add(Model.FREQUENCY_YEARLY);
+		
+		invoiceColumns = new ArrayList<String>();
+//		invoiceColumns.add(COLUMN_POS);
+		invoiceColumns.add(COLUMN_AMOUNT);
+		invoiceColumns.add(COLUMN_DESCRIPTION);
+		invoiceColumns.add(COLUMN_PLANT_NUMBER);
+		invoiceColumns.add(COLUMN_SINGLE_PRICE);
+		invoiceColumns.add(COLUMN_TOTAL_PRICE);
+		
+		columnSize = new HashMap<String, Float>();
+		columnSize.put(COLUMN_POS, 1.5f);
+		columnSize.put(COLUMN_AMOUNT, 2f);
+		columnSize.put(COLUMN_DESCRIPTION, 12.5f);
+		columnSize.put(COLUMN_PLANT_NUMBER, 9f);
+		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
+		columnSize.put(COLUMN_TOTAL_PRICE, 4f);
 	}
 
 	public List<SelectItem> getCountryCodes() {
@@ -170,6 +197,22 @@ public class Model {
 			dataOptionSurcharges = c.getDataOptionPricesFromDB();
 		}
 		return dataOptionSurcharges;
+	}
+
+	public List<String> getInvoiceColumns() {
+		return invoiceColumns;
+	}
+
+	public void setInvoiceColumns(List<String> invoiceColumns) {
+		this.invoiceColumns = invoiceColumns;
+	}
+
+	public HashMap<String, Float> getColumnSize() {
+		return columnSize;
+	}
+
+	public void setColumnSize(HashMap<String, Float> columnSize) {
+		this.columnSize = columnSize;
 	}
 
 }
