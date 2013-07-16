@@ -53,6 +53,7 @@ public class CardBean extends DaoObject {
 	private String notrufNr;
 	private String kostenstelle;
 	private String einsatzort;
+	private String bestellNummer;
 	
 	public Date getLastCalculationDate() {
 		return lastCalculationDate;
@@ -456,6 +457,14 @@ public class CardBean extends DaoObject {
 
 	public void setEinsatzort(String einsatzort) {
 		this.einsatzort = einsatzort;
+	}
+
+	public String getBestellNummer() {
+		return bestellNummer;
+	}
+
+	public void setBestellNummer(String bestellNummer) {
+		this.bestellNummer = bestellNummer;
 	}
 
 	
