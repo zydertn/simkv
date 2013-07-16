@@ -139,6 +139,7 @@ public class CardActionController extends ActionController {
 				card.setSoNr(ccCardBean.getSoNr());
 				card.setVertrag(ccCardBean.getVertrag());
 				card.setWe(ccCardBean.getWe());
+				card.setBestellNummer(ccCardBean.getBestellNummer());
 			} else
 				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			tx.commit();
