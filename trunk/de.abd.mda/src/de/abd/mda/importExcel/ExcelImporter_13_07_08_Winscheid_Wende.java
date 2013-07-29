@@ -220,19 +220,18 @@ public class ExcelImporter_13_07_08_Winscheid_Wende {
 				}
 			}
 			if (split.length > 10) {
+				// HIER GAB ES EINEN FEHLER ==> WIRD ZUR KORREKTUR WIEDER AUF "" GESETZT
 				logger.debug("split[10] == " + split[10]);
-				String customerOrderNumber = split[10];
-				if (customerOrderNumber != null && customerOrderNumber.length() > 0) {
+				String customerOrderNumber = "";
 					if (existingCard != null) {
-						existingCard.setCustomerOrderNumber(split[10]);
+						existingCard.setCustomerOrderNumber("");
 					} else {
-						card.setCustomerOrderNumber(split[10]);
+						card.setCustomerOrderNumber("");
 					}
-				}
 			}
-			if (split.length > 11) {
-				logger.debug("split[11] == " + split[11]);
-				String date = split[11];
+			if (split.length > 10) {
+				logger.debug("split[10] == " + split[10]);
+				String date = split[10];
 				if (date != null && date.length() > 0) {
 					Calendar c = new GregorianCalendar();
 					c.set(new Integer(date.substring(6, 10)), new Integer(date.substring(3, 5)) - 1, new Integer(date.substring(0, 2)));
@@ -246,20 +245,34 @@ public class ExcelImporter_13_07_08_Winscheid_Wende {
 				}
 			}
 			Person contactPerson = null;
-			if (split.length > 12) {
-				logger.debug("split[12] == " + split[12]);
-				if (split[12].length() > 0) {
+			if (split.length > 11) {
+				logger.debug("split[11] == " + split[11]);
+				if (split[11].length() > 0) {
 					if (existingCard != null) {
 						if (existingCard.getContactPerson() != null) {
-							existingCard.getContactPerson().setGender(split[12]);
+							existingCard.getContactPerson().setGender(split[11]);
 						} else {
 							contactPerson = new Person();
-							contactPerson.setGender(split[12]);
+							contactPerson.setGender(split[11]);
 							existingCard.setContactPerson(contactPerson);
 						}
 					} else {
 						contactPerson = new Person();
-						contactPerson.setGender(split[12]);
+						contactPerson.setGender(split[11]);
+						card.setContactPerson(contactPerson);
+					}
+				}
+			}
+			if (split.length > 12) {
+				logger.debug("split[12] == " + split[12]);
+				if (split[12].length() > 0) {
+					if (existingCard != null) {
+						existingCard.getContactPerson().setFirstname(split[12]);
+					} else {
+						if (contactPerson == null) {
+							contactPerson = new Person();
+						}
+						contactPerson.setFirstname(split[12]);
 						card.setContactPerson(contactPerson);
 					}
 				}
@@ -268,12 +281,12 @@ public class ExcelImporter_13_07_08_Winscheid_Wende {
 				logger.debug("split[13] == " + split[13]);
 				if (split[13].length() > 0) {
 					if (existingCard != null) {
-						existingCard.getContactPerson().setFirstname(split[13]);
+						existingCard.getContactPerson().setName(split[13]);
 					} else {
 						if (contactPerson == null) {
 							contactPerson = new Person();
 						}
-						contactPerson.setFirstname(split[13]);
+						contactPerson.setName(split[13]);
 						card.setContactPerson(contactPerson);
 					}
 				}
@@ -282,89 +295,76 @@ public class ExcelImporter_13_07_08_Winscheid_Wende {
 				logger.debug("split[14] == " + split[14]);
 				if (split[14].length() > 0) {
 					if (existingCard != null) {
-						existingCard.getContactPerson().setName(split[14]);
+						existingCard.getContactPerson().setPhoneNrFirst(split[14]);
 					} else {
 						if (contactPerson == null) {
 							contactPerson = new Person();
 						}
-						contactPerson.setName(split[14]);
+						contactPerson.setPhoneNrFirst(split[14]);					
 						card.setContactPerson(contactPerson);
 					}
 				}
 			}
 			if (split.length > 15) {
 				logger.debug("split[15] == " + split[15]);
-				if (split[15].length() > 0) {
+				// HIER GAB ES EINEN FEHLER ==> phoneNumber wird wieder auf leer gesetzt
+				if (true) {
 					if (existingCard != null) {
-						existingCard.getContactPerson().setPhoneNrFirst(split[15]);
+						existingCard.getContactPerson().setPhoneNrSecond(split[15]);
 					} else {
 						if (contactPerson == null) {
 							contactPerson = new Person();
 						}
-						contactPerson.setPhoneNrFirst(split[15]);					
-						card.setContactPerson(contactPerson);
-					}
-				}
-			}
-			if (split.length > 16) {
-				logger.debug("split[16] == " + split[16]);
-				if (split[16].length() > 0) {
-					if (existingCard != null) {
-						existingCard.getContactPerson().setPhoneNrSecond(split[16]);
-					} else {
-						if (contactPerson == null) {
-							contactPerson = new Person();
-						}
-						contactPerson.setPhoneNrSecond(split[16]);
+						contactPerson.setPhoneNrSecond(split[15]);
 						card.setContactPerson(contactPerson);
 					}
 				}
 			}
 			
-			if (split.length > 17) {
-				logger.debug("split[17] == " + split[17]);
-				if (split[17].length() > 0) {
+			if (split.length > 16) {
+				logger.debug("split[16] == " + split[16]);
+				if (split[16].length() > 0) {
 					if (existingCard != null) {
 						if (existingCard.getCustomer() != null) {
-							if (existingCard.getCustomer().getCustomernumber().equals(split[17])) {
+							if (existingCard.getCustomer().getCustomernumber().equals(split[16])) {
 								MdaLogger.info(logger, "001 Kunde bereits bei Karte angelegt! Tue nichts!");
 							} else {
-								MdaLogger.warn(logger, "001 Customer Number UNGLEICH!!!: split[17] == " + split[17] + ", existingCard.Customer.Customernumber == " + existingCard.getCustomer().getCustomernumber());
-								List<DaoObject> cusList = this.searchCustomer(split[17], null);
+								MdaLogger.warn(logger, "001 Customer Number UNGLEICH!!!: split[16] == " + split[16] + ", existingCard.Customer.Customernumber == " + existingCard.getCustomer().getCustomernumber());
+								List<DaoObject> cusList = this.searchCustomer(split[16], null);
 								if (cusList.size() > 0) {
 									Customer c = (Customer) cusList.get(0);
 									existingCard.setCustomer(c);
-									MdaLogger.info(logger, "Kunde mit Kundennummer " + split[17] + " auf Karte " + existingCard.getCardNumberFirst() + ", " + existingCard.getCardNumberSecond() + " gesetzt.");
+									MdaLogger.info(logger, "Kunde mit Kundennummer " + split[16] + " auf Karte " + existingCard.getCardNumberFirst() + ", " + existingCard.getCardNumberSecond() + " gesetzt.");
 								} else {
 									// Dieser Fall kann eigentlich nicht eintreten
 									Customer c = new Customer();
-									c.setCustomernumber(split[17]);
+									c.setCustomernumber(split[16]);
 									existingCard.setCustomer(c);
-									MdaLogger.info(logger, "Es existiert kein Kunde mit Kundennummer " + split[15] + " in der DB. Der Kunde wird angelegt und auf der Karte " + existingCard.getCardNumberFirst() + ", " + existingCard.getCardNumberSecond() + " gesetzt.");
+									MdaLogger.info(logger, "Es existiert kein Kunde mit Kundennummer " + split[16] + " in der DB. Der Kunde wird angelegt und auf der Karte " + existingCard.getCardNumberFirst() + ", " + existingCard.getCardNumberSecond() + " gesetzt.");
 								}
 							}
 						} else {
-							List<DaoObject> cusList = this.searchCustomer(split[17], null);
+							List<DaoObject> cusList = this.searchCustomer(split[16], null);
 							if (cusList.size() > 0) {
 								Customer c = (Customer) cusList.get(0);
 								existingCard.setCustomer(c);
 								MdaLogger.info(logger, "002 Für die existierende Karte war noch kein Kunde vergeben! Kunde existiert in DB und wird vergeben!");
 							} else {
 								Customer c = new Customer();
-								c.setCustomernumber(split[17]);
+								c.setCustomernumber(split[16]);
 								existingCard.setCustomer(c);
 								MdaLogger.warn(logger, "001 Für die existierende Karte war noch kein Kunde vergeben! Kunde existiert nicht in DB! Neuer Kunde wird angelegt.");
 							}
 						}
 					} else {
-						List<DaoObject> cusList = this.searchCustomer(split[17], null);
+						List<DaoObject> cusList = this.searchCustomer(split[16], null);
 						if (cusList.size() > 0) {
 							Customer c = (Customer) cusList.get(0);
 							card.setCustomer(c);
 							MdaLogger.info(logger, "003 Karte ist neu in DB. Kunde existiert in DB und wird vergeben!");
 						} else {
 							Customer c = new Customer();
-							c.setId(new Integer(split[17]));
+							c.setId(new Integer(split[16]));
 							card.setCustomer(c);
 							MdaLogger.warn(logger, "003 Es handelt sich um eine neue Karte und einen neuen Kunde. Kunde wird vergeben!");
 						}
