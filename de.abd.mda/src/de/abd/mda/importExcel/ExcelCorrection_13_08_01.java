@@ -85,7 +85,6 @@ public class ExcelCorrection_13_08_01 {
 				logger.debug("split[1] == " + split[1]);
 				card.setCardNumberSecond(split[1]);
 				
-				CardController controller = new CardController();
 				try {
 					String select = "select distinct card from CardBean card where card.cardNumberFirst = '" + card.getCardNumberFirst() + "'";
 					if (card.getCardNumberSecond() != null && card.getCardNumberSecond().length() > 0 && !card.getCardNumberSecond().equals(" ")) {
