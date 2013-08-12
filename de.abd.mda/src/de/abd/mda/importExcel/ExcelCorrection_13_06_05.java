@@ -83,15 +83,48 @@ public class ExcelCorrection_13_06_05 {
 				logger.debug("---------------------------------------------------------------");
 				logger.debug("split[1] == " + split[1]);
 				card.setCardNumberSecond(split[1]);
+
+				try {
+					String select = "select distinct card from CardBean card where card.cardNumberFirst = '" + card.getCardNumberFirst() + "'";
+					if (card.getCardNumberSecond() != null && card.getCardNumberSecond().length() > 0 && !card.getCardNumberSecond().equals(" ")) {
+						select = select + "	and card.cardNumberSecond = '" + card.getCardNumberSecond() +"'";
+					}
+					tx = session.beginTransaction();
+					List<CardBean> list = session.createQuery(select).list();
+					Iterator it = list.iterator();
+					
+					if (list.size() > 0) {
+						if (list.size() > 1) {
+							MdaLogger.warn(logger, "Mehr als eine Karte gefunden!");
+							continue;
+						} else {
+							MdaLogger.info(logger, "Nur eine Karte gefunden!");
+							existingCard = (CardBean) list.get(0);
+						}
+					} else {
+						MdaLogger.info(logger, "Keine Karte gefunden!");
+					}
+				} catch (Exception e) {
+					MdaLogger.error(logger, e);
+				}
+
+			
 			}
 
 			if (split.length > 2) {
 				logger.debug("---------------------------------------------------------------");
 				logger.debug("split[2] == " + split[2]);
 
-				Address instAdd = card.getInstallAddress();
+				Address instAdd = null;
+				if (existingCard != null)
+					instAdd = existingCard.getInstallAddress();
+				else
+					instAdd = card.getInstallAddress();
 				if (fall.equals("status")) {
-					card.setStatus(split[2]);
+					if (existingCard != null)
+						existingCard.setStatus(split[2]);
+					else
+						card.setStatus(split[2]);
 				} else if (fall.equals("delSlipDate")) {
 					String date = split[2];
 					if (date != null && date.length() > 0) {
@@ -99,9 +132,15 @@ public class ExcelCorrection_13_06_05 {
 						c.set(new Integer(date.substring(6, 10)), new Integer(
 								date.substring(3, 5)) - 1,
 								new Integer(date.substring(0, 2)));
-						card.setDeliverySlipDate(c.getTime());
+						if (existingCard != null)
+							existingCard.setDeliverySlipDate(c.getTime());
+						else
+							card.setDeliverySlipDate(c.getTime());
 					} else if (fall.equals("facNumber")) {
-						card.setFactoryNumber(split[2]);
+						if (existingCard != null)
+							existingCard.setFactoryNumber(split[2]);
+						else
+							card.setFactoryNumber(split[2]);
 					} else if (fall.equals("instAddCity")) {
 						instAdd.setCity(split[2]);
 					} else if (fall.equals("instAddHNumber")) {
@@ -113,9 +152,9 @@ public class ExcelCorrection_13_06_05 {
 					} else {
 						logger.error("Irgendwas ging schief! Fall = " + fall);
 					}
-
 				}
 			}
+			tx.commit();
 		}
 	}
 
