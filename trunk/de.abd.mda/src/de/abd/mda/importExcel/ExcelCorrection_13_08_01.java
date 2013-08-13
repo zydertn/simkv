@@ -132,10 +132,14 @@ public class ExcelCorrection_13_08_01 {
 						c.set(new Integer(date.substring(6, 10)), new Integer(
 								date.substring(3, 5)) - 1,
 								new Integer(date.substring(0, 2)));
-						if (existingCard != null)
-							existingCard.setDeliverySlipDate(c.getTime());
-						else
-							card.setDeliverySlipDate(c.getTime());
+						if (existingCard != null) {
+							existingCard.setActivationDate(c.getTime());
+							existingCard.setStatus(Model.STATUS_ACTIVE);
+						}
+						else {
+							card.setActivationDate(c.getTime());
+							card.setStatus(Model.STATUS_ACTIVE);
+						}
 					} else if (fall.equals("facNumber")) {
 						if (existingCard != null)
 							existingCard.setFactoryNumber(split[2]);
