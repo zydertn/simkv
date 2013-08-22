@@ -14,15 +14,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import de.abd.mda.model.Country;
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.CardBean;
-import de.abd.mda.persistence.dao.Customer;
-import de.abd.mda.persistence.dao.DaoObject;
-import de.abd.mda.persistence.dao.Person;
-import de.abd.mda.persistence.dao.SequenceNumber;
-import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.MdaLogger;
 
@@ -40,13 +34,26 @@ public class ExcelCorrection_13_08_01 {
 	public static void main(String[] args) {
 		ExcelCorrection_13_08_01 c = new ExcelCorrection_13_08_01();
 		try {
-//			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_STATUS.csv"), "Status");
-			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_DEL_SLIP_DATE.csv"), "delSlipDate");
-			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_FAC_NUMBER.csv"), "facNumber");
-			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_CITY.csv"), "instAddCity");
-			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_HNUMBER.csv"), "instAddHNumber");
-			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_POSTCODE.csv"), "instAddPostcode");
-			c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_STREET.csv"), "instAddStreet");
+			// c.updateColumn(c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_STATUS.csv"),
+			// "Status");
+			c.updateColumn(
+					c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_DEL_SLIP_DATE.csv"),
+					"delSlipDate");
+			c.updateColumn(
+					c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_FAC_NUMBER.csv"),
+					"facNumber");
+			c.updateColumn(
+					c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_CITY.csv"),
+					"instAddCity");
+			c.updateColumn(
+					c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_HNUMBER.csv"),
+					"instAddHNumber");
+			c.updateColumn(
+					c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_POSTCODE.csv"),
+					"instAddPostcode");
+			c.updateColumn(
+					c.readData("D:/Softwareentwicklung/Excel-Lieferung-Sina/Datenbank_Korrekturen_01_08_2013_INST_ADD_STREET.csv"),
+					"instAddStreet");
 
 		} catch (IOException e) {
 			logger.error("E/A-Fehler");
@@ -60,7 +67,7 @@ public class ExcelCorrection_13_08_01 {
 		} catch (FileNotFoundException e) {
 			logger.error("Datei nicht gefunden");
 		}
-				
+
 		return file;
 	}
 
@@ -79,24 +86,32 @@ public class ExcelCorrection_13_08_01 {
 				logger.debug("---------------------------------------------------------------");
 				logger.debug("split[0] == " + split[0]);
 				card.setCardNumberFirst(split[0]);
+				if (card.getCardNumberFirst().equals("79420431")) {
+					System.out.println("Jetzt");
+				}
 			}
 			if (split.length > 1) {
 				logger.debug("---------------------------------------------------------------");
 				logger.debug("split[1] == " + split[1]);
 				card.setCardNumberSecond(split[1]);
-				
+
 				try {
-					String select = "select distinct card from CardBean card where card.cardNumberFirst = '" + card.getCardNumberFirst() + "'";
-					if (card.getCardNumberSecond() != null && card.getCardNumberSecond().length() > 0 && !card.getCardNumberSecond().equals(" ")) {
-						select = select + "	and card.cardNumberSecond = '" + card.getCardNumberSecond() +"'";
+					String select = "select distinct card from CardBean card where card.cardNumberFirst = '"
+							+ card.getCardNumberFirst() + "'";
+					if (card.getCardNumberSecond() != null
+							&& card.getCardNumberSecond().length() > 0
+							&& !card.getCardNumberSecond().equals(" ")) {
+						select = select + "	and card.cardNumberSecond = '"
+								+ card.getCardNumberSecond() + "'";
 					}
 					tx = session.beginTransaction();
 					List<CardBean> list = session.createQuery(select).list();
 					Iterator it = list.iterator();
-					
+
 					if (list.size() > 0) {
 						if (list.size() > 1) {
-							MdaLogger.warn(logger, "Mehr als eine Karte gefunden!");
+							MdaLogger.warn(logger,
+									"Mehr als eine Karte gefunden!");
 							continue;
 						} else {
 							MdaLogger.info(logger, "Nur eine Karte gefunden!");
@@ -135,33 +150,30 @@ public class ExcelCorrection_13_08_01 {
 						if (existingCard != null) {
 							existingCard.setActivationDate(c.getTime());
 							existingCard.setStatus(Model.STATUS_ACTIVE);
-						}
-						else {
+						} else {
 							card.setActivationDate(c.getTime());
 							card.setStatus(Model.STATUS_ACTIVE);
 						}
-					} else if (fall.equals("facNumber")) {
-						if (existingCard != null)
-							existingCard.setFactoryNumber(split[2]);
-						else
-							card.setFactoryNumber(split[2]);
-					} else if (fall.equals("instAddCity")) {
-						instAdd.setCity(split[2]);
-					} else if (fall.equals("instAddHNumber")) {
-						instAdd.setHousenumber(split[2]);
-					} else if (fall.equals("instAddPostcode")) {
-						instAdd.setPostcode(split[2]);
-					} else if (fall.equals("instAddStreet")) {
-						instAdd.setStreet(split[2]);
-					} else {
-						logger.error("Irgendwas ging schief! Fall = " + fall);
 					}
-
+				} else if (fall.equals("facNumber")) {
+					if (existingCard != null)
+						existingCard.setFactoryNumber(split[2]);
+					else
+						card.setFactoryNumber(split[2]);
+				} else if (fall.equals("instAddCity")) {
+					instAdd.setCity(split[2]);
+				} else if (fall.equals("instAddHNumber")) {
+					instAdd.setHousenumber(split[2]);
+				} else if (fall.equals("instAddPostcode")) {
+					instAdd.setPostcode(split[2]);
+				} else if (fall.equals("instAddStreet")) {
+					instAdd.setStreet(split[2]);
+				} else {
+					logger.error("Irgendwas ging schief! Fall = " + fall);
 				}
+
 			}
 			tx.commit();
 		}
 	}
-
-
 }
