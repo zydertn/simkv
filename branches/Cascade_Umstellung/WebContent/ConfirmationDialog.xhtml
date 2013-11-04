@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ace="http://www.icefaces.org/icefaces/components"
+    xmlns:ice="http://www.icesoft.com/icefaces/component"
+    xmlns:icecore="http://www.icefaces.org/icefaces/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<h:head>
+		<title>ICEfaces 2</title>
+		<link rel="stylesheet" type="text/css"
+			href="./xmlhttp/css/rime/rime.css" />
+	</h:head>
+	<h:body styleClass="ice-skin-rime">
+
+        <h:form id="form">
+            <h:panelGrid styleClass="centeredPanelGrid">
+                <h:commandButton id="save" value="Save" onclick="confirmation.show()" type="button"/>
+                <h:outputText id="outcome" value="#{confirmationDialogBean.outcome}" rendered="#{confirmationDialogBean.outcome != null}"/>
+            </h:panelGrid>
+
+            <ace:confirmationDialog id="confirmDialog"
+                                    widgetVar="confirmation"
+                                    message="Are you sure about this?"
+                                    header="Confirmation"
+                                    width="250"
+                                    height="100"
+                                    closable="true"
+                                    position="center">
+                <h:panelGrid columns="2" styleClass="centeredPanelGrid">
+                    <h:commandButton id="yes" value="Yes" onclick="confirmation.hide()" actionListener="#{confirmationDialogBean.yes}"/>
+                    <h:commandButton id="no" value="No" onclick="confirmation.hide()" actionListener="#{confirmationDialogBean.no}" />
+                </h:panelGrid>
+            </ace:confirmationDialog>
+        </h:form>
+</h:body>
+</html>

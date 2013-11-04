@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder; margin-right:15px" value="Report-Erstellung" />
+				<h:outputText escape="false" style="color: red" value="#{actionController.requestMessage}" />		
+			</h:panelGrid>
+		</p>
+
+        <h:panelGrid width="100%" style="text-align: center;" columns="1">
+            <h:panelGrid columns="2" styleClass="centeredPanelGrid">
+                <h:outputText value="Fertigstellung "/>
+                <h:outputText id="progress" value="@ #{longtask.progress} %; Kunde: #{longtask.customer}" rendered="#{longtask.progress ne 100 and longtask.taskRunning}" style="font-weight: bold;"/>    
+                <h:outputText id="completed" value="completed" rendered="#{longtask.progress eq 100}" style="font-weight: bold;"/>
+            </h:panelGrid>
+            
+            <!-- ace:progressBar id="myProgressBar" value="#{longtask.progress}"/-->
+                               
+            <h:commandLink id="start" actionListener="#{reportCalculator.startTask}" rendered="#{!longtask.taskRunning}" value="start"></h:commandLink>
+
+            <h:commandLink id="zurücksetzen" rendered="#{!longtask.taskRunning}" value="Zurücksetzen"></h:commandLink>
+		</h:panelGrid>
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>

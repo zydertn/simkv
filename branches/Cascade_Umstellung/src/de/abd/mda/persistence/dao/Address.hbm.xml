@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.Address" table="ADDRESS">
+		<id name="addressId" type="int" column="ADDRESS_ID" >
+			<generator class="native"/>
+		</id>
+	 	<property name="street" column="ADDRESS_STREET" type="string" length="100" />
+	 	<property name="housenumber" column="ADDRESS_HOUSENUMBER" type="string" length="30" />
+	 	<property name="postbox" column="ADDRESS_POSTBOX" type="string" length="15" />
+	 	<property name="postcode" column="ADDRESS_POSTCODE" type="string" length="5" />
+	 	<property name="city" column="ADDRESS_CITY" type="string" length="70" />
+	 </class>
+ </hibernate-mapping>

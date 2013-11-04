@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<h:form>
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+
+		<p>
+			<h:outputText style="font-weight:bolder" value="Lieferscheindaten eingeben" />
+			<h:outputText escape="false" style="color: red" value="#{actionController.requestMessage}" />		
+		</p>
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+				<h:outputText style="font-weight:bold" value="Kartensuche:" />
+				<h:panelGrid columns="4">
+					<h:outputText value="KartenNr.: " />
+					<h:panelGrid columns="3">
+						<h:inputText
+							value="#{searchCardController.cardNumberFirst}" size="10"
+							maxlength="12">
+						</h:inputText>
+
+						<h:outputText value="-" />
+						<h:inputText
+							value="#{searchCardController.cardNumberSecond}" size="1"
+							maxlength="4" />
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText value="Rufnummer:" />
+					<h:panelGrid columns="5">
+						<h:inputText size="1" maxlength="5"
+							value="#{searchCardController.phoneNrFirst}" />
+						<h:outputText value="/" />
+						<h:inputText size="8" maxlength="9"
+							value="#{searchCardController.phoneNrSecond}" />
+					</h:panelGrid>
+					<h:outputText/>
+
+					<h:commandButton value="Suchen"
+						action="#{searchCardController.searchCard}" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="830">
+				<h:outputText style="font-weight:bold" value="Auftragsdaten:" />
+
+				<h:panelGrid columns="2">
+					<h:outputText value="Kundenbestellnummer:" />
+					<h:inputText size="9"
+						disabled="true"
+						value="#{deliveryBillController.cardBean.customerOrderNumber}" />
+
+					<!-- h:outputText value="Auftragsnummer:" />
+					<h:inputText size="9"
+						disabled="true"
+						value="#{deliveryBillController.cardBean.orderNumber}" /-->
+
+					<h:outputText value="Lieferscheindatum:" />
+					<ice:selectInputDate
+						value="#{deliveryBillController.cardBean.deliverySlipDate}"
+						disabled="true"
+						renderAsPopup="true" highlighClass="newyear"
+						highlightUnit="DAY_OF_YEAR" highlightValue="1">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</ice:selectInputDate>
+
+					<h:outputText value="Lieferscheinnummer:" />
+					<h:inputText size="9"
+						disabled="true"
+						value="#{deliveryBillController.cardBean.deliverySlipNumber}" />
+
+					<h:outputText value="Kunde: " />
+					<h:selectOneMenu disabled="true">
+						<f:selectItems itemLabel="#{customer.listString}" var="customer" value="#{deliveryBillController.customerList}" />
+					</h:selectOneMenu>
+
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="3">
+				<h:commandButton value="Abbrechen"
+					action="#{actionController.cancel}"></h:commandButton>
+				<h:commandButton value="Speichern und nächste Karte"
+					action="#{deliveryBillController.addDeliveryDataNext}"></h:commandButton>
+				<h:commandButton value="Speichern und Ende"
+					action="#{deliveryBillController.addDeliveryDataFinish}"></h:commandButton>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>

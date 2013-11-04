@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.CardBean" table="CARD">
+		<!-- id name="sequenceNumber" type="int" column="CARD_SEQUENCE_NUMBER" >
+			<generator class="native"/>
+		</id-->
+		<composite-id>
+			<key-property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12"></key-property>
+			<key-property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4"></key-property>
+		</composite-id>
+	 	<property name="sequenceNumber" type="int" column="CARD_SEQUENCE_NUMBER" />
+	 	<!-- property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12" not-null="true" />
+	 	<property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4" not-null="true" /-->
+	 	<property name="phoneNrFirst" type="string" column="CARD_PHONE_NR_FIRST" length="5" not-null="true" />
+	 	<property name="phoneNrSecond" type="string" column="CARD_PHONE_NR_SECOND" length="11" not-null="true" />
+	 	<property name="customerOrderNumber" type="string" column="CARD_CUSTOMER_ORDER_NUMBER" length="50" />
+	 	<property name="supplier" type="string" column="CARD_SUPPLIER" length="15" />
+	 	<property name="status" type="string" column="CARD_STATUS" length="15" />
+	 	<property name="activationDate" type="timestamp" column="CARD_ACTIVATION_DATE" />
+	 	<property name="deactivationDate" type="timestamp" column="CARD_DEACTIVATION_DATE" />
+	 	<property name="orderNumber" type="string" column="CARD_ORDER_NUMBER" length="200" />
+	 	<property name="deliverySlipDate" type="timestamp" column="CARD_DELIVERY_SLIP_DATE" />
+	 	<property name="deliverySlipNumber" type="string" column="CARD_DELIVERY_SLIP_NUMBER" length="12" />
+	 	<many-to-one name="contactPerson" class="de.abd.mda.persistence.dao.Person" column="CARD_PERSON" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="PERSON_ID"></many-to-one>
+	 	<many-to-one name="customer" class="de.abd.mda.persistence.dao.Customer" column="CARD_CUSTOMER" lazy="false" not-null="false" cascade="save-update" foreign-key="CUSTOMER_ID"></many-to-one>
+	 	<many-to-one name="installAddress" class="de.abd.mda.persistence.dao.Address" column="CARD_INSTALL_ADDRESS" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="ADDRESS_ID"></many-to-one>
+	 	<property name="factoryNumber" type="string" column="CARD_INSTALL_FACTORY_NUMBER" length="200" />
+	 	<property name="vpnProfile" type="string" column="CARD_INSTALL_VPN_PROFILE" length="15" />
+	 	<property name="comment" type="string" column="CARD_COMMENT" />
+	 	<property name="lastCalculationDate" type="timestamp" column="CARD_CALCULATION_DATE" />
+	 	<property name="project" type="string" column="CARD_PROJECT" length="50" />
+	 	<property name="countryCode" type="string" column="CARD_COUNTRY_CODE" length="3" />
+		<property name="country" type="string" column="CARD_COUNTRY" length="2" />
+		<property name="simPrice" type="int" column="CARD_ALT_SIM_PRICE" />
+		<property name="standardPrice" type="boolean" column="CARD_STANDARD_PRICE" />
+	 	<property name="anlagenNr" type="string" column="CARD_ANLAGEN_NR" length="50" />
+	 	<property name="equipmentNr" type="string" column="CARD_EQUIPMENT_NR" length="50" />
+	 	<property name="vertrag" type="string" column="CARD_VERTRAG" length="50" />
+	 	<property name="soNr" type="string" column="CARD_SO_NR" length="50" />
+	 	<property name="leitstand" type="string" column="CARD_LEINSTAND" length="50" />
+	 	<property name="lokation" type="string" column="CARD_LOKATION" length="50" />
+	 	<property name="we" type="string" column="CARD_WE" length="50" />
+	 	<property name="sachkonto" type="string" column="CARD_SACHKONTO" length="50" />
+	 	<property name="auftragsNr" type="string" column="CARD_AUFTRAGS_NR" length="50" />
+	 	<property name="notrufNr" type="string" column="CARD_NOTRUF_NR" length="50" />
+	 	<property name="kostenstelle" type="string" column="CARD_KOSTENSTELLE" length="50" />
+	 	<property name="einsatzort" type="string" column="CARD_EINSATZORT" length="50" />
+	 	<property name="bestellNummer" type="string" column="CARD_BESTELL_NR" length="50" />
+	 </class>
+ </hibernate-mapping>

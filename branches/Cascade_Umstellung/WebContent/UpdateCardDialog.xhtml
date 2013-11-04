@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+	<title>MDA</title>
+	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
+</h:head>
+<h:body styleClass="ice-skin-rime">
+	<script type="text/javascript">
+		function hideOrShow(show) {
+			document.getElementById("createCardForm:simPriceSelector").disabled = show;
+			document.getElementById("createCardForm:myCheckHidden").value = document.getElementById("createCardForm:simPriceSelector").value;
+		}
+
+		function updateValue(val) {
+			document.getElementById("createCardForm:myCheckHidden").value = val;
+		}
+	</script>
+	<h:form id="createCardForm">
+		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
+		<ui:include src="UpperMenu.xhtml"></ui:include>
+		<p>
+			<h:panelGrid columns="2">
+				<h:outputText style="font-weight:bolder; margin-right:15px" value="Karte ändern" />
+				<h:outputText escape="false" style="color: red" value="#{actionController.requestMessage}" />		
+			</h:panelGrid>
+		</p>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+				<h:outputText style="font-weight:bold" value="Kartendaten:" />
+				<h:panelGrid columns="4">
+					<h:outputText value="KartenNr.: " />
+					<h:panelGrid columns="3">
+						<h:inputText
+							value="#{cardController.cardBean.cardNumberFirst}"
+							size="8" maxlength="12" disabled="true">
+						</h:inputText>
+
+						<h:outputText value="-" />
+						<h:inputText
+							value="#{cardController.cardBean.cardNumberSecond}"
+							size="1" maxlength="4" disabled="true"/>
+					</h:panelGrid>
+					<h:outputText/>
+					<h:commandButton value="Suchen" disabled="true"
+ 						action="#{cardController.createCardSearch}" />
+
+					<h:outputText value="Rufnummer:" />
+					<h:panelGrid columns="5">
+						<h:inputText size="1" maxlength="5"
+							value="#{cardController.cardBean.phoneNrFirst}" />
+						<h:outputText value="/" />
+						<h:inputText size="8" maxlength="9"
+							value="#{cardController.cardBean.phoneNrSecond}" />
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
+					<h:outputText value="Standard-Preis: " />
+					<h:panelGrid id="checkPanel" columns="3">
+						<h:selectBooleanCheckbox id="myCheckbox" onclick="hideOrShow(this.checked);" value="#{cardController.cardBean.standardPrice}" />
+						<h:selectOneMenu id="simPriceSelector" onchange="updateValue(this.value)" disabled="#{cardController.cardBean.standardPrice}" value="#{cardController.cardBean.simPrice}">
+							<f:selectItems value="#{actionController.model.simPrices.entrySet()}" var="simPriceVar" itemLabel="#{simPriceVar.key} - #{simPriceVar.value} €" itemValue="#{simPriceVar.key}" />
+						</h:selectOneMenu>
+						<h:inputHidden id="myCheckHidden" binding="#{cardController.cardPriceHidden}" value="#{cardController.cardBean.simPrice}"></h:inputHidden>
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
+				</h:panelGrid>
+					
+				<h:panelGrid columns="5">				
+					<h:outputText value="Lieferant: " />
+					<h:panelGrid>
+						<h:selectOneMenu value="#{cardController.cardBean.supplier}">
+							<f:selectItems value="#{actionController.model.supplierList}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Status: " />
+					<h:panelGrid>
+						<h:selectOneMenu value="#{cardController.cardBean.status}">
+							<f:selectItems value="#{actionController.model.statusList}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+
+					<h:outputText value="Anlagen-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.anlagenNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>		
+					
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Fabrik-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.factoryNumber}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Equipment-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.equipmentNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+					
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Vertrag: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.vertrag}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="So-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.soNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+					
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Leitstand: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.leitstand}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Bestell-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.bestellNummer}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Lokation: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.lokation}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="WE: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.we}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Sachkonto: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.sachkonto}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Auftrags-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.auftragsNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="zugel. Notruf-Nr.: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.notrufNr}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText value="Kostenstelle: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.kostenstelle}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Einsatzort: " />
+					<h:panelGrid>
+						<h:inputText
+							value="#{cardController.cardBean.einsatzort}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>					
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid>
+			<h:panelGrid columns="3">
+				<h:commandButton value="Abbrechen"
+					action="#{actionController.cancel}"></h:commandButton>
+				<h:commandButton value="Speichern"
+					action="#{cardController.updateCard}"></h:commandButton>
+				<h:commandButton value="Löschen"
+					action="#{cardController.deleteCard}"></h:commandButton>
+			</h:panelGrid>
+		</h:panelGrid>
+
+	</h:form>
+</h:body>
+<!-- h:outputStylesheet library="org.icefaces.component.skins"
+	name="rime.css" /-->
+</html>
