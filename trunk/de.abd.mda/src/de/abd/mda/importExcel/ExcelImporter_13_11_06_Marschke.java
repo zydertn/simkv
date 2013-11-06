@@ -120,8 +120,12 @@ public class ExcelImporter_13_11_06_Marschke {
 			
 			if (existingCard != null) {
 				setCardValues(existingCard, split, spalten, customer);
+				// Deutsche Karten
+				existingCard.setSupplier(Model.SUPPLIER_TELEKOM);
 			} else {
 				setCardValues(card, split, spalten, customer);
+				// Deutsche Karten
+				card.setSupplier(Model.SUPPLIER_TELEKOM);
 				CardController cardController = new CardController();
 				String retMessage = cardController.createObject(card);
 				if (retMessage != null && retMessage.length() == 0) {
