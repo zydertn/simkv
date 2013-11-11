@@ -50,39 +50,41 @@ public class ExcelImporter_13_11_08 {
 		
 		public void readData() {
 			try {
-					String path = "D:/Softwareentwicklung/Excel-Lieferung-Sina/Rollout/2013_11_08/";
-//					String path = "E:/ExcelImport/Rollout/";
+//					String path = "D:/Softwareentwicklung/Excel-Lieferung-Sina/Rollout/2013_11_08/";
+					String path = "E:/ExcelImport/Rollout/";
+
+					FileReader file = null;
 					
-					logger.info("************ GSM-Tel._Baugemeinschaft_Zwillinghaus_GbR.csv **************");
-					FileReader file = new FileReader(path + "GSM-Tel._Baugemeinschaft_Zwillinghaus_GbR.csv");
-					readDataFromFile(file, "20039");
+//					logger.info("************ GSM-Tel._Baugemeinschaft_Zwillinghaus_GbR.csv **************");
+//					file = new FileReader(path + "GSM-Tel._Baugemeinschaft_Zwillinghaus_GbR.csv");
+//					readDataFromFile(file, "20039");
+//					writeOutList(list);
+//					
+//					logger.info("************ GSM-Tel._Fa._Aufzugdienst_Vogel.csv **************");
+//					file = new FileReader(path + "GSM-Tel._Fa._Aufzugdienst_Vogel.csv");
+//					readDataFromFile(file, "20076");
+//					writeOutList(list);
+					
+					logger.info("************ GSM-Tel._Fa._BLSA.csv **************");
+					file = new FileReader(path + "GSM-Tel._Fa._BLSA.csv");
+					readDataFromFile(file, "20128");
 					writeOutList(list);
-					
-/*					logger.info("************ GSM-Tel._Fa._Aufzugdienst_Vogel.csv **************");
-					file = new FileReader(path + "GSM-Tel._Fa._Aufzugdienst_Vogel.csv");
-					readDataFromFile(file, "20076");
-					writeOutList(list);
-					
-//					logger.info("************ GSM-Tel._Fa._BLSA.csv **************");
-//					file = new FileReader(path + "GSM-Tel._Fa._BLSA.csv");
-//					readDataFromFile(file, "");
+
+//					logger.info("************ GSM-Tel_Fa_Aufzugservice_Koder.csv **************");
+//					file = new FileReader(path + "GSM-Tel_Fa_Aufzugservice_Koder.csv");
+//					readDataFromFile(file, "20198");
+//					writeOutList(list);
+//
+//					logger.info("************ GSM-Tel_Fa_Aufzugservice_Tominski.csv **************");
+//					file = new FileReader(path + "GSM-Tel_Fa_Aufzugservice_Tominski.csv");
+//					readDataFromFile(file, "20200");
 //					writeOutList(list);
 
-					logger.info("************ GSM-Tel_Fa_Aufzugservice_Koder.csv **************");
-					file = new FileReader(path + "GSM-Tel_Fa_Aufzugservice_Koder.csv");
-					readDataFromFile(file, "20198");
+					logger.info("************ GSM-Tel_Fa_Brobeil_Aufzüge_GmbH_Co_KG_16.02.20012.csv **************");
+					file = new FileReader(path + "GSM-Tel_Fa_Brobeil_Aufzüge_GmbH_Co_KG_16.02.20012.csv");
+					readDataFromFile(file, "20157");
 					writeOutList(list);
 
-					logger.info("************ GSM-Tel_Fa_Aufzugservice_Tominski.csv **************");
-					file = new FileReader(path + "GSM-Tel_Fa_Aufzugservice_Tominski.csv");
-					readDataFromFile(file, "20200");
-					writeOutList(list);
-
-//					logger.info("************ GSM-Tel_Fa_Brobeil_Aufzüge_GmbH_Co_KG_16.02.20012.csv **************");
-//					file = new FileReader(path + "GSM-Tel_Fa_Brobeil_Aufzüge_GmbH_Co_KG_16.02.20012.csv");
-//					readDataFromFile(file, "");
-//					writeOutList(list);
-*/
 			} catch (FileNotFoundException e) {
 				logger.error("Datei nicht gefunden");
 			} catch (IOException e) {
@@ -272,8 +274,9 @@ public class ExcelImporter_13_11_08 {
 			}
 		}
 		if (spalten.containsKey("Kartenpreis")) {
-			if (split[spalten.get("Kartenpreis")] != null) {
-				int simPrice = Integer.getInteger(split[spalten.get("Kartenpreis")]);
+			if (split.length > spalten.get("Kartenpreis") && split[spalten.get("Kartenpreis")] != null) {
+				String preis = split[spalten.get("Kartenpreis")];
+				int simPrice = Integer.parseInt(preis);
 				card.setStandardPrice(false);
 				card.setSimPrice(simPrice);
 			}
