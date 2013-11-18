@@ -361,7 +361,7 @@
 		</navigation-case>
 		<navigation-case>
 			<from-outcome>searchCard</from-outcome>
-			<to-view-id>/AddCustomerDialog.xhtml</to-view-id>
+			<to-view-id>/ViewCardDetailsSearch.xhtml</to-view-id>
 		</navigation-case>
 		<navigation-case>
 			<from-outcome>updateCard</from-outcome>
