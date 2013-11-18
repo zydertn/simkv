@@ -14,7 +14,7 @@
 	<link rel="stylesheet" type="text/css"
 		href="./xmlhttp/css/rime/rime.css" />
 </h:head>
-<h:body styleClass="ice-skin-rime">
+<h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
 	<h:form>
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
@@ -29,7 +29,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Kundendaten:" />
 
 				<h:panelGrid columns="6">
@@ -46,9 +46,13 @@
 					<h:inputText size="15"
 						binding="#{customerController.branchBinding}"
 						value="#{customerController.customer.branch}"
+						disabled="#{customerController.componentDisabled}"
+						style="margin-left: 36px;" />
+					<h:outputText value="z.Hd.:" />
+					<h:inputText size="20"
+						binding="#{customerController.faoBinding}"
+						value="#{customerController.customer.fao}" 
 						disabled="#{customerController.componentDisabled}" />
-					<h:outputText />
-					<h:outputText />
 					<h:outputText />
 					<h:outputText />
 
@@ -109,7 +113,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Rechnungsadresse:"
 					disabled="#{customerController.componentDisabled}" />
 				<h:panelGrid columns="6">
@@ -163,15 +167,26 @@
 						binding="#{customerController.invoiceCityBinding}"
 						value="#{customerController.customer.invoiceAddress.city}"
 						disabled="#{customerController.componentDisabled}" />
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText value="E-Mail:" />
+					<h:inputText size="15" disabled="#{customerController.componentDisabled}"
+						binding="#{customerController.emailBinding}"
+						value="#{customerController.customer.contactPerson.email}"  />
+					<h:outputText value="DE-Mail: " />
+					<h:inputText size="20" disabled="#{customerController.componentDisabled}"
+						binding="#{customerController.de_mailBinding}"
+						value="#{customerController.customer.contactPerson.de_mail}" />
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Rechnung:" />
 				<h:panelGrid columns="2">
-					<h:outputText value="SIM Profil (Standard): " />
+					<h:outputText value="Preiskategorie (Standard): " />
 					<h:selectOneMenu
 						binding="#{customerController.invoiceconfigSimpriceBinding}"
 						value="#{customerController.customer.invoiceConfiguration.simPrice}">
@@ -182,7 +197,7 @@
 							itemValue="#{simPriceVar.key}" />
 					</h:selectOneMenu>
 
-					<h:outputText value="Datenoption Profil: " />
+					<h:outputText value="Datenoption Kategorie: " />
 					<h:selectOneMenu
 						binding="#{customerController.invoiceconfigDataoptionBinding}"
 						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">

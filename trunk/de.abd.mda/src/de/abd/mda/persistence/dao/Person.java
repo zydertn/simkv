@@ -14,15 +14,18 @@ public class Person extends DaoObject {
 	private String phoneNrFirst;
 	private String phoneNrSecond;
 	private String email;
+	private String de_mail;
 
 	public Person() {
 		this.name = "";
 		this.firstname = "";
 		this.gender = "Herr";
+		// CASCADE: Evtl. hier eine Zeile auskommentieren
 		this.address = new Address();
 		this.phoneNrFirst = "";
 		this.phoneNrSecond = "";
 		this.email = "";
+		this.de_mail = "";
 	}
 
 	public String getNameString() {
@@ -107,6 +110,14 @@ public class Person extends DaoObject {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getDe_mail() {
+		return de_mail;
+	}
+
+	public void setDe_mail(String de_mail) {
+		this.de_mail = de_mail;
 	}
 
 }

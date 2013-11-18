@@ -30,8 +30,8 @@ public class Model {
 	public static String STATUS_INACTIVE = "Inaktiv";
 	public static String STATUS_DUMMY = "Dummy";
 	
-	public static String SUPPLIER_TELEKOM = "Telekom";
-	public static String SUPPLIER_TELEKOM_AUSTRIA = "Telekom Austria";
+	public static String SUPPLIER_TELEKOM = "Deutschland";
+	public static String SUPPLIER_TELEKOM_AUSTRIA = "Austria";
 	
 	public static String FORMAT_HOCHFORMAT = "Hochformat";
 	public static String FORMAT_QUERFORMAT = "Querformat";
@@ -45,6 +45,12 @@ public class Model {
 	public static String COLUMN_AMOUNT = "Menge";
 	public static String COLUMN_DESCRIPTION = "Bezeichnung";
 	public static String COLUMN_PLANT_NUMBER = "Anlagen Nr.";
+	public static String COLUMN_INST_PLZ = "PLZ";
+	public static String COLUMN_INST_CITY = "Einsatzort";
+	public static String COLUMN_INST_STREET = "Straße";
+	public static String COLUMN_EQUIP_NR = "Equipment Nr.";
+	public static String COLUMN_ORDER_NR = "Order Nr.";
+	public static String COLUMN_TEL_NR = "Rufnummer";
 	public static String COLUMN_SINGLE_PRICE = "Einzelpreis";
 	public static String COLUMN_TOTAL_PRICE = "Gesamtpreis";
 	
@@ -53,22 +59,53 @@ public class Model {
 	public static String GENDER_WOMAN = "Frau";
 	public static String GENDER_COMPANY = "Firma";
 
+	public List<String> relationList;
+	public static String RELATION_0 = "";
+	public static String RELATION_1 = "Relation1";
+	public static String RELATION_2 = "Relation2";
+	
+	public String cardDeAv = "Alt-Voice";
+	public String cardDeAvIp = "Alt-Voice-IP";
+	public String cardDeM2m = "M2M-Voice";
+	public String cardDeHbn = "HBN-Data";
+	public String cardDeTc = "Testkarte";
+	public String cardDeSc = "Sonderkarte";
+	public String cardDeRc = "Roamingkarte";
+	
+	public String cardDeEmptyCmt = "";
+	public String cardDeAvCmt = "Unsere Karten für normalen Einsatz in D, ohne fixe IP";
+	public String cardDeAvIpCmt = "Unsere Karten für normalen Einsatz in D, mit fixer IP für Monitoring";
+	public String cardDeM2mCmt = "??? Frau Kiesenbauer, hier schauen wir noch ein mal";
+	public String cardDeHbnCmt = "Unsere neue deutsche Karte für das HBN Modul mit fixer IP und ohne Sprachanteil";
+	public String cardDeTcCmt = "Bei Einsatz als Testkarte, zB wird nicht abgerechnet";
+	public String cardDeScCmt = "für speziellen Einsatz, z.B. als Flatratekarte";
+	public String cardDeRcCmt = "deutsche Karte im Ausland im Einsatz , z.B. Hollaus Karte";
+
+	public String cardAut1 = "Ö1";
+	public String cardAut2 = "Ö3";
+	public String cardAut3 = "Ö5";
+	public String cardAut4 = "EU";
+	public String cardAut5 = "NTS";
+	public String cardAut6 = "HBN-EU";
+	public String cardAut7 = "HBN-NTS";
+	public String cardAut8 = "Testkarte";
+	public String cardAut9 = "Sonderkarte";
+
+	public String cardAutAA1 = "Austria Intern";
+	public String cardAutAA2 = "Europa";
+
+	public String paymentInvoice = "Rechnung";
+	public String paymentDebit = "Lastschrift";
+	
 	public Map<Integer, Double> simPrices;
 	public Map<Integer, Double> dataOptionSurcharges;
 	
-	public List<String> getSupplierList() {
-		return supplierList;
-	}
-
-	public void setSupplierList(List<String> supplierList) {
-		this.supplierList = supplierList;
-	}
-
 	private HashMap<String, Float> columnSize;
 	private List<String> invoiceFormats;
 	private List<String> invoiceCreationFrequencies;
 	private List<String> invoiceColumns;
-
+	private List<String> paymentMethods;
+	
 	public Model() {
 	}
 
@@ -101,16 +138,37 @@ public class Model {
 		invoiceColumns.add(COLUMN_AMOUNT);
 		invoiceColumns.add(COLUMN_DESCRIPTION);
 		invoiceColumns.add(COLUMN_PLANT_NUMBER);
+		invoiceColumns.add(COLUMN_INST_PLZ);
+		invoiceColumns.add(COLUMN_INST_CITY);
+		invoiceColumns.add(COLUMN_INST_STREET);
+		invoiceColumns.add(COLUMN_EQUIP_NR);
+		invoiceColumns.add(COLUMN_ORDER_NR);
+		invoiceColumns.add(COLUMN_TEL_NR);
 		invoiceColumns.add(COLUMN_SINGLE_PRICE);
 		invoiceColumns.add(COLUMN_TOTAL_PRICE);
 		
 		columnSize = new HashMap<String, Float>();
 		columnSize.put(COLUMN_POS, 1.5f);
-		columnSize.put(COLUMN_AMOUNT, 2f);
+		columnSize.put(COLUMN_AMOUNT, 2.2f);
 		columnSize.put(COLUMN_DESCRIPTION, 12.5f);
 		columnSize.put(COLUMN_PLANT_NUMBER, 9f);
+		columnSize.put(COLUMN_INST_PLZ, 2f);
+		columnSize.put(COLUMN_INST_CITY, 4f);
+		columnSize.put(COLUMN_INST_STREET, 8f);
+		columnSize.put(COLUMN_EQUIP_NR, 5f);
+		columnSize.put(COLUMN_ORDER_NR, 4f);
+		columnSize.put(COLUMN_TEL_NR, 6f);
 		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
 		columnSize.put(COLUMN_TOTAL_PRICE, 4f);
+		
+		relationList = new ArrayList<String>();
+		relationList.add(RELATION_0);
+		relationList.add(RELATION_1);
+		relationList.add(RELATION_2);
+		
+		paymentMethods = new ArrayList<String>();
+		paymentMethods.add(paymentInvoice);
+		paymentMethods.add(paymentDebit);
 	}
 
 	public List<SelectItem> getCountryCodes() {
@@ -213,6 +271,210 @@ public class Model {
 
 	public void setColumnSize(HashMap<String, Float> columnSize) {
 		this.columnSize = columnSize;
+	}
+
+	public List<String> getSupplierList() {
+		return supplierList;
+	}
+
+	public void setSupplierList(List<String> supplierList) {
+		this.supplierList = supplierList;
+	}
+
+	public String getCardDeAv() {
+		return cardDeAv;
+	}
+
+	public String getCardDeAvIp() {
+		return cardDeAvIp;
+	}
+
+	public String getCardDeM2m() {
+		return cardDeM2m;
+	}
+
+	public String getCardDeHbn() {
+		return cardDeHbn;
+	}
+
+	public String getCardDeTc() {
+		return cardDeTc;
+	}
+
+	public String getCardDeSc() {
+		return cardDeSc;
+	}
+
+	public String getCardDeRc() {
+		return cardDeRc;
+	}
+
+	public String getCardDeAvCmt() {
+		return cardDeAvCmt;
+	}
+
+	public String getCardDeAvIpCmt() {
+		return cardDeAvIpCmt;
+	}
+
+	public String getCardDeM2mCmt() {
+		return cardDeM2mCmt;
+	}
+
+	public String getCardDeHbnCmt() {
+		return cardDeHbnCmt;
+	}
+
+	public String getCardDeTcCmt() {
+		return cardDeTcCmt;
+	}
+
+	public String getCardDeScCmt() {
+		return cardDeScCmt;
+	}
+
+	public String getCardDeRcCmt() {
+		return cardDeRcCmt;
+	}
+
+	public void setCardDeAv(String cardDeAv) {
+		this.cardDeAv = cardDeAv;
+	}
+
+	public void setCardDeAvCmt(String cardDeAvCmt) {
+		this.cardDeAvCmt = cardDeAvCmt;
+	}
+
+	public void setCardDeAvIp(String cardDeAvIp) {
+		this.cardDeAvIp = cardDeAvIp;
+	}
+
+	public void setCardDeM2m(String cardDeM2m) {
+		this.cardDeM2m = cardDeM2m;
+	}
+
+	public void setCardDeHbn(String cardDeHbn) {
+		this.cardDeHbn = cardDeHbn;
+	}
+
+	public void setCardDeTc(String cardDeTc) {
+		this.cardDeTc = cardDeTc;
+	}
+
+	public void setCardDeSc(String cardDeSc) {
+		this.cardDeSc = cardDeSc;
+	}
+
+	public void setCardDeRc(String cardDeRc) {
+		this.cardDeRc = cardDeRc;
+	}
+
+	public void setCardDeAvIpCmt(String cardDeAvIpCmt) {
+		this.cardDeAvIpCmt = cardDeAvIpCmt;
+	}
+
+	public void setCardDeM2mCmt(String cardDeM2mCmt) {
+		this.cardDeM2mCmt = cardDeM2mCmt;
+	}
+
+	public void setCardDeHbnCmt(String cardDeHbnCmt) {
+		this.cardDeHbnCmt = cardDeHbnCmt;
+	}
+
+	public void setCardDeTcCmt(String cardDeTcCmt) {
+		this.cardDeTcCmt = cardDeTcCmt;
+	}
+
+	public void setCardDeScCmt(String cardDeScCmt) {
+		this.cardDeScCmt = cardDeScCmt;
+	}
+
+	public void setCardDeRcCmt(String cardDeRcCmt) {
+		this.cardDeRcCmt = cardDeRcCmt;
+	}
+
+	public String getCardDeEmptyCmt() {
+		return cardDeEmptyCmt;
+	}
+
+	public void setCardDeEmptyCmt(String cardDeEmptyCmt) {
+		this.cardDeEmptyCmt = cardDeEmptyCmt;
+	}
+
+	public String getCardAut1() {
+		return cardAut1;
+	}
+
+	public String getCardAut2() {
+		return cardAut2;
+	}
+
+	public String getCardAut3() {
+		return cardAut3;
+	}
+
+	public String getCardAut4() {
+		return cardAut4;
+	}
+
+	public String getCardAut5() {
+		return cardAut5;
+	}
+
+	public String getCardAut6() {
+		return cardAut6;
+	}
+
+	public String getCardAut7() {
+		return cardAut7;
+	}
+
+	public String getCardAut8() {
+		return cardAut8;
+	}
+
+	public String getCardAut9() {
+		return cardAut9;
+	}
+
+	public String getCardAutAA1() {
+		return cardAutAA1;
+	}
+
+	public String getCardAutAA2() {
+		return cardAutAA2;
+	}
+
+	public List<String> getRelationList() {
+		return relationList;
+	}
+
+	public void setRelationList(List<String> relationList) {
+		this.relationList = relationList;
+	}
+
+	public List<String> getPaymentMethods() {
+		return paymentMethods;
+	}
+
+	public void setPaymentMethods(List<String> paymentMethods) {
+		this.paymentMethods = paymentMethods;
+	}
+
+	public String getPaymentInvoice() {
+		return paymentInvoice;
+	}
+
+	public void setPaymentInvoice(String paymentInvoice) {
+		this.paymentInvoice = paymentInvoice;
+	}
+
+	public String getPaymentDebit() {
+		return paymentDebit;
+	}
+
+	public void setPaymentDebit(String paymentDebit) {
+		this.paymentDebit = paymentDebit;
 	}
 
 }

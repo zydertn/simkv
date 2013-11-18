@@ -36,6 +36,7 @@ public class CustomerActionController extends ActionController {
 	private String selectedCustomer;
 	private boolean componentDisabled = true;
 	private HtmlInputText branchBinding;
+	private HtmlInputText faoBinding;
 	private HtmlInputText streetBinding;
 	private HtmlInputText housenumberBinding;
 	private HtmlInputText postboxBinding;
@@ -54,17 +55,36 @@ public class CustomerActionController extends ActionController {
 	private HtmlSelectOneMenu invoiceconfigDataoptionBinding;
 	private HtmlSelectOneMenu invoiceconfigFormatBinding;
 	private HtmlSelectOneMenu invoiceconfigCreationFrequencyBinding;
+	private HtmlInputText emailBinding;
+	private HtmlInputText de_mailBinding;
+	private String relation;
+	private List<CardBean> cardList;
 //	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
 	
 	public CustomerActionController() {
 		customer = new Customer();
+		customer.setAddress(new Address());
+		customer.setContactPerson(new Person());
+		customer.setInvoiceAddress(new Address());
+		customer.setInvoiceConfiguration(new InvoiceConfiguration());
 		customerList = new ArrayList<Customer>();
+		cardList = new ArrayList<CardBean>();
 	}
 	
 	public void createCustomer() {
 		CustomerController customerController = new CustomerController();
+
+		// CASCADE:
+//		Customer cus = new Customer();
+//		cus.setBranch(customer.getBranch());
+//		cus.setCustomernumber(customer.getCustomernumber());
+//		cus.setName(customer.getName());
+		
+//		createCustomerSubObjects(cus);
+
 		
 		String retMessage = customerController.createObject(customer);
+//		String retMessage = customerController.createObject(cus);
 
 		if (retMessage != null && retMessage.length() > 0) {
 			getRequest().setAttribute("message", retMessage);
@@ -75,6 +95,34 @@ public class CustomerActionController extends ActionController {
 		getSession().setAttribute("refreshCustomerList", true);
 	}
 
+	private void createCustomerSubObjects(Customer cus) {
+		CustomerController customerController = new CustomerController();
+		if (customer.getAddress() != null && customer.getAddress().getCity() != null && customer.getAddress().getCity().length() > 0) {
+			Address a = (Address) customerController.createMyObject(customer.getAddress());
+			cus.setAddress(a);
+		}
+		
+		if (customer.getInvoiceAddress() != null && customer.getInvoiceAddress().getCity() != null && customer.getInvoiceAddress().getCity().length() > 0) {
+			Address ia = (Address) customerController.createMyObject(customer.getInvoiceAddress());
+			cus.setInvoiceAddress(ia);
+		}
+		
+		if (customer.getContactPerson() != null && customer.getContactPerson().getAddress() != null && customer.getContactPerson().getAddress().getCity() != null && customer.getContactPerson().getAddress().getCity().length() > 0) {
+			Address cpa = (Address) customerController.createMyObject(customer.getContactPerson().getAddress());
+			cus.getContactPerson().setAddress(cpa);
+		}
+		
+//		if (customer.getContactPerson() != null && customer.getContactPerson().getName() != null && customer.getContactPerson().getName().length() > 0) {
+//			Person p = (Person) customerController.createMyObject(customer.getContactPerson());
+//			cus.setContactPerson(p);
+//		}
+
+		if (customer.getInvoiceConfiguration() != null) {
+			InvoiceConfiguration ic = (InvoiceConfiguration) customerController.createMyObject(customer.getInvoiceConfiguration());
+			cus.setInvoiceConfiguration(ic);
+		}
+	}
+	
 	public void searchCustomer() {
 		CustomerController cc = new CustomerController();
 		List<DaoObject> customers =	cc.searchCustomer(customer.getCustomernumber(), customer.getName());
@@ -95,6 +143,7 @@ public class CustomerActionController extends ActionController {
 			}
 			
 			branchBinding.setDisabled(false);
+			faoBinding.setDisabled(false);
 			streetBinding.setDisabled(false);
 			housenumberBinding.setDisabled(false);
 			postboxBinding.setDisabled(false);
@@ -112,6 +161,8 @@ public class CustomerActionController extends ActionController {
 			invoiceconfigDataoptionBinding.setDisabled(false);
 			invoiceconfigFormatBinding.setDisabled(false);
 			invoiceconfigCreationFrequencyBinding.setDisabled(false);
+			emailBinding.setDisabled(false);
+			de_mailBinding.setDisabled(false);
 //			invoiceconfigColumnsBinding.setDisabled(false);
 			getRequest().setAttribute("componentDisabled", false);
 
@@ -120,10 +171,38 @@ public class CustomerActionController extends ActionController {
 		}
 	}
 	
+	public void searchCustomerCards() {
+		CustomerController cc = new CustomerController();
+		List<DaoObject> customers =	cc.searchCustomer(customer.getCustomernumber(), customer.getName());
+		Customer cus = null;
+		if (customers != null && customers.size() > 0) {
+			cus = (Customer) customers.get(0);
+		}
+
+		cardList = new ArrayList<CardBean>();
+		if (cus != null) {
+			List<DaoObject> cardsDao = cc.searchCustomerCards(cus);
+			for (DaoObject dao : cardsDao) {
+				cardList.add((CardBean) dao);
+			}
+		}
+	}
+	
 	public String updateCustomer() {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
+		CustomerController customerController = new CustomerController();
+
+//		Person cp = null;
+//		Person cpp = customer.getContactPerson();
+//		if (cp == null && cpp != null && cpp.getName() != null && cpp.getName().length() > 0) {
+//			// HIER GIBT ES EINEN OUT OF MEMORY ERROR
+//			cp = (Person) customerController.createMyObject(cpp);
+//			dbCustomer.setContactPerson(cp);
+//		}
+
+		
 		try {
 			tx = session.beginTransaction();
 			String whereClause = "";
@@ -133,10 +212,14 @@ public class CustomerActionController extends ActionController {
 			Customer dbCustomer = customerList.get(0);
 			dbCustomer.setCustomernumber(customer.getCustomernumber());
 			dbCustomer.setBranch(customer.getBranch());
+			dbCustomer.setFao(customer.getFao());
 			dbCustomer.setName(customer.getName());
 			
 			Address ad = dbCustomer.getAddress();
 			Address cad = customer.getAddress();
+//			if (ad == null && cad != null && cad.getCity() != null && cad.getCity().length() > 0) {
+//				ad = (Address) customerController.createMyObject(new Address());
+//			}
 			ad.setCity(cad.getCity());
 			ad.setHousenumber(cad.getHousenumber());
 			ad.setPostbox(cad.getPostbox());
@@ -145,19 +228,32 @@ public class CustomerActionController extends ActionController {
 			
 			Person cp = dbCustomer.getContactPerson();
 			Person cpp = customer.getContactPerson();
+//			if (cp == null && cpp != null && cpp.getName() != null && cpp.getName().length() > 0) {
+//				// HIER GIBT ES EINEN OUT OF MEMORY ERROR
+//				cp = (Person) customerController.createMyObject(cpp);
+//				dbCustomer.setContactPerson(cp);
+//			}
+			
 			cp.setFirstname(cpp.getFirstname());
 			cp.setGender(cpp.getGender());
 			cp.setName(cpp.getName());
+			cp.setEmail(cpp.getEmail());
+			cp.setDe_mail(cpp.getDe_mail());
+
 			Address cpa = cp.getAddress();
 			Address cppa = cpp.getAddress();
 			cpa.setCity(cppa.getCity());
 			cpa.setHousenumber(cppa.getHousenumber());
 			cpa.setPostbox(cppa.getPostbox());
 			cpa.setPostcode(cppa.getPostcode());
-			cpa.setStreet(cppa.getStreet());
+			cpa.setStreet(cppa.getStreet());			
 
 			Address ia = dbCustomer.getInvoiceAddress();
 			Address cia = customer.getInvoiceAddress();
+//			if (ia == null && cia != null && cia.getCity() != null && cia.getCity().length() > 0) {
+//				ia = (Address) customerController.createMyObject(new Address());
+//				dbCustomer.setInvoiceAddress(ia);
+//			}
 			ia.setCity(cia.getCity());
 			ia.setHousenumber(cia.getHousenumber());
 			ia.setPostbox(cia.getPostbox());
@@ -166,6 +262,10 @@ public class CustomerActionController extends ActionController {
 
 			InvoiceConfiguration ic = dbCustomer.getInvoiceConfiguration();
 			InvoiceConfiguration cic = customer.getInvoiceConfiguration();
+//			if (ic == null) {
+//				ic = (InvoiceConfiguration) customerController.createMyObject(new InvoiceConfiguration());
+//				dbCustomer.setInvoiceConfiguration(ic);
+//			}
 			ic.setColumns(cic.getColumns());
 			ic.setCreationFrequency(cic.getCreationFrequency());
 			ic.setDataOptionSurcharge(cic.getDataOptionSurcharge());
@@ -257,6 +357,7 @@ public class CustomerActionController extends ActionController {
 		invoiceconfigDataoptionBinding.setDisabled(false);
 		invoiceconfigFormatBinding.setDisabled(false);
 		invoiceconfigCreationFrequencyBinding.setDisabled(false);
+		
 //		invoiceconfigColumnsBinding.setDisabled(false);
 		getRequest().setAttribute("componentDisabled", false);
 		opened = !opened;
@@ -291,6 +392,16 @@ public class CustomerActionController extends ActionController {
 			customer = new Customer();
 			getRequest().removeAttribute("newCustomer");
 		}
+		// CASCADE: Evtl. hier auskommentieren?
+//		if (customer.getAddress() == null)
+//			customer.setAddress(new Address());
+//		if (customer.getContactPerson() == null)
+//			customer.setContactPerson(new Person());
+//		if (customer.getInvoiceAddress() == null)
+//			customer.setInvoiceAddress(new Address());
+//		if (customer.getInvoiceConfiguration() == null)
+//			customer.setInvoiceConfiguration(new InvoiceConfiguration());
+
 		return customer;
 	}
 
@@ -535,6 +646,46 @@ public class CustomerActionController extends ActionController {
 
 	public void setBranchBinding(HtmlInputText branchBinding) {
 		this.branchBinding = branchBinding;
+	}
+
+	public HtmlInputText getEmailBinding() {
+		return emailBinding;
+	}
+
+	public void setEmailBinding(HtmlInputText emailBinding) {
+		this.emailBinding = emailBinding;
+	}
+
+	public HtmlInputText getDe_mailBinding() {
+		return de_mailBinding;
+	}
+
+	public void setDe_mailBinding(HtmlInputText de_mailBinding) {
+		this.de_mailBinding = de_mailBinding;
+	}
+
+	public HtmlInputText getFaoBinding() {
+		return faoBinding;
+	}
+
+	public void setFaoBinding(HtmlInputText faoBinding) {
+		this.faoBinding = faoBinding;
+	}
+
+	public String getRelation() {
+		return relation;
+	}
+
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}
+
+	public List<CardBean> getCardList() {
+		return cardList;
+	}
+
+	public void setCardList(List<CardBean> cardList) {
+		this.cardList = cardList;
 	}
 
 

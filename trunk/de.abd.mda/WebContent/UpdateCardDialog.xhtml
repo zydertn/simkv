@@ -11,7 +11,7 @@
 	<title>MDA</title>
 	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
 </h:head>
-<h:body styleClass="ice-skin-rime">
+<h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
 	<script type="text/javascript">
 		function hideOrShow(show) {
 			document.getElementById("createCardForm:simPriceSelector").disabled = show;
@@ -21,6 +21,50 @@
 		function updateValue(val) {
 			document.getElementById("createCardForm:myCheckHidden").value = val;
 		}
+
+		function updateActAsValue(val) {
+			document.getElementById("createCardForm:ActivatedAsHidden").value = val;
+		}
+		
+		function updateTypeDe(val) {
+			document.getElementById("createCardForm:TypeDeHidden").value = val;
+		}
+		
+		function hideOrShowCardTypeSelector(val) {
+			if (val == "Austria") {
+				document.getElementById("createCardForm:selectArtDE").disabled = true;
+				document.getElementById("createCardForm:selectArtAUT").disabled = false;
+				document.getElementById("createCardForm:selectArtDE").value = "";
+			} else if (val == "Deutschland") {
+				document.getElementById("createCardForm:selectArtDE").disabled = false;
+				document.getElementById("createCardForm:selectArtAUT").disabled = true;
+				document.getElementById("createCardForm:selectArtAUT").value = "";
+				document.getElementById("createCardForm:selectArtAUTActivatedAs").value = "";
+			}
+		}
+
+		function hideOrShowActivatedAs(val) {
+			document.getElementById("createCardForm:TypeAutHidden").value = val;
+			if (val == "EU") {
+				document.getElementById("createCardForm:selectArtAUTActivatedAs").disabled = false;
+			} else if (val == "NTS") {
+				document.getElementById("createCardForm:selectArtAUTActivatedAs").disabled = false;
+			} else {
+				document.getElementById("createCardForm:selectArtAUTActivatedAs").disabled = true;
+				document.getElementById("createCardForm:selectArtAUTActivatedAs").value = "";
+			}
+		}
+
+		
+		function updateDeTypeTooltip() {
+	        var options = document.getElementById("createCardForm:selectArtDE").options;
+	        for(var i = 0; i &lt; options.length; i++) {
+	            var note = options[i].childNotes;
+	            options[i].title = document.getElementById("createCardForm:comment" +i).value;
+	        }	
+		}
+
+		
 	</script>
 	<h:form id="createCardForm">
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
@@ -33,7 +77,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Kartendaten:" />
 				<h:panelGrid columns="4">
 					<h:outputText value="KartenNr.: " />
@@ -77,9 +121,9 @@
 				</h:panelGrid>
 					
 				<h:panelGrid columns="5">				
-					<h:outputText value="Lieferant: " />
+					<h:outputText value="Kartenlieferant: " />
 					<h:panelGrid>
-						<h:selectOneMenu value="#{cardController.cardBean.supplier}">
+						<h:selectOneMenu onchange="hideOrShowCardTypeSelector(this.value)" value="#{cardController.cardBean.supplier}">
 							<f:selectItems value="#{actionController.model.supplierList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
@@ -92,6 +136,80 @@
 							<f:selectItems value="#{actionController.model.statusList}" />
 						</h:selectOneMenu>
 					</h:panelGrid>
+
+					<h:outputText value="Art der Karte DE:" />
+					<h:panelGrid>
+						<h:selectOneMenu disabled="#{cardController.cardBean.typeDeDisabled}" onchange="updateTypeDe(this.value)" onclick="updateDeTypeTooltip()" value="#{cardController.cardBean.cardDeType}" id="selectArtDE">
+							<f:selectItem itemLabel="" itemValue="">
+								<h:inputHidden id="comment0" value="#{actionController.model.cardDeEmptyCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeAv}" itemValue="#{actionController.model.cardDeAv}">
+								<h:inputHidden id="comment1" value="#{actionController.model.cardDeAvCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeAvIp}" itemValue="#{actionController.model.cardDeAvIp}">
+								<h:inputHidden id="comment2" value="#{actionController.model.cardDeAvIpCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeM2m}" itemValue="#{actionController.model.cardDeM2m}">
+								<h:inputHidden id="comment3" value="#{actionController.model.cardDeM2mCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeHbn}" itemValue="#{actionController.model.cardDeHbn}">
+								<h:inputHidden id="comment4" value="#{actionController.model.cardDeHbnCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeTc}" itemValue="#{actionController.model.cardDeTc}">
+								<h:inputHidden id="comment5" value="#{actionController.model.cardDeTcCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeSc}" itemValue="#{actionController.model.cardDeSc}">
+								<h:inputHidden id="comment6" value="#{actionController.model.cardDeScCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeRc}" itemValue="#{actionController.model.cardDeRc}">
+								<h:inputHidden id="comment7" value="#{actionController.model.cardDeRcCmt}"/>
+							</f:selectItem>
+						</h:selectOneMenu>
+						<h:inputHidden id="TypeDeHidden" binding="#{cardController.cardTypeDeHidden}" value="#{cardController.cardBean.cardDeType}"></h:inputHidden>
+					</h:panelGrid>
+
+					<h:outputText/>
+
+					<h:outputText value="" />
+					<h:panelGrid>
+					</h:panelGrid>					
+
+					<h:outputText value="Art der Karte AUT:" />
+					<h:panelGrid>
+						<h:selectOneMenu disabled="#{cardController.cardBean.typeAutDisabled}" onchange="hideOrShowActivatedAs(this.value)" value="#{cardController.cardBean.cardAutType}" id="selectArtAUT">
+							<f:selectItem itemLabel="" itemValue="" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut1}" itemValue="#{actionController.model.cardAut1}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut2}" itemValue="#{actionController.model.cardAut2}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut3}" itemValue="#{actionController.model.cardAut3}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut4}" itemValue="#{actionController.model.cardAut4}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut5}" itemValue="#{actionController.model.cardAut5}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut6}" itemValue="#{actionController.model.cardAut6}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAut7}" itemValue="#{actionController.model.cardAut7}" />
+						</h:selectOneMenu>
+						<h:inputHidden id="TypeAutHidden" binding="#{cardController.cardTypeAutHidden}" value="#{cardController.cardBean.cardAutType}"></h:inputHidden>
+					</h:panelGrid>
+
+					<ice:graphicImage url="Pfeil_rechts_transp.png" height="15" width="40" style="margin-left: 30px; margin-right: 30px"/>
+
+					<h:outputText value="Aktiviert als:" />
+					<h:panelGrid>
+						<h:selectOneMenu onchange="updateActAsValue(this.value)" disabled="#{cardController.cardBean.actAsDisabled}" value="#{cardController.cardBean.cardAutActivatedAs}" id="selectArtAUTActivatedAs">
+							<f:selectItem itemLabel="" itemValue="" />
+							<f:selectItem itemLabel="#{actionController.model.cardAutAA1}" itemValue="#{actionController.model.cardAutAA1}" />
+							<f:selectItem itemLabel="#{actionController.model.cardAutAA2}" itemValue="#{actionController.model.cardAutAA2}" />
+						</h:selectOneMenu>
+						<h:inputHidden id="ActivatedAsHidden" binding="#{cardController.cardActivatedAsHidden}" value="#{cardController.cardBean.cardAutActivatedAs}"></h:inputHidden>
+					</h:panelGrid>					
+
+					<h:outputText value="Beziehung"/>
+					<h:panelGrid>
+						<h:selectOneMenu value="#{cardController.cardBean.relation}">
+							<f:selectItems value="#{actionController.model.relationList}" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					<h:outputText/>
 
 					<h:outputText value="Anlagen-Nr.: " />
 					<h:panelGrid>
@@ -218,6 +336,11 @@
 							size="13">
 						</h:inputText>
 					</h:panelGrid>					
+				</h:panelGrid>
+				<h:outputText/>
+				<h:panelGrid columns="2">
+					<h:outputText value="Kommentar:" style="margin-top:15px"/>
+					<h:inputTextarea rows="5" disabled="false" value="#{cardController.cardBean.comment}" style="width: 437px; margin-left: 20px;"></h:inputTextarea>
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>

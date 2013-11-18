@@ -7,10 +7,15 @@
 		<!-- id name="sequenceNumber" type="int" column="CARD_SEQUENCE_NUMBER" >
 			<generator class="native"/>
 		</id-->
+		<!-- id name="id" type="int" column="CUSTOMER_ID" >
+			<generator class="native"/>
+		</id-->
 		<composite-id>
 			<key-property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12"></key-property>
 			<key-property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4"></key-property>
 		</composite-id>
+		<!-- property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12"></property>
+		<property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4"></property-->
 	 	<property name="sequenceNumber" type="int" column="CARD_SEQUENCE_NUMBER" />
 	 	<!-- property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12" not-null="true" />
 	 	<property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4" not-null="true" /-->
@@ -35,7 +40,11 @@
 	 	<property name="countryCode" type="string" column="CARD_COUNTRY_CODE" length="3" />
 		<property name="country" type="string" column="CARD_COUNTRY" length="2" />
 		<property name="simPrice" type="int" column="CARD_ALT_SIM_PRICE" />
+		<property name="cardDeType" type="string" column="CARD_DE_TYPE" length="15" />
+		<property name="cardAutType" type="string" column="CARD_AUT_TYPE" length="15" />
+		<property name="cardAutActivatedAs" type="string" column="CARD_AUT_ACT_AS" length="15" />
 		<property name="standardPrice" type="boolean" column="CARD_STANDARD_PRICE" />
+		<property name="relation" type="string" column="CARD_RELATION" length="70" />
 	 	<property name="anlagenNr" type="string" column="CARD_ANLAGEN_NR" length="50" />
 	 	<property name="equipmentNr" type="string" column="CARD_EQUIPMENT_NR" length="50" />
 	 	<property name="vertrag" type="string" column="CARD_VERTRAG" length="50" />
@@ -49,5 +58,23 @@
 	 	<property name="kostenstelle" type="string" column="CARD_KOSTENSTELLE" length="50" />
 	 	<property name="einsatzort" type="string" column="CARD_EINSATZORT" length="50" />
 	 	<property name="bestellNummer" type="string" column="CARD_BESTELL_NR" length="50" />
+		<!-- list name="comments" cascade="all">
+
+         <key column="comment_id"/>
+         <list-index column="idx"/>
+         <one-to-many class="de.abd.mda.persistence.dao.Comment"/>
+		</list-->
 	 </class>
+	 
+   <class name="de.abd.mda.persistence.dao.Comment" table="COMMENT">
+      <meta attribute="class-description">
+         This class contains the comment records. 
+      </meta>
+     <id name="id" type="int" column="id">
+         <generator class="native"/>
+      </id>
+      <property name="date" column="COMMENT_DATE" type="string"/>
+   	  <property name="commentString" column="COMMENT_STRING" type="string"/>
+ 
+   </class>
  </hibernate-mapping>

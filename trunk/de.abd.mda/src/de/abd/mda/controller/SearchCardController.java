@@ -48,6 +48,12 @@ public class SearchCardController extends ActionController {
 		}
 		return "noCardFound";
 	}
+
+	public String updateCard() {
+		getRequest().setAttribute("updateCard", card);
+		System.out.println("********* updateCard *********");
+		return "updateCardDirect";
+	}
 	
 	public String searchCard() {
 		try {

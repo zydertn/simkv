@@ -2,7 +2,10 @@ package de.abd.mda.persistence.dao;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import de.abd.mda.model.Country;
 import de.abd.mda.model.Model;
@@ -13,6 +16,7 @@ public class CardBean extends DaoObject {
 	 * 
 	 */
 	private static final long serialVersionUID = 2744842668281743491L;
+//	private int id;
 	private String cardNumberFirst;
 	private String cardNumberSecond;
 	private String countryCode;
@@ -40,6 +44,11 @@ public class CardBean extends DaoObject {
 	private String project;
 	private Boolean standardPrice;
 	private int simPrice;
+	private String relation;	
+	
+	private String cardDeType;
+	private String cardAutType;
+	private String cardAutActivatedAs;
 	
 	private String anlagenNr;
 	private String equipmentNr;
@@ -54,6 +63,13 @@ public class CardBean extends DaoObject {
 	private String kostenstelle;
 	private String einsatzort;
 	private String bestellNummer;
+	private boolean typeDeDisabled;
+	private boolean typeAutDisabled;
+	private boolean actAsDisabled;
+	
+	private Map<Integer, Double> simPriceMap;
+	
+//	private List comments;
 	
 	public Date getLastCalculationDate() {
 		return lastCalculationDate;
@@ -76,6 +92,7 @@ public class CardBean extends DaoObject {
 		this.deliverySlipDate = new Date();
 		SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
 		df.format(deliverySlipDate);
+		// CASCADE: Evtl. hier drei Zeilen auskommentieren
 		this.contactPerson = new Person();
 		this.customer = new Customer();
 		this.installAddress = new Address();
@@ -163,7 +180,13 @@ public class CardBean extends DaoObject {
 			return "0" + phoneNrFirst + phoneNrSecond;
 		else return "";
 	}
-	
+
+	public String getPhoneNrInclMinus() {
+		if (phoneNrFirst != null && phoneNrFirst.length() > 0 && phoneNrSecond != null && phoneNrSecond.length() > 0)
+			return phoneNrFirst + "-" + phoneNrSecond;
+		else return "";
+	}
+
 	public String getSupplier() {
 		return supplier;
 	}
@@ -201,7 +224,23 @@ public class CardBean extends DaoObject {
 	}
 
 	public String getPhoneString() {
-		return phoneNrFirst + "" + phoneNrSecond;
+		return "0" + phoneNrFirst + "" + phoneNrSecond;
+	}
+	
+	public String getPhoneStringInvoice() {
+		return phoneNrFirst + " - " + enhancePhoneSecond(phoneNrSecond);
+	}
+	
+	private String enhancePhoneSecond(String phoneNrSecond) {
+		String pNS = "";
+		int len = phoneNrSecond.length();
+		for (int i = 0; i < len; i++) {
+			pNS += phoneNrSecond.charAt(i++);
+			if (i <= len) {
+				pNS += phoneNrSecond.charAt(i) + " ";
+			}
+		}
+		return pNS;
 	}
 	
 	public String getCardnumberString() {
@@ -226,6 +265,14 @@ public class CardBean extends DaoObject {
 
 	public Date getActivationDate() {
 		return activationDate;
+	}
+	
+	public Date getDeOrActivationDate() {
+		if (status.equalsIgnoreCase(Model.STATUS_ACTIVE))
+			return activationDate;
+		if (status.equalsIgnoreCase(Model.STATUS_INACTIVE))
+			return deactivationDate;
+		return null;
 	}
 
 	public void setActivationDate(Date activationDate) {
@@ -351,6 +398,35 @@ public class CardBean extends DaoObject {
 		return simPrice;
 	}
 
+	public String getSimPriceDouble() {
+		Double d = 0.0;
+		
+		// Einmalige Initialisierung der lokalen SimPriceMap
+		if (simPriceMap == null) {
+			Model model = new Model();
+			model.createModel();
+			simPriceMap = model.getSimPrices();
+		}
+		if (simPrice != 0) {
+			d = simPriceMap.get(simPrice);
+		} else {
+			if (getCustomer() != null && getCustomer().getInvoiceConfiguration() != null) {
+				d = simPriceMap.get(getCustomer().getInvoiceConfiguration().getSimPrice());
+			}
+		}
+		String s = getEuroFromDouble(d);
+		return s;
+	}
+	
+	private String getEuroFromDouble(Double d) {
+		// Euro-Zeichen wird aus unbekannten Gründen in Tabelle bereits eingefügt; 
+		// Evtl. wird anhand des Formats erkannt, dass es ein Preis ist.
+		String s = "" + d;
+		if (s.indexOf(".") == (s.length()-2))
+			s = s + "0";
+		return s;
+	}
+	
 	public void setSimPrice(int simPrice) {
 		this.simPrice = simPrice;
 	}
@@ -466,6 +542,87 @@ public class CardBean extends DaoObject {
 	public void setBestellNummer(String bestellNummer) {
 		this.bestellNummer = bestellNummer;
 	}
+
+	public String getCardDeType() {
+		return cardDeType;
+	}
+
+	public void setCardDeType(String cardDeType) {
+		this.cardDeType = cardDeType;
+	}
+
+	public String getCardAutType() {
+		return cardAutType;
+	}
+
+	public void setCardAutType(String cardAutType) {
+		this.cardAutType = cardAutType;
+	}
+
+	public String getCardAutActivatedAs() {
+		return cardAutActivatedAs;
+	}
+
+	public void setCardAutActivatedAs(String cardAutActivatedAs) {
+		this.cardAutActivatedAs = cardAutActivatedAs;
+	}
+
+	public boolean isTypeDeDisabled() {
+		if (this.getSupplier().equals(Model.SUPPLIER_TELEKOM))
+			return false;
+		else
+			return true;
+	}
+
+	public void setTypeDeDisabled(boolean typeDeDisabled) {
+		this.typeDeDisabled = typeDeDisabled;
+	}
+
+	public boolean isTypeAutDisabled() {
+		if (this.getSupplier().equals(Model.SUPPLIER_TELEKOM_AUSTRIA))
+			return false;
+		else
+			return true;
+	}
+
+	public void setTypeAutDisabled(boolean typeAutDisabled) {
+		this.typeAutDisabled = typeAutDisabled;
+	}
+
+	public boolean isActAsDisabled() {
+		if (this.cardAutActivatedAs != null && this.cardAutActivatedAs.length() > 0)
+			return false;
+		return true;
+	}
+
+	public void setActAsDisabled(boolean actAsDisabled) {
+		this.actAsDisabled = actAsDisabled;
+	}
+
+	public String getRelation() {
+		return relation;
+	}
+
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}
+
+	
+//	public int getId() {
+//		return id;
+//	}
+//
+//	public void setId(int id) {
+//		this.id = id;
+//	}
+//
+//	public List getComments() {
+//		return comments;
+//	}
+//
+//	public void setComments(List comments) {
+//		this.comments = comments;
+//	}
 
 	
 

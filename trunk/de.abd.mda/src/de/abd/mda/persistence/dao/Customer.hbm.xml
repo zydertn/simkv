@@ -9,6 +9,7 @@
 		</id>
 	 	<property index="true" type="string" name="name" column="CUSTOMER_NAME" length="100" />
 	 	<property type="string" name="branch" column="CUSTOMER_BRANCH" length="50" />
+	 	<property type="string" name="fao" column="CUSTOMER_FAO" length="50" />
 	 	<many-to-one name="address" class="de.abd.mda.persistence.dao.Address" lazy="false" column="CUSTOMER_ADDRESS" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="ADDRESS_ID"></many-to-one>
 	 	<many-to-one name="invoiceAddress" class="de.abd.mda.persistence.dao.Address" lazy="false" column="CUSTOMER_INVOICE_ADDRESS" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="ADDRESS_ID"></many-to-one>
 	 	<many-to-one name="contactPerson" class="de.abd.mda.persistence.dao.Person" lazy="false" column="CUSTOMER_CONTACT_PERSON" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="PERSON_ID"></many-to-one>

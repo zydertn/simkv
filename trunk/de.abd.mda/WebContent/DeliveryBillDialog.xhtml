@@ -11,7 +11,7 @@
 	<title>MDA</title>
 	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
 </h:head>
-<h:body styleClass="ice-skin-rime">
+<h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
 	<h:form>
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
@@ -21,7 +21,7 @@
 			<h:outputText escape="false" style="color: red" value="#{actionController.requestMessage}" />		
 		</p>
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Kartendaten:" />
 				<h:panelGrid columns="2">
 					<h:outputText value="KartenNr.: " />
@@ -53,7 +53,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Auftragsdaten:" />
 
 				<h:panelGrid columns="2">

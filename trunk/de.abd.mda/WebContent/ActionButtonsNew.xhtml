@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:icecore="http://www.icefaces.org/icefaces/core"
+	xmlns:ace="http://www.icefaces.org/icefaces/components"
+	xmlns:ice="http://www.icesoft.com/icefaces/component">
+
+<center>
+	<h:panelGrid columns="1" style="margin-top: 35px;">
+		<h:panelGrid columns="3">
+			<h:panelGrid columns="1" cellspacing="12" bgcolor="#E0E6F8" style="height:300px; width: 374px">
+				<div align="center" style="color:#848484">
+					<h1>KARTE</h1>
+				</div>
+				<hr/>
+				
+				<h:panelGrid columns="1" style="width:100%">
+					<h:commandButton id="search"
+						action="#{actionController.openSearchDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Suche" style="width:100%; height:40px;" />
+				</h:panelGrid>
+				<h:panelGrid columns="2" style="width:100%">
+					<h:commandButton id="createNewCard"
+						action="#{actionController.openCreateNewCardDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Anlegen" style="width:100%; height:40px; margin-bottom:15px;" />
+					<h:commandButton id="updateCard"
+						action="#{actionController.openUpdateCardDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Ändern/Löschen" style="width:100%; height:40px; margin-bottom:15px" />
+					<h:commandButton id="clearing"
+						action="#{actionController.openClearingDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Freischalten" style="width:100%; height:40px; margin-bottom:15px" />
+					<h:commandButton id="deliveryBill"
+						action="#{actionController.openDeliveryBillDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Lieferschein" style="width:100%; height:40px; margin-bottom:15px" />
+				</h:panelGrid>
+			</h:panelGrid>
+		<ice:graphicImage url="logo2012.png" style="display: block; margin-left: auto; margin-right: auto"></ice:graphicImage>
+
+			<h:panelGrid columns="1" cellspacing="12" bgcolor="#E0E6F8" style="height: 300px; width: 374px; ">
+				<div align="center" style="color:#848484">
+					<h1>KUNDE</h1>
+				</div>
+				<hr/>
+
+				<h:panelGrid columns="1" style="width:100%">
+					<h:commandButton id="searchCustomer"
+						action="#{actionController.openShowCardsDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Alle Karten anzeigen" style="width:100%; height:40px;" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2" style="width:100%">
+					<h:commandButton id="addCustomer"
+						action="#{actionController.openAddCustomerDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Anlegen" style="width:100%; height:40px; margin-bottom:71px" />
+					<h:commandButton id="updateCustomer"
+						action="#{actionController.openUpdateCustomerDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Ändern/löschen" style="width:100%; height:40px; margin-bottom:71px" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<ice:graphicImage url="Siwal_Aufzug2.jpg" style="display: block; margin-left:3px;"></ice:graphicImage>
+		
+		<h:panelGrid columns="3">
+			<h:panelGrid columns="1" cellspacing="12" bgcolor="#E0E6F8" style="height:300px; width: 374px">
+				<div align="center" style="color:#848484">
+					<h1>RECHNUNG</h1>
+				</div>
+				<hr/>
+
+				<h:panelGrid columns="1" style="width:100%">
+					<h:commandButton id="billing"
+						action="#{actionController.generateReport}"
+						actionListener="#{actionController.processAction}"
+						value="Rechnungslauf" style="width:100%; height:40px;" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2" style="width:100%">
+					<h:commandButton id="openInvoices"
+						action="#{actionController.generateReport}"
+						actionListener="#{actionController.processAction}"
+						value="offene Rechnungen" style="width:100%; height:40px; margin-bottom:15px" />
+					<h:commandButton id="invoicesStatus"
+						action="#{actionController.generateReport}"
+						actionListener="#{actionController.processAction}"
+						value="Rechnungsstatus" style="width:100%; height:40px; margin-bottom:15px" />
+				</h:panelGrid>
+			</h:panelGrid>
+			<h:panelGrid style="width:200px; "></h:panelGrid>
+			<h:panelGrid columns="1" cellspacing="12" bgcolor="#E0E6F8" style="height: 300px; width: 374px; ">
+				<div align="center" style="color:#848484">
+					<h1>KONFIGURATION</h1>
+				</div>
+				<hr/>
+
+				<h:panelGrid columns="1" style="width:100%">
+					<h:commandButton id="config"
+						action="#{actionController.openConfigDialog}"
+						actionListener="#{actionController.processAction}"
+						value="SIM-Profile anlegen" style="width:100%; height:40px; margin-bottom:95px" />
+				</h:panelGrid>
+				
+			</h:panelGrid>
+		</h:panelGrid>
+		
+		<h:panelGrid>
+			<h:outputText escape="false" style="color: red"
+				value="#{actionController.requestMessage}" />
+		</h:panelGrid>
+	</h:panelGrid>
+</center>
+
+</ui:composition>

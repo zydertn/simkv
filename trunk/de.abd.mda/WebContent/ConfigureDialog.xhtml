@@ -11,7 +11,7 @@
 	<title>MDA</title>
 	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
 </h:head>
-<h:body styleClass="ice-skin-rime">
+<h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
 	<h:form>
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
@@ -23,7 +23,7 @@
 		</p>
 
 		<h:panelGrid>
-			<h:panelGrid columns="3" bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid columns="3" bgcolor="#E0E6F8" cellspacing="1" width="1000">
 					<h:outputText value="SIM Profil: " />
 					<ice:selectOneMenu partialSubmit="true" immediate="true" valueChangeListener="#{configurationController.changeSimKeyValue}"
 						value="#{configurationController.simPriceKey}">
