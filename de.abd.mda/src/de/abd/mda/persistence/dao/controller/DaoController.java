@@ -29,7 +29,7 @@ public class DaoController implements IDaoController {
 			tx = session.beginTransaction();
 			session.save(d);
 			tx.commit();
-			message = d.toString() + " erfolgreich in DB angelegt.";
+//			message = d.toString() + " erfolgreich in DB angelegt.";
 		} catch (NonUniqueObjectException e) {
 			MdaLogger.warn(logger, "NonUniqueObjectException");
 			MdaLogger.error(logger, e);
@@ -60,6 +60,46 @@ public class DaoController implements IDaoController {
 		return message;
 	}
 
+	public DaoObject createMyObject(DaoObject d) {
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		String message = "";
+		try {
+			tx = session.beginTransaction();
+			session.save(d);
+			tx.commit();
+			message = d.toString() + " erfolgreich in DB angelegt.";
+		} catch (NonUniqueObjectException e) {
+			MdaLogger.warn(logger, "NonUniqueObjectException");
+			MdaLogger.error(logger, e);
+			message = "Fehler!! Objekt existiert bereits und wurde nicht angelegt!";
+//			return message;
+		} catch (ConstraintViolationException e) {
+			if (e.getSQLException().getMessage().contains("Duplicate entry")) {
+				MdaLogger.error(logger, "ConstraintViolationException");
+				MdaLogger.error(logger, e);
+				message = "Fehler!! Objekt existiert bereits und wurde nicht angelegt!";
+//				return message;
+			}
+		} catch (RuntimeException e) {
+			if (tx != null && tx.isActive()) {
+				try {
+					// Second try catch as the rollback could fail as well
+					tx.rollback();
+					MdaLogger.error(logger, e);
+//					return e.getMessage();
+				} catch (HibernateException e1) {
+					MdaLogger.warn(logger, "Error rolling back transaction");
+					MdaLogger.error(logger, e);
+				}
+				// throw again the first exception
+				throw e;
+			}
+		}
+		return d;
+	}
+
+	
 	@Override
 	public void deleteObject(DaoObject d) {
 		Transaction tx = null;

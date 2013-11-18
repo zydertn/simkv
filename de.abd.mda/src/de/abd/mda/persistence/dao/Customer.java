@@ -1,5 +1,10 @@
 package de.abd.mda.persistence.dao;
 
+import javax.persistence.CascadeType;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Cascade;
+
 public class Customer extends DaoObject {
 
 	/**
@@ -9,24 +14,39 @@ public class Customer extends DaoObject {
 	private int id;
 	private String name;
 	private String branch;
+	private String fao;
+	
 	private Address address;
+	
 	private Address invoiceAddress;
+
 	private Person contactPerson;
 	private String customernumber;
+	private String paymentMethod;
+	
 	private InvoiceConfiguration invoiceConfiguration;
 
 	public Customer() {
 		this.name = "";
 		this.branch = "";
+		// CASCADE: Evtl. hier drei Zeilen und die letzte Zeile auskommentieren
 		this.address = new Address();
 		this.invoiceAddress = new Address();
 		this.contactPerson = new Person();
 		this.customernumber = "";
 		this.invoiceConfiguration = new InvoiceConfiguration();
+		paymentMethod = "";
 	}
 	
 	public String getListString() {
-		return name + " - " + branch + "; " + address.getAddressString() + "; " + customernumber;
+//		String s = name + " - " + branch + "; " + address.getAddressString();
+		String st = new String(name + " - " + branch + "; " + address.getAddressString());
+		if (st.length() > 92) {
+			st = st.substring(0, 91);
+		}
+		st += "; " + customernumber;
+		st = st.replaceAll("&", " ");
+		return st;
 	}
 	
 	public String getName() {
@@ -91,6 +111,22 @@ public class Customer extends DaoObject {
 
 	public void setInvoiceConfiguration(InvoiceConfiguration invoiceConfiguration) {
 		this.invoiceConfiguration = invoiceConfiguration;
+	}
+
+	public String getFao() {
+		return fao;
+	}
+
+	public void setFao(String fao) {
+		this.fao = fao;
+	}
+
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
 	}
 	
 }

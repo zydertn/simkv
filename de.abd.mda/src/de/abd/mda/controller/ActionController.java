@@ -18,6 +18,7 @@ import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
+import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.report.ReportCalculator;
 import de.abd.mda.report.ReportRunnable;
 
@@ -34,8 +35,13 @@ public class ActionController implements ActionListener {
 	public ActionController() {
 		model = new Model();
 		model.createModel();
+		CustomerController customerController = new CustomerController();
+		List customerList = customerController.listObjects();
+		HttpSession session = null;
 		if (getSession() != null) {
-			getSession().setAttribute("model", model);
+			session = getSession();
+			session.setAttribute("model", model);
+			session.setAttribute("customerList", customerList);
 		}
 	}
 	
@@ -54,6 +60,10 @@ public class ActionController implements ActionListener {
 		return "searchCard";
 	}
 
+	public String openShowCardsDialog() {
+		return "showCards";
+	}
+	
 	public String openUpdateCardDialog() {
 		cardBean = new CardBean();
 		return "updateCard";

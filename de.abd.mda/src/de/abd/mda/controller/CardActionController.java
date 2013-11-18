@@ -16,6 +16,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.SequenceNumber;
 import de.abd.mda.persistence.dao.controller.CardController;
@@ -28,6 +29,9 @@ public class CardActionController extends ActionController {
 	public CardBean ccCardBean;
 	private HtmlSelectOneMenu invoiceconfigSimpriceBinding;
 	private HtmlInputHidden cardPriceHidden;
+	private HtmlInputHidden cardTypeAutHidden;
+	private HtmlInputHidden cardTypeDeHidden;	
+	private HtmlInputHidden cardActivatedAsHidden;
 	private boolean selected = true;
 	
 	public CardBean getCcCardBean() {
@@ -89,6 +93,7 @@ public class CardActionController extends ActionController {
 			}
 						
 			ccCardBean.setSequenceNumber(currentSequenceNumber);
+			updateTypeInfo();
 			String retMessage = cardController.createObject(ccCardBean);
 			if (retMessage != null && retMessage.length() == 0) {
 				
@@ -125,6 +130,7 @@ public class CardActionController extends ActionController {
 				card.setStatus(ccCardBean.getStatus());
 				card.setStandardPrice(ccCardBean.getStandardPrice());
 				card.setSimPrice(ccCardBean.getSimPrice());
+				card.setRelation(ccCardBean.getRelation());
 				card.setAnlagenNr(ccCardBean.getAnlagenNr());
 				card.setAuftragsNr(ccCardBean.getAuftragsNr());
 				card.setEinsatzort(ccCardBean.getEinsatzort());
@@ -140,6 +146,10 @@ public class CardActionController extends ActionController {
 				card.setVertrag(ccCardBean.getVertrag());
 				card.setWe(ccCardBean.getWe());
 				card.setBestellNummer(ccCardBean.getBestellNummer());
+				updateTypeInfo();
+				card.setCardAutActivatedAs(ccCardBean.getCardAutActivatedAs());
+				card.setCardAutType(ccCardBean.getCardAutType());
+				card.setCardDeType(ccCardBean.getCardDeType());
 			} else
 				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			tx.commit();
@@ -159,6 +169,21 @@ public class CardActionController extends ActionController {
 		getRequest().setAttribute("message", "Änderung gespeichert!");
 		
 		return "";
+	}
+
+	private void updateTypeInfo() {
+		String supp = ccCardBean.getSupplier();
+		if (supp != null && supp.equals(Model.SUPPLIER_TELEKOM)) {
+			ccCardBean.setCardAutType("");
+			ccCardBean.setCardAutActivatedAs("");
+		} else if (supp != null && supp.equals(Model.SUPPLIER_TELEKOM_AUSTRIA)) {
+			ccCardBean.setCardDeType("");
+		}
+		String cardAutType = ccCardBean.getCardAutType();
+		// Prüfung, ob der Typ einer Austria Karte == EU oder NTS ist; wenn nicht, dann muss ActivatedAs auf leer gesetzt werden
+		if (cardAutType != null && !(cardAutType.equals(getModel().getCardAut4()) || (cardAutType.equals(getModel().getCardAut5())))) {
+			ccCardBean.setCardAutActivatedAs("");
+		}
 	}
 
 	public String deleteCard() {
@@ -207,6 +232,13 @@ public class CardActionController extends ActionController {
 			ccCardBean = new CardBean();
 			getRequest().removeAttribute("clearCard");
 		}
+		System.out.println("getCardBean");
+		if (getRequest().getAttribute("updateCard") != null) {
+			System.out.println("getCardBean updateCard im Request");
+			CardBean card = (CardBean) getRequest().getAttribute("updateCard");
+			return card;
+		}
+			
 		return ccCardBean;
 	}
 
@@ -255,5 +287,29 @@ public class CardActionController extends ActionController {
 
 	public void setCardPriceHidden(HtmlInputHidden cardPriceHidden) {
 		this.cardPriceHidden = cardPriceHidden;
+	}
+
+	public HtmlInputHidden getCardTypeAutHidden() {
+		return cardTypeAutHidden;
+	}
+
+	public void setCardTypeAutHidden(HtmlInputHidden cardTypeAutHidden) {
+		this.cardTypeAutHidden = cardTypeAutHidden;
+	}
+
+	public HtmlInputHidden getCardActivatedAsHidden() {
+		return cardActivatedAsHidden;
+	}
+
+	public void setCardActivatedAsHidden(HtmlInputHidden cardActivatedAsHidden) {
+		this.cardActivatedAsHidden = cardActivatedAsHidden;
+	}
+
+	public HtmlInputHidden getCardTypeDeHidden() {
+		return cardTypeDeHidden;
+	}
+
+	public void setCardTypeDeHidden(HtmlInputHidden cardTypeDeHidden) {
+		this.cardTypeDeHidden = cardTypeDeHidden;
 	}
 }

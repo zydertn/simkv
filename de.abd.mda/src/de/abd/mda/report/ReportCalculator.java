@@ -111,7 +111,13 @@ public class ReportCalculator implements Runnable {
 				
 				if (customerCards != null && customerCards.size() > 0) {
 					i++;
-					ReportGenerator rp = new ReportGenerator();
+					IReportGenerator rp = null;
+					if (customer.getInvoiceConfiguration().getFormat().equals(Model.FORMAT_QUERFORMAT)) {
+						rp = new ReportGenerator_landscape();
+					} else {
+						rp = new ReportGenerator_portrait();
+					}
+
 					boolean generatedWithoutError = rp.generateReport(customerCards, customer, calcMonth);
 					if (generatedWithoutError) {
 						Iterator<DaoObject> cIt = customerCards.iterator();
@@ -202,10 +208,11 @@ public class ReportCalculator implements Runnable {
 		String select = "select distinct customer from Customer customer where customer.customernumber IN (" +
 //		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20190')";
 				"'20166', '20120', '20016', '20190', '20074', '20208', '20206', '20216', '20198'" +
-//				", '20200', '20039', '20128', '20157'" +
-//				", '20012', '20105', '20197', '20060', '20218', '20066', '20209', '20107', '20094'" +
-//				", '20069', '20112', '20201', '20079', '20098', '20165', '20214'" +
+				", '20200', '20039', '20128', '20157', '20076', '20224'" +
+				", '20012', '20105', '20197', '20060', '20218', '20066', '20209', '20107', '20094'" +
+				", '20069', '20112', '20201', '20079', '20098', '20165', '20214'" +
 				")";
+
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
 		List<DaoObject> customerList = searchObjects(select, tx, session);

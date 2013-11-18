@@ -14,5 +14,6 @@
 	 	<property type="string" name="phoneNrFirst" column="PERSON_PHONE_NR_FIRST" length="5" />
 	 	<property type="string" name="phoneNrSecond" column="PERSON_PHONE_NR_SECOND" length="11" />
 	 	<property type="string" name="email" column="PERSON_EMAIL" length="100" />
+	 	<property type="string" name="de_mail" column="PERSON_DE_MAIL" length="100" />
 	 </class>
  </hibernate-mapping>

@@ -11,7 +11,7 @@
 	<title>MDA</title>
 	<link rel="stylesheet" type="text/css" href="./css/mystyle.css" />
 </h:head>
-<h:body styleClass="ice-skin-rime">
+<h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
 	<h:form>
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
@@ -23,9 +23,9 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="LightGrey" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Kartensuche:" />
-				<h:panelGrid columns="4">
+				<h:panelGrid columns="5">
 					<h:outputText value="KartenNr.: " />
 					<h:panelGrid columns="3">
 						<h:inputText value="#{searchCardController.cardNumberFirst}" disabled="true"
@@ -36,6 +36,7 @@
 						<h:inputText value="#{searchCardController.cardNumberSecond}" disabled="true"
 							size="1" maxlength="4" />
 					</h:panelGrid>
+					<h:outputText/>
 					<h:outputText/>
 					<h:outputText/>
 					
@@ -51,12 +52,15 @@
 										
 					<h:commandButton value="Suchen" disabled="true"
 						action="#{searchCardController.searchCardViewDetails}" />
+						
+					<h:commandButton value="Diese Karte ändern"
+						action="#{searchCardController.updateCard}" />
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
 
 		<h:panelGrid>
-			<h:panelGrid columns="2" bgcolor="#FFFFCC" width="830">
+			<h:panelGrid columns="2" bgcolor="#E0E6F8" width="1000">
 				<h:panelGrid columns="2">
 					<h:outputText style="font-weight:bold; margin-right:77px" value="Kommentar" ></h:outputText>
 					<h:inputTextarea rows="5" disabled="false" value="#{searchCardController.card.comment}" style="width: 632px;"></h:inputTextarea>
@@ -67,7 +71,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid>
-			<h:panelGrid columns="2" bgcolor="LightGrey" width="830">
+			<h:panelGrid columns="2" bgcolor="LightGrey" width="1000">
 				<h:panelGrid columns="3" cellpadding="3">
 					<h:outputText style="font-weight:bold" value="Kartendaten" />
 					<h:outputText value="Status:" />
@@ -168,7 +172,7 @@
 
 					<h:outputText style="font-weight:bold" value="Rechnungsdaten" />
 					<h:outputText value="Einzelpreis pro SIM-Karte:" />
-					<h:outputText value="#{searchCardController.card.customer.invoiceConfiguration.simPrice}" />
+					<h:outputText value="#{searchCardController.card.customer.invoiceConfiguration.simPriceString}" />
 
 					<h:outputText />
 					<h:outputText value="Aufpreis mit Datenoption:" />

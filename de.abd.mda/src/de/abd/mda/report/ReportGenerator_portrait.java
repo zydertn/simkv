@@ -23,6 +23,8 @@ import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
 
+import com.itextpdf.text.BaseColor;
+import com.lowagie.text.Anchor;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -47,10 +49,10 @@ import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.DateUtils;
 
-public class ReportGenerator {
+public class ReportGenerator_portrait implements IReportGenerator {
 	BaseFont bf_broadway = null;
 	BaseFont bf_arial = null;
-	static final Logger logger = Logger.getLogger(ReportGenerator.class);
+	static final Logger logger = Logger.getLogger(ReportGenerator_portrait.class);
 	private static int MAX_ROW_FIRST_PAGE = 25;
 	private static int FULL_PAGE_SIZE = 39;
 	private int pos = 0;
@@ -58,13 +60,13 @@ public class ReportGenerator {
 
 
 	
-	public ReportGenerator() {
+	public ReportGenerator_portrait() {
 		loadBaseFonts();
 	}
 
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth) {
 		try {
-			Document document = new Document(PageSize.A4.rotate(), 60, 25, 40, 40);
+			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
 			String month = "";
 			if ((calcMonth.get(Calendar.MONTH) + 1) > 9) {
 				month = month + (calcMonth.get(Calendar.MONTH) + 1);
@@ -72,7 +74,8 @@ public class ReportGenerator {
 				month = "0" + (calcMonth.get(Calendar.MONTH) + 1);
 			}
 			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + ".pdf";
-			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
+//			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
+			File dir = new File("C:/Temp/report/2013/10");
 			dir.mkdirs();
 			
 			FileOutputStream fos = new FileOutputStream(
@@ -109,7 +112,7 @@ public class ReportGenerator {
 			logger.info("File " + filename + " created successfully!");
 //			Runtime.getRuntime().exec(
 //					"rundll32 url.dll,FileProtocolHandler "
-//							+ "C:/Temp/header-footer.pdf");
+//							+ "C:/Temp/report/" + customer.getCustomernumber());
 
 			return true;
 		} catch (Exception ex) {
@@ -191,59 +194,105 @@ public class ReportGenerator {
 			// Firma
 			cb.beginText();
 			cb.setColorFill(Color.BLACK);
-			cb.setFontAndSize(bf_arial, 10);
+			cb.setFontAndSize(bf_arial, 11);
 			String companyString = "Firma";
 			y = y - 20;
 			int d = 11;
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, companyString, x, y,
 					0);
 
+			y = y - d;
 			// Firmenname
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getName(), x,
-					y - d, 0);
+					y, 0);
 
+			if (customer.getBranch() != null && customer.getBranch().length() > 0) {
+				y = y - d;
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getBranch(), x, y, 0);
+			}
+			
+			y = y - d;
 			// Firmenstrasse
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
-					x, y - 2 * d, 0);
+					x, y, 0);
 
+			y = y - 2*d;
 			// Firmenort
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
-					y - 4 * d, 0);
-			cb.endText();
+					y, 0);
+//			cb.endText();
 
-			// SiwalTec GmbH Absender
-			x = 445;
-			y = 680;
-			cb.beginText();
-			cb.setColorFill(Color.BLUE);
-			cb.setFontAndSize(bf_broadway, 10);
-
-			// Siwalstrasse Absender
-			y = y - 2;
-			cb.setColorFill(Color.BLACK);
-			cb.setFontAndSize(bf_arial, 10);
+//			// SiwalTec GmbH Absender
+//			x = 445;
+//			y = 480;
+//			cb.beginText();
+//			cb.setColorFill(Color.BLUE);
+//			cb.setFontAndSize(bf_broadway, 10);
+//
+//			// Siwalstrasse Absender
+//			y = y - 2;
+//			cb.setColorFill(Color.BLACK);
+//			cb.setFontAndSize(bf_arial, 10);
 
 			// Date
-			y = y - 5 * d;
+//			y = y - 5 * d;
 			Date date = new Date();
-			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yy");
+			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), x, y
-					- 2 * d, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 430, 630, 0);
 
 			// Rechnungsnummer
-			String invoiceNumber = "Rechnung - Nr.   02357";
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, invoiceNumber, x, y
-					- 4 * d, 0);
+			String invoiceNumber = "";
+			if (customer.getCustomernumber().equals("20074"))
+				invoiceNumber += "Rechnung - Nr.   30001";
+			if (customer.getCustomernumber().equals("20190"))
+				invoiceNumber = "Rechnung - Nr.   30002";
+			if (customer.getCustomernumber().equals("20208"))
+				invoiceNumber = "Rechnung - Nr.   30003";
+			if (customer.getCustomernumber().equals("20206"))
+				invoiceNumber = "Rechnung - Nr.   30004";
+			if (customer.getCustomernumber().equals("20216"))
+				invoiceNumber = "Rechnung - Nr.   30005";
+			if (customer.getCustomernumber().equals("20166"))
+				invoiceNumber = "Rechnung - Nr.   30006";
+			if (customer.getCustomernumber().equals("20120"))
+				invoiceNumber = "Rechnung - Nr.   30007";
+			if (customer.getCustomernumber().equals("20016"))
+				invoiceNumber = "Rechnung - Nr.   30008";
+			if (customer.getCustomernumber().equals("20039"))
+				invoiceNumber = "Rechnung - Nr.   30009";
+			if (customer.getCustomernumber().equals("20076"))
+				invoiceNumber = "Rechnung - Nr.   30010";
+			if (customer.getCustomernumber().equals("20198"))
+				invoiceNumber = "Rechnung - Nr.   30011";
+			if (customer.getCustomernumber().equals("20200"))
+				invoiceNumber = "Rechnung - Nr.   30012";
+			if (customer.getCustomernumber().equals("20128"))
+				invoiceNumber = "Rechnung - Nr.   30013";
+			if (customer.getCustomernumber().equals("20157"))
+				invoiceNumber = "Rechnung - Nr.   30014";
+			if (customer.getCustomernumber().equals("20012"))
+				invoiceNumber = "Rechnung - Nr.   30015";
+			if (customer.getCustomernumber().equals("20060"))
+				invoiceNumber = "Rechnung - Nr.   30016";
+			if (customer.getCustomernumber().equals("20105"))
+				invoiceNumber = "Rechnung - Nr.   30017";
+			if (customer.getCustomernumber().equals("20197"))
+				invoiceNumber = "Rechnung - Nr.   30018";
+			if (customer.getCustomernumber().equals("20224"))
+				invoiceNumber = "Rechnung - Nr.   30019";
+			
+				
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, invoiceNumber, 430, 600, 0);
 
 			// Kundennr.
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     " + customer.getCustomernumber(), x, y
-					- 5 * d, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 430, 589, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 506, 589, 0);
 
 			// Rechnungsnummer
 			cb.setFontAndSize(bf_arial, 8);
 			String info = "(Bitte bei Bezahlung immer angeben)";
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, info, x, y - 7 * d, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, info, 430, 578, 0);
 
 			cb.endText();
 
@@ -253,6 +302,7 @@ public class ReportGenerator {
 			Font invoiceFont = new Font(bf_arial, 12, Font.BOLD);
 			Chunk invoice = new Chunk(addNewLines(15) + "Rechnung", invoiceFont);
 			Font timeframeFont = new Font(bf_arial, 11);
+			Font timeframeFontBold = new Font(bf_arial, 11, Font.BOLD);
 			Chunk timeframe = new Chunk(
 					addNewLines(2)
 							+ "Berechnungszeitraum für die Servicegebühr: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR) + "\n\n",
@@ -268,30 +318,35 @@ public class ReportGenerator {
 			table.setWidthPercentage(100f);
 			table.getDefaultCell().setBackgroundColor(null);
 			table.getDefaultCell().setBorder(0);
+			
 
 			// Table Header
-			Font tableFont = new Font(bf_arial, 8);
-			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
-			cell.setPaddingTop(10);
-			cell.setPaddingBottom(10);
-			cell.setBorderWidthTop(0.5f);
-			cell.setBorderWidthBottom(0.5f);
-			cell.setBorder(Rectangle.TOP | Rectangle.BOTTOM);
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("Menge", tableFont));
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("Bezeichnung", tableFont));
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("Einzelpreis", tableFont));
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
-			table.addCell(cell);
-
-			cell.setPaddingTop(1);
-			cell.setPaddingBottom(5);
-			cell.setBorder(Rectangle.NO_BORDER);
+//			Font tableFont = new Font(bf_arial, 8);
+//			Font tableFont = new Font(bf_arial);
+//			tableFont.setSize(15);
+//			tableFont.setStyle(Font.BOLD);
+//			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
+//
+//			cell.setPaddingTop(10);
+//			cell.setPaddingBottom(10);
+//			cell.setBorderWidthTop(0.5f);
+//			cell.setBorderWidthBottom(0.5f);
+//			cell.setBorder(Rectangle.TOP | Rectangle.BOTTOM);
+//			table.addCell(cell);
+//			cell.setPhrase(new Phrase("Menge", tableFont));
+//			table.addCell(cell);
+//			cell.setPhrase(new Phrase("Bezeichnung", tableFont));
+//			table.addCell(cell);
+//			cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
+//			table.addCell(cell);
+//			cell.setPhrase(new Phrase("Einzelpreis", tableFont));
+//			table.addCell(cell);
+//			cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
+//			table.addCell(cell);
+//
+//			cell.setPaddingTop(1);
+//			cell.setPaddingBottom(5);
+//			cell.setBorder(Rectangle.NO_BORDER);
 			
 			ArrayList<String[]> tableRowList = new ArrayList<String[]>();
 			Iterator<DaoObject> iter = customerCards.iterator();			
@@ -299,16 +354,16 @@ public class ReportGenerator {
 			Map<Integer, Double> simPrices = cc.getSimPricesFromDB();
 			Map<Integer, Double> dataOptionPrices = cc.getDataOptionPricesFromDB();
 
-			BigDecimal calcSum = new BigDecimal(0.0);
+			BigDecimal calcSum = new BigDecimal("0.0");
 			
 			while (iter.hasNext()) {
 				CardBean card = (CardBean) iter.next();
-				BigDecimal simPrice = new BigDecimal(0.0);
+				BigDecimal simPrice = new BigDecimal("0.0");
 				if (!card.getStandardPrice()) {
-					simPrice = new BigDecimal(card.getSimPrice());
+					simPrice = new BigDecimal(""+simPrices.get(card.getSimPrice()));
 				} else {
 					if (simPrices.get(customer.getInvoiceConfiguration().getSimPrice()) != null) {
-						simPrice = new BigDecimal(simPrices.get(customer.getInvoiceConfiguration().getSimPrice()));
+						simPrice = new BigDecimal(""+simPrices.get(customer.getInvoiceConfiguration().getSimPrice()));
 					} else {
 						logger.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
 					}
@@ -316,14 +371,14 @@ public class ReportGenerator {
 
 				calcSum = calcSum.add(simPrice);
 				
-				Double dataOptionPrice = 0.0;
+				BigDecimal dataOptionPrice = new BigDecimal("0.0");
 				if (dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge()) != null) {
-					dataOptionPrice += dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge());
+					dataOptionPrice.add(new BigDecimal(""+dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge())));
 				} else {
 					logger.warn("DataOptionSurcharge Key == " + customer.getInvoiceConfiguration().getDataOptionSurcharge() + ", ==> Key gibt es nicht in DataOptionSurcharge-Konfigurations-Map!");
 				}
 
-				calcSum = calcSum.add(new BigDecimal(dataOptionPrice));
+				calcSum = calcSum.add(dataOptionPrice);
 				
 				if (customer.getCustomernumber().equals("20074")) {
 					if (calcMonth.get(Calendar.YEAR) == 2013 && calcMonth.get(Calendar.MONTH) == 2) {
@@ -354,10 +409,17 @@ public class ReportGenerator {
 					invoiceRowList.add(card.getFactoryNumber());
 				}
 				if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
-					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
+					if (customer.getCustomernumber().equals("20157") && card.getCardNumberFirst().equals("78695481")) {
+						System.out.println("Jetzt");
+					}
+					try {
+						invoiceRowList.add("" + (simPrice.add(dataOptionPrice)).setScale(2));
+					} catch (ArithmeticException e) {
+						System.out.println(e);
+					}
 				}
 				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
-					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
+					invoiceRowList.add("" + (simPrice.add(dataOptionPrice)).setScale(2));
 				}
 
 				if (!(invoiceRowList != null && invoiceRowList.size() > 0)) {
@@ -390,8 +452,29 @@ public class ReportGenerator {
 				i++;
 			}
 			
-			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den oben stehenden Betrag innerhalb von 14 Tagen nach Rechnungsdatum.", timeframeFont);
-			doc.add(new Phrase(paymentDueDate));
+			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den Rechnungsbetrag innerhalb von 15 Tagen ab Rechnungsdatum ", timeframeFont);
+			Chunk paymentDueDateEnd = new Chunk("unter Angabe der Rechnungsnummer." + addNewLines(2), timeframeFontBold);
+			Phrase payPhrase = new Phrase(paymentDueDate);
+			payPhrase.add(paymentDueDateEnd);
+			doc.add(new Phrase(payPhrase));
+
+			Chunk verzugsChunk = new Chunk("Wir weisen Sie darauf hin, dass Sie sich nach diesem Zeitraum bereits in Verzug befinden." + addNewLines(2), timeframeFont);
+			doc.add(new Phrase(verzugsChunk));
+
+			Chunk rückfragenChunk = new Chunk("Bei Rückfragen können Sie sich gerne an folgende Kontaktdaten wenden:" + addNewLines(2), timeframeFont);
+			doc.add(new Phrase(rückfragenChunk));
+
+			Font mailFont = new Font(bf_arial, 12);
+			mailFont.setColor(Color.BLUE);
+			mailFont.setStyle(Font.UNDERLINE);
+			
+//			Chunk mailChunk = new Chunk("E-Mail: " + mailAnchor + "<" + mailToAnchor + ">" + addNewLines(1));
+			doc.add(new Phrase(new Chunk("E-Mail: ")));
+			doc.add(new Phrase(new Chunk("Controlling@siwaltec.de", mailFont).setAnchor("mailto:Controlling@siwaltec.de")));
+			
+			Chunk phoneChunk = new Chunk(addNewLines(1) + "Tel.Nr.: 07031-9858-444");
+			doc.add(new Phrase(phoneChunk));
+
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -519,7 +602,7 @@ public class ReportGenerator {
 	
 	private PdfPTable createTableEnd(PdfPTable table,
 			ArrayList<String[]> tableEndList) {
-		Font tableFontBold = new Font(bf_arial, 8);
+		Font tableFontBold = new Font(bf_arial, 9);
 		tableFontBold.setStyle(Font.BOLD);
 		PdfPCell cell = new PdfPCell();
 		cell.setPaddingTop(1);
@@ -541,7 +624,7 @@ public class ReportGenerator {
 
 	private PdfPTable createTableBody(PdfPTable table, ArrayList<String[]> tableRowList) {
 		Iterator<String[]> it = tableRowList.iterator();
-		Font tableFont = new Font(bf_arial, 8);
+		Font tableFont = new Font(bf_arial, 9);
 		PdfPCell cell = new PdfPCell();
 		cell.setFixedHeight(14);
 		cell.setPaddingTop(1);
@@ -599,7 +682,7 @@ public class ReportGenerator {
 		
 		if (columns != null) {
 			// Table Header
-			Font tableFont = new Font(bf_arial, 8);
+			Font tableFont = new Font(bf_arial, 9);
 			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
 			cell.setPaddingTop(10);
 			cell.setPaddingBottom(10);

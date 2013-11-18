@@ -1,6 +1,8 @@
 package de.abd.mda.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,14 +25,26 @@ public class DeliveryBillController extends ActionController {
 
 	private CardBean ccCardBean;
 	private List<DaoObject> customerList;
+	private List<HashMap<DaoObject, String>> customerMapList;
 	private String customer;
 	private Customer customerObject;
+	private List<String> addressList;
+	private List<String> customerStringList;
 	
+	@SuppressWarnings("unchecked")
 	public DeliveryBillController() {
 		if (getRequest().getAttribute("searchedCard") != null)
 			ccCardBean = (CardBean) getRequest().getAttribute("searchedCard");
-		CustomerController customerController = new CustomerController();
-		customerList = customerController.listObjects();
+//		CustomerController customerController = new CustomerController();
+//		customerList = customerController.listObjects();
+		ArrayList<String> addressList = new ArrayList<String>();
+		customerList = (List<DaoObject>) getSession().getAttribute("customerList");
+		if (customerList != null && customerList.size() > 0) {
+			customerStringList = new ArrayList<String>();
+			Customer c = (Customer) customerList.get(0);
+			customerStringList.add(c.getName() + "; " + c.getListString() + "; " + c.getCustomernumber());
+		}
+		
 	}
 
 	public void addDeliveryBillData() {
@@ -166,6 +180,30 @@ public class DeliveryBillController extends ActionController {
 
 	public void setCustomerObject(Customer customerObject) {
 		this.customerObject = customerObject;
+	}
+
+	public List<HashMap<DaoObject, String>> getCustomerMapList() {
+		return customerMapList;
+	}
+
+	public void setCustomerMapList(List<HashMap<DaoObject, String>> customerMapList) {
+		this.customerMapList = customerMapList;
+	}
+
+	public List<String> getAddressList() {
+		return addressList;
+	}
+
+	public void setAddressList(List<String> addressList) {
+		this.addressList = addressList;
+	}
+
+	public List<String> getCustomerStringList() {
+		return customerStringList;
+	}
+
+	public void setCustomerStringList(List<String> customerStringList) {
+		this.customerStringList = customerStringList;
 	}
 
 }

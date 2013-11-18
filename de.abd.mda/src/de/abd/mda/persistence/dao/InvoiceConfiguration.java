@@ -1,5 +1,7 @@
 package de.abd.mda.persistence.dao;
 
+import de.abd.mda.model.Model;
+
 public class InvoiceConfiguration extends DaoObject {
 
 	/**
@@ -23,6 +25,17 @@ public class InvoiceConfiguration extends DaoObject {
 
 	public int getSimPrice() {
 		return simPrice;
+	}
+	
+	public String getSimPriceString() {
+		Model model = new Model();
+		model.createModel();
+		Double simP = model.getSimPrices().get(simPrice);
+		String s = "" + simP;
+		if (s.indexOf(".") == (s.length()-2))
+			s = s + "0";
+
+		return "" + s + "€ (Preiskategorie " + simPrice + ")";
 	}
 
 	public void setSimPrice(int simPrice) {

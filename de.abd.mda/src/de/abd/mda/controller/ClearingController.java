@@ -23,6 +23,8 @@ public class ClearingController extends ActionController {
 
 	public ClearingController() {
 		card = new CardBean();
+		card.setContactPerson(new Person());
+		card.setInstallAddress(new Address());
 	}
 
 	public String unclearCard() {
@@ -190,8 +192,15 @@ public class ClearingController extends ActionController {
 	}
 
 	public CardBean getCard() {
-		if (getRequest().getAttribute("searchedCard") != null)
+		if (getRequest().getAttribute("searchedCard") != null) {
 			card = (CardBean) getRequest().getAttribute("searchedCard");
+			if (card.getContactPerson() == null) {
+				card.setContactPerson(new Person());
+			}
+			if (card.getInstallAddress() == null) {
+				card.setInstallAddress(new Address());
+			}
+		}
 		return card;
 	}
 

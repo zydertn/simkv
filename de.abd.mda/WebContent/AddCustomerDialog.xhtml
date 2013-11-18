@@ -24,7 +24,7 @@
 }
 </style>
 </h:head>
-<h:body styleClass="ice-skin-rime">
+<h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
 	<h:form>
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
@@ -37,7 +37,7 @@
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Kundendaten:" />
 
 				<h:panelGrid columns="6">
@@ -54,8 +54,10 @@
 					<h:outputText value="Niederlassung:" />
 					<h:inputText size="15"
 						value="#{customerController.customer.branch}" />
-					<h:outputText />
-					<h:outputText />
+					<h:outputText value="z.Hd.:" />
+					<h:inputText size="20"
+						value="#{customerController.customer.fao}"
+						style="margin-left: 36px;" />
 					<h:outputText />
 					<h:outputText />
 
@@ -88,7 +90,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Rechnungsadresse:" />
 				<h:panelGrid columns="6">
 					<h:outputText value="Anrede: " />
@@ -126,21 +128,31 @@
 					<h:outputText value="Ort: " />
 					<h:inputText size="20"
 						value="#{customerController.customer.invoiceAddress.city}" />
+					<h:outputText/>
+					<h:outputText/>
+
+					<h:outputText value="E-Mail:" />
+					<h:inputText size="15" 
+						value="#{customerController.customer.contactPerson.email}" />
+					<h:outputText value="DE-Mail: " />
+					<h:inputText size="20"
+						value="#{customerController.customer.contactPerson.de_mail}" />
+
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#FFFFCC" cellspacing="1" width="830">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Rechnung:" />
 				<h:panelGrid columns="2">
-					<h:outputText value="SIM Profil (Standard): " />
+					<h:outputText value="Preiskategorie (Standard): " />
 					<h:selectOneMenu
 						value="#{customerController.customer.invoiceConfiguration.simPrice}">
 						<f:selectItems value="#{actionController.model.simPrices.entrySet()}" var="simPriceVar" itemLabel="#{simPriceVar.key} - #{simPriceVar.value} €" itemValue="#{simPriceVar.key}" />
 					</h:selectOneMenu>
 
-					<h:outputText value="Datenoption Profil: " />
+					<h:outputText value="Datenoption Kategorie: " />
 					<h:selectOneMenu
 						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">
 						<f:selectItems value="#{actionController.model.dataOptionSurcharges.entrySet()}" var="dataOptionVar" itemLabel="#{dataOptionVar.key} - #{dataOptionVar.value}" itemValue="#{dataOptionVar.key}" />
@@ -164,11 +176,6 @@
 					<ice:panelGroup style="overflow-y:auto; width:200px; height:150px;">
 						<ice:selectManyCheckbox layout="pageDirection"
 							value="#{customerController.customer.invoiceConfiguration.columns}">
-							<!-- f:selectItem id="item1" itemLabel="Spalte1" itemValue="1" />
-							<f:selectItem id="item2" itemLabel="Spalte2" itemValue="2" />
-							<f:selectItem id="item3" itemLabel="Spalte3" itemValue="3" />
-							<f:selectItem id="item4" itemLabel="Spalte4" itemValue="4" />
-							<f:selectItem id="item5" itemLabel="Spalte5" itemValue="5" /-->
 							<f:selectItems value="#{actionController.model.invoiceColumns}"/>
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
