@@ -568,6 +568,8 @@ public class CardBean extends DaoObject {
 	}
 
 	public boolean isTypeDeDisabled() {
+		if (this.getSupplier() == null)
+			return false;
 		if (this.getSupplier().equals(Model.SUPPLIER_TELEKOM))
 			return false;
 		else
@@ -579,7 +581,7 @@ public class CardBean extends DaoObject {
 	}
 
 	public boolean isTypeAutDisabled() {
-		if (this.getSupplier().equals(Model.SUPPLIER_TELEKOM_AUSTRIA))
+		if (this.getSupplier() != null && this.getSupplier().equals(Model.SUPPLIER_TELEKOM_AUSTRIA))
 			return false;
 		else
 			return true;
