@@ -274,9 +274,9 @@ public class ExcelImporter_13_11_25_2 {
 					} catch (Exception e) {
 						System.out.println(e);
 					}
-					if (card.getStatus().equals(Model.STATUS_ACTIVE)) {
+					if (card.getStatus().equalsIgnoreCase(Model.STATUS_ACTIVE)) {
 						card.setActivationDate(c.getTime());
-					} else if (card.getStatus().equals(Model.STATUS_INACTIVE) || card.getStatus().equals(Model.STATUS_DUMMY)) {
+					} else if (card.getStatus().equalsIgnoreCase(Model.STATUS_INACTIVE) || card.getStatus().equals(Model.STATUS_DUMMY)) {
 						card.setDeactivationDate(c.getTime());
 					}
 				}
