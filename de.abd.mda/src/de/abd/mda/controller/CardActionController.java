@@ -146,6 +146,7 @@ public class CardActionController extends ActionController {
 				card.setVertrag(ccCardBean.getVertrag());
 				card.setWe(ccCardBean.getWe());
 				card.setBestellNummer(ccCardBean.getBestellNummer());
+				card.setPin(ccCardBean.getPin());
 				updateTypeInfo();
 				card.setCardAutActivatedAs(ccCardBean.getCardAutActivatedAs());
 				card.setCardAutType(ccCardBean.getCardAutType());
