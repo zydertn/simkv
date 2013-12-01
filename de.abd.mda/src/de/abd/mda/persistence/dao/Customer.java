@@ -15,6 +15,7 @@ public class Customer extends DaoObject {
 	private String name;
 	private String branch;
 	private String fao;
+	private String supplierNumber;
 	
 	private Address address;
 	
@@ -29,6 +30,7 @@ public class Customer extends DaoObject {
 	public Customer() {
 		this.name = "";
 		this.branch = "";
+		this.supplierNumber = "";
 		// CASCADE: Evtl. hier drei Zeilen und die letzte Zeile auskommentieren
 		this.address = new Address();
 		this.invoiceAddress = new Address();
@@ -127,6 +129,14 @@ public class Customer extends DaoObject {
 
 	public void setPaymentMethod(String paymentMethod) {
 		this.paymentMethod = paymentMethod;
+	}
+
+	public String getSupplierNumber() {
+		return supplierNumber;
+	}
+
+	public void setSupplierNumber(String supplierNumber) {
+		this.supplierNumber = supplierNumber;
 	}
 	
 }

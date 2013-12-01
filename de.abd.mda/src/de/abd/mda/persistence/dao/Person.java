@@ -29,10 +29,14 @@ public class Person extends DaoObject {
 	}
 
 	public String getNameString() {
-		if (gender != null && gender.length() > 0 && name != null && name.length() > 0 && firstname != null
-				&& firstname.length() > 0)
-			return gender + " " + firstname + " " + name;
-		return "";
+		String nameS = "";
+		if (gender != null)
+			nameS += gender + " ";
+		if (firstname != null)
+			nameS += firstname + " ";
+		if (name != null)
+			nameS += name;
+		return nameS;
 	}
 
 	public String getPhoneNr() {
