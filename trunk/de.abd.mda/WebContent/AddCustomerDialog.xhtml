@@ -45,8 +45,9 @@
 					<h:inputText size="15"
 						value="#{customerController.customer.name}"
 						style="margin-right: 34px;" />
-					<h:outputText />
-					<h:outputText />
+					<h:outputText value="Lieferanten-Nr.:"/>
+					<h:inputText size="15"
+						value="#{customerController.customer.supplierNumber}" />
 					<h:outputText />
 					<h:outputText />
 
@@ -179,6 +180,11 @@
 							<f:selectItems value="#{actionController.model.invoiceColumns}"/>
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
+
+					<h:outputText value="Kommentar:" />
+					<h:inputText size="100" maxlength="100" 
+						value="#{customerController.customer.contactPerson.email}" />
+
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>

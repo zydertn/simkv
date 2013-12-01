@@ -315,9 +315,9 @@ public class ReportGenerator_landscape implements IReportGenerator {
 				if (columns.contains(Model.COLUMN_TEL_NR)) {
 					invoiceRowList.add(card.getPhoneStringInvoice());
 				}
-				if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
-					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
-				}
+//				if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
+//					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
+//				}
 				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
 					invoiceRowList.add("" + (simPrice.add(new BigDecimal(dataOptionPrice))).setScale(2));
 				}
@@ -606,7 +606,7 @@ public class ReportGenerator_landscape implements IReportGenerator {
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_EQUIP_NR, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_ORDER_NR, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_TEL_NR, tableHeader);
-			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_SINGLE_PRICE, tableHeader);
+//			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_SINGLE_PRICE, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_TOTAL_PRICE, tableHeader);
 
 			cell.setPaddingTop(1);

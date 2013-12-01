@@ -335,7 +335,15 @@
 							value="#{cardController.cardBean.einsatzort}"
 							size="13">
 						</h:inputText>
-					</h:panelGrid>					
+					</h:panelGrid>
+					
+					<h:outputText value="PIN-Code: " />
+					<h:panelGrid>
+						<h:inputText maxlength="4"
+							value="#{cardController.cardBean.pin}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>
 				</h:panelGrid>
 				<h:outputText/>
 				<h:panelGrid columns="2">

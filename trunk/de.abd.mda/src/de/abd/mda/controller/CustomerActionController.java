@@ -37,6 +37,7 @@ public class CustomerActionController extends ActionController {
 	private boolean componentDisabled = true;
 	private HtmlInputText branchBinding;
 	private HtmlInputText faoBinding;
+	private HtmlInputText supplierNumberBinding;
 	private HtmlInputText streetBinding;
 	private HtmlInputText housenumberBinding;
 	private HtmlInputText postboxBinding;
@@ -144,6 +145,7 @@ public class CustomerActionController extends ActionController {
 			
 			branchBinding.setDisabled(false);
 			faoBinding.setDisabled(false);
+			supplierNumberBinding.setDisabled(false);
 			streetBinding.setDisabled(false);
 			housenumberBinding.setDisabled(false);
 			postboxBinding.setDisabled(false);
@@ -214,6 +216,7 @@ public class CustomerActionController extends ActionController {
 			dbCustomer.setBranch(customer.getBranch());
 			dbCustomer.setFao(customer.getFao());
 			dbCustomer.setName(customer.getName());
+			dbCustomer.setSupplierNumber(customer.getSupplierNumber());
 			
 			Address ad = dbCustomer.getAddress();
 			Address cad = customer.getAddress();
@@ -686,6 +689,14 @@ public class CustomerActionController extends ActionController {
 
 	public void setCardList(List<CardBean> cardList) {
 		this.cardList = cardList;
+	}
+
+	public HtmlInputText getSupplierNumberBinding() {
+		return supplierNumberBinding;
+	}
+
+	public void setSupplierNumberBinding(HtmlInputText supplierNumberBinding) {
+		this.supplierNumberBinding = supplierNumberBinding;
 	}
 
 

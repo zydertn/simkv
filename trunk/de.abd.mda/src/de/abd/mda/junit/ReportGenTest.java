@@ -1,5 +1,6 @@
 package de.abd.mda.junit;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -53,8 +54,20 @@ public class ReportGenTest {
 
 	private List<DaoObject> searchCards(Customer customer, Calendar calcMonth,Transaction tx,
 			Session session) {
+//		String select = "select distinct card from CardBean card where card.customer = '"
+//				+ customer.getId() + "'";
+
+		Calendar maxActivationDate = Calendar.getInstance();
+		maxActivationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
+		maxActivationDate.add(Calendar.MONTH, 1);
+		Calendar maxLastCalculationDate = Calendar.getInstance();
+		maxLastCalculationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String select = "select distinct card from CardBean card where card.customer = '"
-				+ customer.getId() + "'";
+				+ customer.getId() + "' and card.status = 'Aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (card.lastCalculationDate IS NULL or card.lastCalculationDate < '" + sdf.format(maxLastCalculationDate.getTime()) + "')";
+
+		
+		
 		
 		return this.searchObjects(select, tx, session);
 	}

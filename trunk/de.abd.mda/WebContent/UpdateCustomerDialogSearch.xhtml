@@ -36,8 +36,10 @@
 					<h:outputText value="Firmenname:" />
 					<h:inputText size="15" value="#{customerController.customer.name}"
 						style="margin-right: 34px;" />
-					<h:outputText />
-					<h:outputText />
+					<h:outputText value="Lieferanten-Nr.:"/>
+					<h:inputText size="15" disabled="true"
+						binding="#{customerController.supplierNumberBinding}"
+						value="#{customerController.customer.supplierNumber}" />
 					<h:outputText />
 					<h:outputText />
 

@@ -53,8 +53,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	BaseFont bf_broadway = null;
 	BaseFont bf_arial = null;
 	static final Logger logger = Logger.getLogger(ReportGenerator_portrait.class);
-	private static int MAX_ROW_FIRST_PAGE = 25;
-	private static int FULL_PAGE_SIZE = 39;
+//	private static int MAX_ROW_FIRST_PAGE = 25;
+	private static int MAX_ROW_FIRST_PAGE = 22;
+//	private static int FULL_PAGE_SIZE = 39;
+	private static int FULL_PAGE_SIZE = 37;
 	private int pos = 0;
 	private int extraLineBreaks = 0;
 
@@ -210,11 +212,20 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				y = y - d;
 				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getBranch(), x, y, 0);
 			}
-			
+
+			if (customer.getFao() != null && customer.getFao().length() > 0) {
+				y = y - d;
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "z.Hd. " + customer.getFao(), x, y, 0);
+			}
+
 			y = y - d;
 			// Firmenstrasse
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
-					x, y, 0);
+			if (customer.getInvoiceAddress().getStreet() != null && customer.getInvoiceAddress().getStreet().length() > 0) {
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
+						x, y, 0);
+			} else if (customer.getInvoiceAddress().getPostbox() != null && customer.getInvoiceAddress().getPostbox().length() > 0) {
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Postfach "+ customer.getInvoiceAddress().getPostbox(), x, y, 0);
+			}
 
 			y = y - 2*d;
 			// Firmenort
@@ -239,60 +250,45 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Date date = new Date();
 			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 430, 630, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
 
 			// Rechnungsnummer
+			String invoiceText = "Rechnung - Nr.";
+			int invNum = 30001;
 			String invoiceNumber = "";
-			if (customer.getCustomernumber().equals("20074"))
-				invoiceNumber += "Rechnung - Nr.   30001";
-			if (customer.getCustomernumber().equals("20190"))
-				invoiceNumber = "Rechnung - Nr.   30002";
-			if (customer.getCustomernumber().equals("20208"))
-				invoiceNumber = "Rechnung - Nr.   30003";
-			if (customer.getCustomernumber().equals("20206"))
-				invoiceNumber = "Rechnung - Nr.   30004";
-			if (customer.getCustomernumber().equals("20216"))
-				invoiceNumber = "Rechnung - Nr.   30005";
-			if (customer.getCustomernumber().equals("20166"))
-				invoiceNumber = "Rechnung - Nr.   30006";
-			if (customer.getCustomernumber().equals("20120"))
-				invoiceNumber = "Rechnung - Nr.   30007";
-			if (customer.getCustomernumber().equals("20016"))
-				invoiceNumber = "Rechnung - Nr.   30008";
-			if (customer.getCustomernumber().equals("20039"))
-				invoiceNumber = "Rechnung - Nr.   30009";
-			if (customer.getCustomernumber().equals("20076"))
-				invoiceNumber = "Rechnung - Nr.   30010";
-			if (customer.getCustomernumber().equals("20198"))
-				invoiceNumber = "Rechnung - Nr.   30011";
-			if (customer.getCustomernumber().equals("20200"))
-				invoiceNumber = "Rechnung - Nr.   30012";
-			if (customer.getCustomernumber().equals("20128"))
-				invoiceNumber = "Rechnung - Nr.   30013";
-			if (customer.getCustomernumber().equals("20157"))
-				invoiceNumber = "Rechnung - Nr.   30014";
-			if (customer.getCustomernumber().equals("20012"))
-				invoiceNumber = "Rechnung - Nr.   30015";
-			if (customer.getCustomernumber().equals("20060"))
-				invoiceNumber = "Rechnung - Nr.   30016";
-			if (customer.getCustomernumber().equals("20105"))
-				invoiceNumber = "Rechnung - Nr.   30017";
-			if (customer.getCustomernumber().equals("20197"))
-				invoiceNumber = "Rechnung - Nr.   30018";
-			if (customer.getCustomernumber().equals("20224"))
-				invoiceNumber = "Rechnung - Nr.   30019";
+			String[] invNums = new String[] {"20074", "20190", "20208", "20206", "20216", "20166", "20120", 
+					"20016", "20039", "20076", "20198", "20200", "20128", "20157", "20012", "20060", 
+					"20105", "20197", "20224", "20066", "20069", "20094", "20107", "20112", "20209", 
+					"20218", "20079", "20098", "20165", "20201", "20212", "20214", "20219", "20145",
+					"20149", "20188", "20215", "20018", "20043", "20078", "20080", "20174", "20180",
+					"20040", "20054", "20183", "20213", "20221", "20017", "20059", "20119", "20228",
+					"20002"};
+			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
+			for (String s: invNums) {
+				invNumMap.put(s, invNum);
+				invNum++;
+			}
+
 			
-				
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, invoiceNumber, 430, 600, 0);
+			// Rechnungsnummer
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Rechnung - Nr.", 425, 600, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invNumMap.get(customer.getCustomernumber()), 510, 600, 0);
 
 			// Kundennr.
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 430, 589, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 506, 589, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 425, 589, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 516, 589, 0);
 
-			// Rechnungsnummer
+			int abzSuppNum = 0;
+			if (customer.getSupplierNumber() != null && customer.getSupplierNumber().length() > 0) {
+				// Lieferantennr.
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Lieferanten - Nr.     ", 425, 578, 0);
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getSupplierNumber(), 510, 578, 0);
+				abzSuppNum = 11;
+			}
+			
 			cb.setFontAndSize(bf_arial, 8);
 			String info = "(Bitte bei Bezahlung immer angeben)";
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, info, 430, 578, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, info, 425, 578-abzSuppNum, 0);
 
 			cb.endText();
 
@@ -399,28 +395,44 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				}
 				
 				List<String> columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
-				if (columns.contains(Model.COLUMN_AMOUNT)) {
+//				if (columns.contains(Model.COLUMN_AMOUNT)) {
 					invoiceRowList.add("1");
-				}
+//				}
 				if (columns.contains(Model.COLUMN_DESCRIPTION)) {
 					invoiceRowList.add(card.getInstallAddress().getAddressString());
+				}
+				if (columns.contains(Model.COLUMN_CARD_NR)) {
+					invoiceRowList.add(card.getCardnumberString());
+				}
+				if (columns.contains(Model.COLUMN_TEL_NR)) {
+//					invoiceRowList.add(card.getPhoneStringInvoice());
+					invoiceRowList.add(card.getPhoneString());
+				}
+				if (columns.contains(Model.COLUMN_INST_PLZ)) {
+					invoiceRowList.add(card.getInstallAddress().getPostcode());
+				}
+				if (columns.contains(Model.COLUMN_INST_CITY)) {
+					invoiceRowList.add(card.getInstallAddress().getCity());
+				}
+				if (columns.contains(Model.COLUMN_INST_STREET)) {
+					invoiceRowList.add(card.getInstallAddress().getStreet());
 				}
 				if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
 					invoiceRowList.add(card.getFactoryNumber());
 				}
-				if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
-					if (customer.getCustomernumber().equals("20157") && card.getCardNumberFirst().equals("78695481")) {
-						System.out.println("Jetzt");
-					}
-					try {
-						invoiceRowList.add("" + (simPrice.add(dataOptionPrice)).setScale(2));
-					} catch (ArithmeticException e) {
-						System.out.println(e);
-					}
+				if (columns.contains(Model.COLUMN_EQUIP_NR)) {
+					invoiceRowList.add(card.getEquipmentNr());
 				}
-				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
-					invoiceRowList.add("" + (simPrice.add(dataOptionPrice)).setScale(2));
+				if (columns.contains(Model.COLUMN_ORDER_NR)) {
+					invoiceRowList.add(card.getOrderNumber());
 				}
+//				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
+					String price = ("" + (simPrice.add(dataOptionPrice)).setScale(2) + " €").replace(".", ",");
+					invoiceRowList.add(price);
+//				}
+//				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
+//					invoiceRowList.add("" + (simPrice.add(dataOptionPrice)).setScale(2));
+//				}
 
 				if (!(invoiceRowList != null && invoiceRowList.size() > 0)) {
 					throw new Exception("Keine Rechnungsspalten definiert!");
@@ -440,15 +452,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			int i = 0;
 			while (i < tables.size()) {
 				doc.add(tables.get(i));
-				if (i+1 < tables.size()){
-					String lineBreaks = "\n\n\n\n\n";
-					if (i+2 == tables.size()) {
-						for (int j = 0; j < extraLineBreaks; j++) {
-							lineBreaks += "\n";
-						}
-					}
-					doc.add(new Phrase(new Chunk(lineBreaks)));
-				}
+//				if (i+1 < tables.size()){
+//					String lineBreaks = "\n\n\n\n\n";
+//					if (i+2 == tables.size()) {
+//						for (int j = 0; j < extraLineBreaks; j++) {
+//							lineBreaks += "\n";
+//						}
+//					}
+//					doc.add(new Phrase(new Chunk(lineBreaks)));
+//				}
+				doc.newPage();
+				doc.add(new Phrase(new Chunk("\n\n\n")));
 				i++;
 			}
 			
@@ -491,14 +505,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		DecimalFormat df = new DecimalFormat("#0.00");
 
 		BigDecimal mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
-	
-		int firstcols = customer.getInvoiceConfiguration().getColumns().length - 2;
+		
+		if (customer.getCustomernumber().equals("20018")) {
+			System.out.println("Jetzt");
+		}
+		int firstcols = customer.getInvoiceConfiguration().getColumns().length;
 	
 		
-		String[] cr1 = createCalcRow(firstcols, "Netto Summe €", df.format(nettoSum));;
-		String[] cr2 = createCalcRow(firstcols, "19% MWST. €", "" + mwst);
+		String[] cr1 = createCalcRow(firstcols, "Netto Summe", df.format(nettoSum).replace(".", ",") + " €");;
+		String[] cr2 = createCalcRow(firstcols, "19% MWST.", "" + df.format(mwst).replace(".", ",") + " €");
 		String[] cr3 = createCalcRow(firstcols, "", "");
-		String[] cr4 = createCalcRow(firstcols, "Endbetrag €", df.format(mwst.add(nettoSum)));
+		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(nettoSum)).replace(".", ",") + " €");
 
 		tableRowList.add(cr1);
 		tableRowList.add(cr2);
@@ -509,9 +526,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private String[] createCalcRow(int firstcols, String text, String value) {
-		String[] row = new String[firstcols+2];
+		String[] row = new String[firstcols+3];
 		int i = 0;
-		while (i < firstcols) {
+		while (i < firstcols+1) {
 			row[i] = "";
 			i++;
 		}
@@ -611,9 +628,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		Iterator<String[]> it = tableEndList.iterator();
 		while (it.hasNext()) {
 			String[] cellS = it.next();
-			cell.setPhrase(new Phrase("", tableFontBold));
-			table.addCell(cell);
+//			cell.setPhrase(new Phrase("", tableFontBold));
+//			table.addCell(cell);
 			for (int i = 0; i < cellS.length; i++) {
+				if (i + 2 == cellS.length)
+					cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				else if (i + 1 == cellS.length)
+					cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 				cell.setPhrase(new Phrase(cellS[i], tableFontBold));
 				cell.setFixedHeight(14);
 				table.addCell(cell);
@@ -624,7 +645,14 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	private PdfPTable createTableBody(PdfPTable table, ArrayList<String[]> tableRowList) {
 		Iterator<String[]> it = tableRowList.iterator();
-		Font tableFont = new Font(bf_arial, 9);
+		Font tableFont = null;
+		if (tableRowList.size() > 5) {
+			
+			tableFont = new Font(bf_arial, 8);
+			MAX_ROW_FIRST_PAGE = 25;
+			FULL_PAGE_SIZE = 41;
+		} else 
+			tableFont = new Font(bf_arial, 9);
 		PdfPCell cell = new PdfPCell();
 		cell.setFixedHeight(14);
 		cell.setPaddingTop(1);
@@ -636,8 +664,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			pos++;
 			String[] cellS = it.next();
 			cell.setPhrase(new Phrase(""+pos, tableFont));
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			table.addCell(cell);
 			for (int i = 0; i < cellS.length; i++) {
+				if (i == 0)
+					cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				else if (i+1 == cellS.length)
+					cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				else
+					cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
 				cell.setPhrase(new Phrase(cellS[i], tableFont));
 				table.addCell(cell);
 			}
@@ -648,8 +684,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	private PdfPTable createTableHeader(Customer customer) throws Exception {
 		List<String> columns = null;
+		ArrayList<String> cols = new ArrayList<String>();
 		if (customer != null) {
 			columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
+			for (String s: columns) {
+				if (s != null)
+					cols.add(s);
+			}
 		} else {
 			logger.error("Customer is NULL!");
 			throw new Exception("Customer is NULL");
@@ -660,18 +701,26 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			throw new Exception("Customer " + customer.getCustomernumber() + " hat keine Rechnungsspalten konfiguriert!");
 		}
 		
-		int anzahl_mandatory_spalten = 1;
+		int anzahl_mandatory_spalten = 3;
 		
 		// Tabelle erstellen mit Default-Parameter ; +1 wegen Pos-Spalte
-		float[] colSizes = new float[columns.size() + anzahl_mandatory_spalten];
+		float[] colSizes = new float[cols.size() + anzahl_mandatory_spalten];
 		
 		Model model = new Model();
 		model.createModel();
+
+		if (customer.getCustomernumber().equals("20215")) {
+			System.out.println("Jetzt");
+		}
+		
 		HashMap<String, Float> columnSizes = model.getColumnSize();
 		colSizes[0] = columnSizes.get(Model.COLUMN_POS);
-		for (int i = 0; i < columns.size(); i++) {
-			colSizes[i+anzahl_mandatory_spalten] = columnSizes.get(columns.get(i));
+		colSizes[1] = columnSizes.get(Model.COLUMN_AMOUNT);
+
+		for (int i = 0; i < cols.size(); i++) {
+			colSizes[i+2] = columnSizes.get(cols.get(i));
 		}
+		colSizes[2+cols.size()] = columnSizes.get(Model.COLUMN_TOTAL_PRICE);
 		
 		
 		PdfPTable tableHeader = new PdfPTable(colSizes);
@@ -680,36 +729,80 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		tableHeader.getDefaultCell().setBorder(0);
 
 		
-		if (columns != null) {
+		if (cols != null) {
 			// Table Header
-			Font tableFont = new Font(bf_arial, 9);
+			Font tableFont = null;
+			if (cols.size() > 2)
+				tableFont = new Font(bf_arial, 8);
+			else 
+				tableFont = new Font(bf_arial, 9);
 			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
 			cell.setPaddingTop(10);
 			cell.setPaddingBottom(10);
 			cell.setBorderWidthTop(0.5f);
 			cell.setBorderWidthBottom(0.5f);
 			cell.setBorder(Rectangle.TOP | Rectangle.BOTTOM);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			tableHeader.addCell(cell);
-			if (columns.contains(Model.COLUMN_AMOUNT)) {
+//			if (columns.contains(Model.COLUMN_AMOUNT)) {
 				cell.setPhrase(new Phrase("Menge", tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				tableHeader.addCell(cell);
-			}
-			if (columns.contains(Model.COLUMN_DESCRIPTION)) {
+//			}
+			if (cols.contains(Model.COLUMN_DESCRIPTION)) {
 				cell.setPhrase(new Phrase("Bezeichnung", tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
-			if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
+			if (cols.contains(Model.COLUMN_CARD_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_CARD_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_TEL_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_TEL_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_INST_PLZ)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_INST_PLZ, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_INST_CITY)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_INST_CITY, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_INST_STREET)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_INST_STREET, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_PLANT_NUMBER)) {
 				cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
-			if (columns.contains(Model.COLUMN_SINGLE_PRICE)) {
-				cell.setPhrase(new Phrase("Einzelpreis", tableFont));
+			if (cols.contains(Model.COLUMN_EQUIP_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_EQUIP_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
-			if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
-				cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
+			if (cols.contains(Model.COLUMN_ORDER_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_ORDER_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
+//			if (cols.contains(Model.COLUMN_TOTAL_PRICE)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_TOTAL_PRICE, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				tableHeader.addCell(cell);
+//			}
+//			if (cols.contains(Model.COLUMN_TOTAL_PRICE)) {
+//				cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
+//				tableHeader.addCell(cell);
+//			}
 
 			cell.setPaddingTop(1);
 			cell.setPaddingBottom(5);

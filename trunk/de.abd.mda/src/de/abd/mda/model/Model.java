@@ -50,9 +50,10 @@ public class Model {
 	public static String COLUMN_INST_STREET = "Straﬂe";
 	public static String COLUMN_EQUIP_NR = "Equipment Nr.";
 	public static String COLUMN_ORDER_NR = "Order Nr.";
+	public static String COLUMN_CARD_NR = "Kartennummer";
 	public static String COLUMN_TEL_NR = "Rufnummer";
-	public static String COLUMN_SINGLE_PRICE = "Einzelpreis";
-	public static String COLUMN_TOTAL_PRICE = "Gesamtpreis";
+//	public static String COLUMN_SINGLE_PRICE = "Preis";
+	public static String COLUMN_TOTAL_PRICE = "Preis";
 	
 	
 	public static String GENDER_MAN = "Herr";
@@ -135,30 +136,31 @@ public class Model {
 		
 		invoiceColumns = new ArrayList<String>();
 //		invoiceColumns.add(COLUMN_POS);
-		invoiceColumns.add(COLUMN_AMOUNT);
+//		invoiceColumns.add(COLUMN_AMOUNT);
 		invoiceColumns.add(COLUMN_DESCRIPTION);
-		invoiceColumns.add(COLUMN_PLANT_NUMBER);
+		invoiceColumns.add(COLUMN_CARD_NR);
+		invoiceColumns.add(COLUMN_TEL_NR);
 		invoiceColumns.add(COLUMN_INST_PLZ);
 		invoiceColumns.add(COLUMN_INST_CITY);
 		invoiceColumns.add(COLUMN_INST_STREET);
+		invoiceColumns.add(COLUMN_PLANT_NUMBER);
 		invoiceColumns.add(COLUMN_EQUIP_NR);
 		invoiceColumns.add(COLUMN_ORDER_NR);
-		invoiceColumns.add(COLUMN_TEL_NR);
-		invoiceColumns.add(COLUMN_SINGLE_PRICE);
-		invoiceColumns.add(COLUMN_TOTAL_PRICE);
+//		invoiceColumns.add(COLUMN_SINGLE_PRICE);
 		
 		columnSize = new HashMap<String, Float>();
 		columnSize.put(COLUMN_POS, 1.5f);
-		columnSize.put(COLUMN_AMOUNT, 2.2f);
+		columnSize.put(COLUMN_AMOUNT, 2.3f);
 		columnSize.put(COLUMN_DESCRIPTION, 12.5f);
-		columnSize.put(COLUMN_PLANT_NUMBER, 9f);
-		columnSize.put(COLUMN_INST_PLZ, 2f);
+		columnSize.put(COLUMN_CARD_NR, 5f);
+		columnSize.put(COLUMN_TEL_NR, 6f);
+		columnSize.put(COLUMN_INST_PLZ, 1.5f);
 		columnSize.put(COLUMN_INST_CITY, 4f);
 		columnSize.put(COLUMN_INST_STREET, 8f);
+		columnSize.put(COLUMN_PLANT_NUMBER, 3.5f);
 		columnSize.put(COLUMN_EQUIP_NR, 5f);
 		columnSize.put(COLUMN_ORDER_NR, 4f);
-		columnSize.put(COLUMN_TEL_NR, 6f);
-		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
+//		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
 		columnSize.put(COLUMN_TOTAL_PRICE, 4f);
 		
 		relationList = new ArrayList<String>();
