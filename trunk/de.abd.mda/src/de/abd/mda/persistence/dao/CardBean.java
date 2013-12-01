@@ -66,6 +66,7 @@ public class CardBean extends DaoObject {
 	private boolean typeDeDisabled;
 	private boolean typeAutDisabled;
 	private boolean actAsDisabled;
+	private String pin;
 	
 	private Map<Integer, Double> simPriceMap;
 	
@@ -224,7 +225,10 @@ public class CardBean extends DaoObject {
 	}
 
 	public String getPhoneString() {
-		return "0" + phoneNrFirst + "" + phoneNrSecond;
+		String s = "";
+		if (!phoneNrFirst.startsWith("0"))
+			s += "0";
+		return s + phoneNrFirst + "" + phoneNrSecond;
 	}
 	
 	public String getPhoneStringInvoice() {
@@ -607,6 +611,14 @@ public class CardBean extends DaoObject {
 
 	public void setRelation(String relation) {
 		this.relation = relation;
+	}
+
+	public String getPin() {
+		return pin;
+	}
+
+	public void setPin(String pin) {
+		this.pin = pin;
 	}
 
 	
