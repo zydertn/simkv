@@ -140,7 +140,7 @@ public class CardActionController extends ActionController {
 				card.setLeitstand(ccCardBean.getLeitstand());
 				card.setLokation(ccCardBean.getLokation());
 				card.setNotrufNr(ccCardBean.getNotrufNr());
-				card.setOrderNumber(ccCardBean.getOrderNumber());
+//				card.setOrderNumber(ccCardBean.getOrderNumber());
 				card.setSachkonto(ccCardBean.getSachkonto());
 				card.setSoNr(ccCardBean.getSoNr());
 				card.setVertrag(ccCardBean.getVertrag());

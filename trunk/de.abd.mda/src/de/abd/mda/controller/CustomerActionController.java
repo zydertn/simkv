@@ -58,6 +58,7 @@ public class CustomerActionController extends ActionController {
 	private HtmlSelectOneMenu invoiceconfigCreationFrequencyBinding;
 	private HtmlInputText emailBinding;
 	private HtmlInputText de_mailBinding;
+	private HtmlInputText commentBinding;
 	private String relation;
 	private List<CardBean> cardList;
 //	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
@@ -165,6 +166,7 @@ public class CustomerActionController extends ActionController {
 			invoiceconfigCreationFrequencyBinding.setDisabled(false);
 			emailBinding.setDisabled(false);
 			de_mailBinding.setDisabled(false);
+			commentBinding.setDisabled(false);
 //			invoiceconfigColumnsBinding.setDisabled(false);
 			getRequest().setAttribute("componentDisabled", false);
 
@@ -217,6 +219,7 @@ public class CustomerActionController extends ActionController {
 			dbCustomer.setFao(customer.getFao());
 			dbCustomer.setName(customer.getName());
 			dbCustomer.setSupplierNumber(customer.getSupplierNumber());
+			dbCustomer.setComment(customer.getComment());
 			
 			Address ad = dbCustomer.getAddress();
 			Address cad = customer.getAddress();
@@ -697,6 +700,14 @@ public class CustomerActionController extends ActionController {
 
 	public void setSupplierNumberBinding(HtmlInputText supplierNumberBinding) {
 		this.supplierNumberBinding = supplierNumberBinding;
+	}
+
+	public HtmlInputText getCommentBinding() {
+		return commentBinding;
+	}
+
+	public void setCommentBinding(HtmlInputText commentBinding) {
+		this.commentBinding = commentBinding;
 	}
 
 

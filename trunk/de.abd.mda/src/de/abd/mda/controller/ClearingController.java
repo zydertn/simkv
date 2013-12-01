@@ -148,7 +148,7 @@ public class ClearingController extends ActionController {
 			
 			dbCard.setFactoryNumber(screenCard.getFactoryNumber());
 			dbCard.setVpnProfile(screenCard.getVpnProfile());
-			dbCard.setOrderNumber(screenCard.getOrderNumber());
+//			dbCard.setOrderNumber(screenCard.getOrderNumber());
 			dbCard.setProject(screenCard.getProject());
 			dbCard.setComment(screenCard.getComment());
 			

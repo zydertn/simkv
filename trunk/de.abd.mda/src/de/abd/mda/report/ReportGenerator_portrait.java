@@ -423,8 +423,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				if (columns.contains(Model.COLUMN_EQUIP_NR)) {
 					invoiceRowList.add(card.getEquipmentNr());
 				}
-				if (columns.contains(Model.COLUMN_ORDER_NR)) {
-					invoiceRowList.add(card.getOrderNumber());
+				if (columns.contains(Model.COLUMN_AUFTRAGS_NR)) {
+					invoiceRowList.add(card.getAuftragsNr());
+				}
+				if (columns.contains(Model.COLUMN_BESTELL_NR)) {
+					invoiceRowList.add(card.getBestellNummer());
 				}
 //				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
 					String price = ("" + (simPrice.add(dataOptionPrice)).setScale(2) + " €").replace(".", ",");
@@ -789,8 +792,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
-			if (cols.contains(Model.COLUMN_ORDER_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_ORDER_NR, tableFont));
+			if (cols.contains(Model.COLUMN_AUFTRAGS_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_AUFTRAGS_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_BESTELL_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_BESTELL_NR, tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
