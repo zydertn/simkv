@@ -26,7 +26,6 @@
 	 	<property name="status" type="string" column="CARD_STATUS" length="15" />
 	 	<property name="activationDate" type="timestamp" column="CARD_ACTIVATION_DATE" />
 	 	<property name="deactivationDate" type="timestamp" column="CARD_DEACTIVATION_DATE" />
-	 	<property name="orderNumber" type="string" column="CARD_ORDER_NUMBER" length="200" />
 	 	<property name="deliverySlipDate" type="timestamp" column="CARD_DELIVERY_SLIP_DATE" />
 	 	<property name="deliverySlipNumber" type="string" column="CARD_DELIVERY_SLIP_NUMBER" length="12" />
 	 	<many-to-one name="contactPerson" class="de.abd.mda.persistence.dao.Person" column="CARD_PERSON" lazy="false" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="PERSON_ID"></many-to-one>

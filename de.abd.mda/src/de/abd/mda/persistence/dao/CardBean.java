@@ -31,7 +31,7 @@ public class CardBean extends DaoObject {
 	private Date deactivationDate;
 
 	private String customerOrderNumber;
-	private String orderNumber;
+//	private String orderNumber;
 	private Date deliverySlipDate;
 	private String deliverySlipNumber;
 	private Person contactPerson;
@@ -89,7 +89,7 @@ public class CardBean extends DaoObject {
 		this.phoneNrSecond = "";
 		this.status = "Inaktiv";
 		this.customerOrderNumber = "";
-		this.orderNumber = "";
+//		this.orderNumber = "";
 		this.deliverySlipDate = new Date();
 		SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
 		df.format(deliverySlipDate);
@@ -127,7 +127,7 @@ public class CardBean extends DaoObject {
 		this.sequenceNumber = seqNum;
 		this.status = "Inaktiv";
 		this.customerOrderNumber = "";
-		this.orderNumber = "";
+//		this.orderNumber = "";
 		this.deliverySlipDate = new Date();
 		SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
 		df.format(deliverySlipDate);
@@ -291,13 +291,13 @@ public class CardBean extends DaoObject {
 		this.customerOrderNumber = customerOrderNumber;
 	}
 
-	public String getOrderNumber() {
-		return orderNumber;
-	}
-
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
-	}
+//	public String getOrderNumber() {
+//		return orderNumber;
+//	}
+//
+//	public void setOrderNumber(String orderNumber) {
+//		this.orderNumber = orderNumber;
+//	}
 
 	public String getDeliverySlipNumber() {
 		return deliverySlipNumber;

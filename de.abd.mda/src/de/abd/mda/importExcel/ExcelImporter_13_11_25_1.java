@@ -317,9 +317,9 @@ public class ExcelImporter_13_11_25_1 {
 		if (spalten.containsKey("Endkunde")) {
 			card.setComment(split[spalten.get("Endkunde")]);
 		}
-		// prüfen, ob OrderNumber korrekt ist, oder BestellNummer (auf Karte)
+		// prüfen, ob BestellNummer korrekt ist, oder BestellNummer (auf Karte)
 		if (spalten.containsKey("Bestellnr.")) {
-			card.setOrderNumber(split[spalten.get("Bestellnr.")]);
+			card.setBestellNummer(split[spalten.get("Bestellnr.")]);
 		}
 		if (spalten.containsKey("Kartenpreis")) {
 			if (split.length > spalten.get("Kartenpreis") && split[spalten.get("Kartenpreis")] != null) {

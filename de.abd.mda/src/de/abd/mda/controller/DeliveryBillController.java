@@ -68,7 +68,7 @@ public class DeliveryBillController extends ActionController {
 			if (list.size() > 0) {
 				card = (CardBean) list.get(0);
 				card.setCustomerOrderNumber(ccCardBean.getCustomerOrderNumber());
-				card.setOrderNumber(ccCardBean.getOrderNumber());
+//				card.setOrderNumber(ccCardBean.getOrderNumber());
 				card.setDeliverySlipDate(ccCardBean.getDeliverySlipDate());
 				card.setDeliverySlipNumber(ccCardBean.getDeliverySlipNumber());
 
