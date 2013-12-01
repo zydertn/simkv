@@ -16,5 +16,6 @@
 	 	<many-to-one name="contactPerson" class="de.abd.mda.persistence.dao.Person" lazy="false" column="CUSTOMER_CONTACT_PERSON" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="PERSON_ID"></many-to-one>
 	 	<property type="string" name="customernumber" column="CUSTOMER_NUMBER" length="15" />
 	 	<many-to-one name="invoiceConfiguration" class="de.abd.mda.persistence.dao.InvoiceConfiguration" lazy="false" column="CUSTOMER_INVOICE_CONFIGURATION" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="IC_ID"></many-to-one>
+	 	<property name="comment" type="string" column="CUSTOMER_COMMENT" length="100"/>
 	 </class>
  </hibernate-mapping>

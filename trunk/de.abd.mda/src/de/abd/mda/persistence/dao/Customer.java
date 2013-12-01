@@ -24,6 +24,7 @@ public class Customer extends DaoObject {
 	private Person contactPerson;
 	private String customernumber;
 	private String paymentMethod;
+	private String comment;
 	
 	private InvoiceConfiguration invoiceConfiguration;
 
@@ -36,6 +37,7 @@ public class Customer extends DaoObject {
 		this.invoiceAddress = new Address();
 		this.contactPerson = new Person();
 		this.customernumber = "";
+		this.comment = "";
 		this.invoiceConfiguration = new InvoiceConfiguration();
 		paymentMethod = "";
 	}
@@ -137,6 +139,14 @@ public class Customer extends DaoObject {
 
 	public void setSupplierNumber(String supplierNumber) {
 		this.supplierNumber = supplierNumber;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 }
