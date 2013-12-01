@@ -50,9 +50,15 @@ public class ExcelImporter_13_11_27 {
 		
 		public void readData() {
 			try {
-//					String path = "D:/Softwareentwicklung/Excel-Lieferung-Sina/Rollout/2013_11_27/";
+					String hostname = java.net.InetAddress.getLocalHost().getHostName();
+					System.out.println("Hostname" + hostname);
+					
 					String path = "E:/ExcelImport/Rollout/";
-
+					
+					if (hostname.equals("STR00108")) {
+						path = "D:/Softwareentwicklung/Excel-Lieferung-Sina/Rollout/2013_11_27/";
+					}
+					
 					FileReader file = null;
 	
 					logger.info("************ 20002_GSM-Tel._Karten_Windscheid+Wendel_Ges..csv **************");
@@ -332,8 +338,9 @@ public class ExcelImporter_13_11_27 {
 				card.setSimPrice(simPrice);
 			}
 		}
+
 		if (spalten.containsKey("PIN-Code")) {
-			card.setOrderNumber(split[spalten.get("PIN-Code")]);
+			card.setPin(split[spalten.get("PIN-Code")]);
 		}
 		
 		card.setCustomer(customer);
