@@ -37,7 +37,7 @@
 					<h:inputText size="15" value="#{customerController.customer.name}"
 						style="margin-right: 34px;" />
 					<h:outputText value="Lieferanten-Nr.:"/>
-					<h:inputText size="15" disabled="true"
+					<h:inputText size="15" disabled="#{customerController.componentDisabled}"
 						binding="#{customerController.supplierNumberBinding}"
 						value="#{customerController.customer.supplierNumber}" />
 					<h:outputText />
@@ -235,6 +235,13 @@
 							<f:selectItems value="#{actionController.model.invoiceColumns}" disabled="#{customerController.componentDisabled}" />
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
+					
+					<h:outputText value="Kommentar:" />
+					<h:inputText size="100" maxlength="100" 
+						binding="#{customerController.commentBinding}"
+						disabled="#{customerController.componentDisabled}"
+						value="#{customerController.customer.comment}" />
+					
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
