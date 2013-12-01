@@ -272,25 +272,27 @@ public class ExcelImporter_13_11_27 {
 		if (spalten.containsKey("Status")) {
 			card.setStatus(""+split[spalten.get("Status")]);
 		}
+
+		String date = null;
+
 		if (spalten.containsKey("Datum")) {
-			try {
-				String date = split[spalten.get("Datum")];
-				if (date != null && date.length() > 1) {
-					System.out.println(date);
-					Calendar c = new GregorianCalendar();
-					try{
-						c.set(new Integer(date.substring(6, 10)), new Integer(date.substring(3, 5)) - 1, new Integer(date.substring(0, 2)));
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-					if (card.getStatus().equalsIgnoreCase(Model.STATUS_ACTIVE)) {
-						card.setActivationDate(c.getTime());
-					} else if (card.getStatus().equalsIgnoreCase(Model.STATUS_INACTIVE) || card.getStatus().equals(Model.STATUS_DUMMY)) {
-						card.setDeactivationDate(c.getTime());
-					}
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				logger.warn("ArrayIndexOutOfBounds Exception bei Spalte Datum der Karte " + card.getCardNumber());
+			date = split[spalten.get("Datum")];
+		} else if (spalten.containsKey("Aktiv. Datum")) {
+			date = split[spalten.get("Aktiv. Datum")];
+		}
+		
+		if (date != null && date.length() > 1) {
+			System.out.println(date);
+			Calendar c = new GregorianCalendar();
+			try{
+				c.set(new Integer(date.substring(6, 10)), new Integer(date.substring(3, 5)) - 1, new Integer(date.substring(0, 2)));
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+			if (card.getStatus().equalsIgnoreCase(Model.STATUS_ACTIVE)) {
+				card.setActivationDate(c.getTime());
+			} else if (card.getStatus().equalsIgnoreCase(Model.STATUS_INACTIVE) || card.getStatus().equals(Model.STATUS_DUMMY)) {
+				card.setDeactivationDate(c.getTime());
 			}
 		}
 
@@ -322,6 +324,9 @@ public class ExcelImporter_13_11_27 {
 				String comment = "" + split[spalten.get("Bemerkungen")]; 
 				card.setComment(comment);
 			}
+		}
+		if (spalten.containsKey("Memo")) {
+			card.setComment(split[spalten.get("Memo")]);
 		}
 		if (spalten.containsKey("Endkunde")) {
 			card.setComment(split[spalten.get("Endkunde")]);
