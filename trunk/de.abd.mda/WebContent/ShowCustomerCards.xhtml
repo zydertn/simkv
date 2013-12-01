@@ -50,7 +50,7 @@
 		</h:panelGrid>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1500">
 				<h:outputText style="font-weight:bold" value="Karten:" />
 				<h:panelGrid>
 					<ice:dataTable id="cardTable" value="#{customerController.cardList}" var="card" rows="25" width="100%" cellspacing="1" cellpadding="5">
@@ -102,6 +102,14 @@
 							</f:facet>
 							#{card.simPriceDouble} €
 						</ice:column>
+
+						<ice:column>
+							<f:facet name="header">
+								<ice:commandSortHeader columnName="Kommentar" value="Kommentar"></ice:commandSortHeader>
+							</f:facet>
+							#{card.comment}
+						</ice:column>
+
 					
 					</ice:dataTable>
 					
