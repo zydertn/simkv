@@ -50,8 +50,8 @@ public class ExcelImporter_13_11_27 {
 		
 		public void readData() {
 			try {
-					String path = "D:/Softwareentwicklung/Excel-Lieferung-Sina/Rollout/2013_11_27/";
-//					String path = "E:/ExcelImport/Rollout/";
+//					String path = "D:/Softwareentwicklung/Excel-Lieferung-Sina/Rollout/2013_11_27/";
+					String path = "E:/ExcelImport/Rollout/";
 
 					FileReader file = null;
 	
