@@ -309,7 +309,7 @@ public class ReportGenerator_landscape implements IReportGenerator {
 				if (columns.contains(Model.COLUMN_EQUIP_NR)) {
 					invoiceRowList.add(card.getEquipmentNr());
 				}
-				if (columns.contains(Model.COLUMN_ORDER_NR)) {
+				if (columns.contains(Model.COLUMN_AUFTRAGS_NR)) {
 					invoiceRowList.add(card.getBestellNummer());
 				}
 				if (columns.contains(Model.COLUMN_TEL_NR)) {
@@ -604,7 +604,7 @@ public class ReportGenerator_landscape implements IReportGenerator {
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_INST_CITY, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_INST_STREET, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_EQUIP_NR, tableHeader);
-			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_ORDER_NR, tableHeader);
+			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_AUFTRAGS_NR, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_TEL_NR, tableHeader);
 //			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_SINGLE_PRICE, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_TOTAL_PRICE, tableHeader);
