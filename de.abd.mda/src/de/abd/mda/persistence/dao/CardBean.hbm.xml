@@ -58,6 +58,7 @@
 	 	<property name="kostenstelle" type="string" column="CARD_KOSTENSTELLE" length="50" />
 	 	<property name="einsatzort" type="string" column="CARD_EINSATZORT" length="50" />
 	 	<property name="bestellNummer" type="string" column="CARD_BESTELL_NR" length="50" />
+	 	<property name="pin" type="string" column="CARD_PIN" length="4" />
 		<!-- list name="comments" cascade="all">
 
          <key column="comment_id"/>
