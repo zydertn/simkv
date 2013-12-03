@@ -12,7 +12,7 @@
 		</id-->
 		<composite-id>
 			<key-property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12"></key-property>
-			<key-property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4"></key-property>
+			<key-property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="12"></key-property>
 		</composite-id>
 		<!-- property name="cardNumberFirst" type="string" column="CARD_NUMBER_FIRST" length="12"></property>
 		<property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4"></property-->

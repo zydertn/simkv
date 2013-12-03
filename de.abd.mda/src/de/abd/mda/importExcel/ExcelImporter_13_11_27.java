@@ -172,13 +172,13 @@ public class ExcelImporter_13_11_27 {
 			
 			if (existingCard != null) {
 				setCardValues(existingCard, split, spalten, customer);
-				// Deutsche Karten
-				existingCard.setSupplier(Model.SUPPLIER_TELEKOM);
+//				// Deutsche Karten
+//				existingCard.setSupplier(Model.SUPPLIER_TELEKOM);
 				list.add(existingCard);
 			} else {
 				setCardValues(card, split, spalten, customer);
-				// Deutsche Karten
-				card.setSupplier(Model.SUPPLIER_TELEKOM);
+//				// Deutsche Karten
+//				card.setSupplier(Model.SUPPLIER_TELEKOM);
 				CardController cardController = new CardController();
 				String retMessage = cardController.createObject(card);
 				if (retMessage != null && retMessage.length() == 0) {
@@ -346,6 +346,15 @@ public class ExcelImporter_13_11_27 {
 
 		if (spalten.containsKey("PIN-Code")) {
 			card.setPin(split[spalten.get("PIN-Code")]);
+		}
+		
+		if (spalten.containsKey("Land")) {
+			String land = split[spalten.get("Land")];
+			if (land != null && land.equals("A")) {
+				card.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
+			} else {
+				card.setSupplier(Model.SUPPLIER_TELEKOM);
+			}
 		}
 		
 		card.setCustomer(customer);
