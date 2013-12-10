@@ -36,17 +36,34 @@ public class ReportGenTest {
 		
 		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
 
-		Iterator<DaoObject> it = customerList.iterator();
-		while (it.hasNext()) {
-			Customer customer = (Customer) it.next();
+//		Iterator<DaoObject> it = customerList.iterator();
+//		while (it.hasNext()) {
+//			Customer customer = (Customer) it.next();
+//
+//			Calendar calcMonth = Calendar.getInstance();
+//			calcMonth.set(2013, Calendar.OCTOBER, 1, 0, 0, 0);
+//			List<DaoObject> cards = rg.searchCards(customer, calcMonth, tx, session);
+////			IReportGenerator repGen = new ReportGenerator_landscape();
+//			IReportGenerator repGen = new ReportGenerator_portrait();
+//			repGen.generateReport(cards, customer, calcMonth);
+//		}
 
+		Iterator<DaoObject> it2 = customerList.iterator();
+		while (it2.hasNext()) {
+			Customer customer = (Customer) it2.next();
+
+			if (customer.getCustomernumber().equals("20165")) {
+				System.out.println("Jetzt");
+			}
+			
 			Calendar calcMonth = Calendar.getInstance();
-			calcMonth.set(2013, Calendar.OCTOBER, 1, 0, 0, 0);
+			calcMonth.set(2013, Calendar.NOVEMBER, 1, 0, 0, 0);
 			List<DaoObject> cards = rg.searchCards(customer, calcMonth, tx, session);
 //			IReportGenerator repGen = new ReportGenerator_landscape();
 			IReportGenerator repGen = new ReportGenerator_portrait();
 			repGen.generateReport(cards, customer, calcMonth);
 		}
+
 		tx.commit();
 //		Customer customer = (Customer) customerList.get(0);
 		

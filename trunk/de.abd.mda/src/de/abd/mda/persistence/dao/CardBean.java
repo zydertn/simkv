@@ -25,7 +25,8 @@ public class CardBean extends DaoObject {
 	private String phoneNrSecond;
 	private int sequenceNumber;
 	private String supplier;
-
+	private int invoiceRows;
+	
 	private String status;
 	private Date activationDate;
 	private Date deactivationDate;
@@ -89,6 +90,7 @@ public class CardBean extends DaoObject {
 		this.phoneNrSecond = "";
 		this.status = "Inaktiv";
 		this.customerOrderNumber = "";
+		this.invoiceRows = 1;
 //		this.orderNumber = "";
 		this.deliverySlipDate = new Date();
 		SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
@@ -619,6 +621,14 @@ public class CardBean extends DaoObject {
 
 	public void setPin(String pin) {
 		this.pin = pin;
+	}
+
+	public int getInvoiceRows() {
+		return invoiceRows;
+	}
+
+	public void setInvoiceRows(int invoiceRows) {
+		this.invoiceRows = invoiceRows;
 	}
 
 	

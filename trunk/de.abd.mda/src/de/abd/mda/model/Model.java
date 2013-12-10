@@ -107,6 +107,7 @@ public class Model {
 	private List<String> invoiceCreationFrequencies;
 	private List<String> invoiceColumns;
 	private List<String> paymentMethods;
+	private List<Integer> invoiceRowList;
 	
 	public Model() {
 	}
@@ -159,12 +160,12 @@ public class Model {
 		columnSize.put(COLUMN_INST_PLZ, 1.5f);
 		columnSize.put(COLUMN_INST_CITY, 4f);
 		columnSize.put(COLUMN_INST_STREET, 8f);
-		columnSize.put(COLUMN_PLANT_NUMBER, 3.5f);
+		columnSize.put(COLUMN_PLANT_NUMBER, 5f);
 		columnSize.put(COLUMN_EQUIP_NR, 5f);
 		columnSize.put(COLUMN_AUFTRAGS_NR, 4f);
 		columnSize.put(COLUMN_BESTELL_NR, 4f);
 //		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
-		columnSize.put(COLUMN_TOTAL_PRICE, 4f);
+		columnSize.put(COLUMN_TOTAL_PRICE, 3f);
 		
 		relationList = new ArrayList<String>();
 		relationList.add(RELATION_0);
@@ -174,6 +175,13 @@ public class Model {
 		paymentMethods = new ArrayList<String>();
 		paymentMethods.add(paymentInvoice);
 		paymentMethods.add(paymentDebit);
+		
+		invoiceRowList = new ArrayList<Integer>();
+		invoiceRowList.add(1);
+		invoiceRowList.add(2);
+		invoiceRowList.add(3);
+		invoiceRowList.add(4);
+		invoiceRowList.add(5);
 	}
 
 	public List<SelectItem> getCountryCodes() {
@@ -480,6 +488,14 @@ public class Model {
 
 	public void setPaymentDebit(String paymentDebit) {
 		this.paymentDebit = paymentDebit;
+	}
+
+	public List<Integer> getInvoiceRowList() {
+		return invoiceRowList;
+	}
+
+	public void setInvoiceRowList(List<Integer> invoiceRowList) {
+		this.invoiceRowList = invoiceRowList;
 	}
 
 }

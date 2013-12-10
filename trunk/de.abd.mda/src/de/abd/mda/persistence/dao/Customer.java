@@ -1,5 +1,7 @@
 package de.abd.mda.persistence.dao;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.OneToOne;
 
@@ -25,6 +27,7 @@ public class Customer extends DaoObject {
 	private String customernumber;
 	private String paymentMethod;
 	private String comment;
+	private Date lastCalculationDate;
 	
 	private InvoiceConfiguration invoiceConfiguration;
 
@@ -147,6 +150,14 @@ public class Customer extends DaoObject {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public Date getLastCalculationDate() {
+		return lastCalculationDate;
+	}
+
+	public void setLastCalculationDate(Date lastCalculationDate) {
+		this.lastCalculationDate = lastCalculationDate;
 	}
 	
 }

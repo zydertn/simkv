@@ -58,7 +58,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //	private static int FULL_PAGE_SIZE = 39;
 	private static int FULL_PAGE_SIZE = 37;
 	private int pos = 0;
-	private int extraLineBreaks = 0;
 
 
 	
@@ -75,9 +74,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			} else {
 				month = "0" + (calcMonth.get(Calendar.MONTH) + 1);
 			}
+			
+			String year = "" + calcMonth.get(Calendar.YEAR);
+			
 			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + ".pdf";
 //			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
-			File dir = new File("C:/Temp/report/2013/10");
+			File dir = new File("C:/Temp/report/" + year + "/" + month);
 			dir.mkdirs();
 			
 			FileOutputStream fos = new FileOutputStream(
@@ -255,6 +257,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			// Rechnungsnummer
 			String invoiceText = "Rechnung - Nr.";
 			int invNum = 30001;
+			if (calcMonth.get(Calendar.MONTH) == Calendar.NOVEMBER) {
+				invNum = 30201;
+			}
 			String invoiceNumber = "";
 			String[] invNums = new String[] {"20074", "20190", "20208", "20206", "20216", "20166", "20120", 
 					"20016", "20039", "20076", "20198", "20200", "20128", "20157", "20012", "20060", 
@@ -262,7 +267,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					"20218", "20079", "20098", "20165", "20201", "20212", "20214", "20219", "20145",
 					"20149", "20188", "20215", "20018", "20043", "20078", "20080", "20174", "20180",
 					"20040", "20054", "20183", "20213", "20221", "20017", "20059", "20119", "20228",
-					"20002"};
+					"20002", "20014", "20015", "20048", "20070", "20073", "20075", "20102", "20164",
+					"20041", "20065", "20130", "20147", "20155", "20163", "20184", "20191", "20235",
+					"20237", "20238", "20239", "20240", "20087"};
 			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
 			for (String s: invNums) {
 				invNumMap.put(s, invNum);
@@ -299,13 +306,27 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Chunk invoice = new Chunk(addNewLines(15) + "Rechnung", invoiceFont);
 			Font timeframeFont = new Font(bf_arial, 11);
 			Font timeframeFontBold = new Font(bf_arial, 11, Font.BOLD);
+			String calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH));
+			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY))
+				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 2);
+			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY))
+				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 5);
+			calcTimeString += " " + calcMonth.get(Calendar.YEAR);
 			Chunk timeframe = new Chunk(
 					addNewLines(2)
-							+ "Berechnungszeitraum für die Servicegebühr: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR) + "\n\n",
-					timeframeFont);
+							+ "Berechnungszeitraum für die Servicegebühr: " + calcTimeString, timeframeFont);
+			Chunk commentCk = null;
+			if (customer.getComment() != null && customer.getComment().length() > 0) {
+				commentCk = new Chunk(addNewLines(1) + customer.getComment() + addNewLines(1), timeframeFont);
+			} else {
+				commentCk = new Chunk(addNewLines(2), timeframeFont);
+			}
+
 			Phrase phrase = new Phrase();
 			phrase.add(invoice);
 			phrase.add(timeframe);
+			phrase.add(commentCk);
+			
 			// phrase.se
 			doc.add(phrase);
 
@@ -344,7 +365,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			cell.setPaddingBottom(5);
 //			cell.setBorder(Rectangle.NO_BORDER);
 			
-			ArrayList<String[]> tableRowList = new ArrayList<String[]>();
+			ArrayList<TableRow> tableRowList = new ArrayList<TableRow>();
 			Iterator<DaoObject> iter = customerCards.iterator();			
 			ConfigurationController cc = new ConfigurationController();
 			Map<Integer, Double> simPrices = cc.getSimPricesFromDB();
@@ -352,6 +373,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			BigDecimal calcSum = new BigDecimal("0.0");
 			
+			int zahl = 0;
 			while (iter.hasNext()) {
 				CardBean card = (CardBean) iter.next();
 				BigDecimal simPrice = new BigDecimal("0.0");
@@ -365,8 +387,32 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					}
 				}
 
-				calcSum = calcSum.add(simPrice);
+				zahl++;
+				System.out.println("Jetzt: Kunde " + customer.getCustomernumber() + ", " + zahl);
 				
+				if (customer.getCustomernumber().equals("20165") && zahl == 67) {
+					System.out.println("Jetzt");
+				}
+				
+				
+				ArrayList<String> invoiceRowList = new ArrayList<String>();
+				
+				if (customer.getCustomernumber().equals("20074")) {
+					System.out.println("Kunde 20074");
+				}
+				
+				List<String> columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
+//				if (columns.contains(Model.COLUMN_AMOUNT)) {
+				int monthAmount = 1;
+				if (card.getFactoryNumber().equals("40514290")) {
+					System.out.println("Jetzt");
+				}
+				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY)) {
+					Calendar periodMaxCalcDate = getPeriodMaxCalcDate(customer.getInvoiceConfiguration().getCreationFrequency(), calcMonth);
+					monthAmount = getMonthAmount(customer.getInvoiceConfiguration().getCreationFrequency(), card.getActivationDate(), periodMaxCalcDate);
+				}
+				calcSum = calcSum.add(simPrice.multiply(new BigDecimal(monthAmount)));
+
 				BigDecimal dataOptionPrice = new BigDecimal("0.0");
 				if (dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge()) != null) {
 					dataOptionPrice.add(new BigDecimal(""+dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge())));
@@ -374,30 +420,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					logger.warn("DataOptionSurcharge Key == " + customer.getInvoiceConfiguration().getDataOptionSurcharge() + ", ==> Key gibt es nicht in DataOptionSurcharge-Konfigurations-Map!");
 				}
 
-				calcSum = calcSum.add(dataOptionPrice);
-				
-				if (customer.getCustomernumber().equals("20074")) {
-					if (calcMonth.get(Calendar.YEAR) == 2013 && calcMonth.get(Calendar.MONTH) == 2) {
-						if (card.getCardNumberFirst().equals("72264689") && card.getCardNumberSecond().equals("5")) {
-							System.out.println(DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
-						}
-					}
-				}
+				calcSum = calcSum.add(dataOptionPrice.multiply(new BigDecimal(monthAmount)));
 
+				invoiceRowList.add("" + monthAmount);
 				
-				
-				System.out.println("Jetzt: Kunde " + customer.getCustomernumber());
-				
-				ArrayList<String> invoiceRowList = new ArrayList<String>();
-	
-				if (customer.getCustomernumber().equals("20074")) {
-					System.out.println("Kunde 20074");
-				}
-				
-				List<String> columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
-//				if (columns.contains(Model.COLUMN_AMOUNT)) {
-					invoiceRowList.add("1");
-//				}
+				//				}
 				if (columns.contains(Model.COLUMN_DESCRIPTION)) {
 					invoiceRowList.add(card.getInstallAddress().getAddressString());
 				}
@@ -430,7 +457,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					invoiceRowList.add(card.getBestellNummer());
 				}
 //				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
-					String price = ("" + (simPrice.add(dataOptionPrice)).setScale(2) + " €").replace(".", ",");
+				 	BigDecimal rowPrice = (simPrice.add(dataOptionPrice)).multiply(new BigDecimal(monthAmount));
+					String price = ("" + rowPrice.setScale(2) + " €").replace(".", ",");
 					invoiceRowList.add(price);
 //				}
 //				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
@@ -444,7 +472,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				for (int i = 0; i < invoiceRowList.size(); i++) {
 					invoiceRow[i] = invoiceRowList.get(i);
 				}
-				tableRowList.add(invoiceRow);
+				tableRowList.add(new TableRow(card.getInvoiceRows(), invoiceRow));
 			}
 
 			tableRowList = addCalculationRows(tableRowList, customerCards, customer, calcSum);
@@ -501,8 +529,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return false;
 	}
 	
-	private ArrayList<String[]> addCalculationRows(
-			ArrayList<String[]> tableRowList,
+	private ArrayList<TableRow> addCalculationRows(
+			ArrayList<TableRow> tableRowList,
 			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum) {
 
 		DecimalFormat df = new DecimalFormat("#0.00");
@@ -520,10 +548,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		String[] cr3 = createCalcRow(firstcols, "", "");
 		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(nettoSum)).replace(".", ",") + " €");
 
-		tableRowList.add(cr1);
-		tableRowList.add(cr2);
-		tableRowList.add(cr3);
-		tableRowList.add(cr4);
+		tableRowList.add(new TableRow(1, cr1));
+		tableRowList.add(new TableRow(1, cr2));
+		tableRowList.add(new TableRow(1, cr3));
+		tableRowList.add(new TableRow(1, cr4));
 		
 		return tableRowList;
 	}
@@ -541,7 +569,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return row;
 	}
 
-	private ArrayList<PdfPTable> prepareTables(ArrayList<String[]> tableRowList, Customer customer) throws Exception {
+	private ArrayList<PdfPTable> prepareTables(ArrayList<TableRow> tableRowList, Customer customer) throws Exception {
 		ArrayList<PdfPTable> tableList = new ArrayList<PdfPTable>();
 		
 		// check, ob alles inkl. Tabellenende auf 1 Seite passt
@@ -556,29 +584,28 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		int fullTableCount = new Double((tableRowList.size() - MAX_ROW_FIRST_PAGE) / FULL_PAGE_SIZE).intValue();
 
 		// create table for first page
-		ArrayList<String[]> firstPageList = new ArrayList<String[]>();
+		ArrayList<TableRow> firstPageList = new ArrayList<TableRow>();
 		int i = 0;
-		while (i < MAX_ROW_FIRST_PAGE) {
-			if (i+6 < tableRowList.size()) {
+		int tablePos = 0;
+		while (tablePos < MAX_ROW_FIRST_PAGE) {
+			if (tablePos+6 < tableRowList.size()) {
 				firstPageList.add(tableRowList.get(i));
 				i++;
+				tablePos += tableRowList.get(i).getInvoiceRows();
 			} else {
-				extraLineBreaks = (MAX_ROW_FIRST_PAGE) - i;
 				break;
 			}
-
 		}
 		tableList.add(createTable(firstPageList, false, customer));
 		
 		// create tables for other full pages
 		for (int j=1; j<fullTableCount+1; j++) {
-			ArrayList<String[]> otherFullTableList = new ArrayList<String[]>();
+			ArrayList<TableRow> otherFullTableList = new ArrayList<TableRow>();
 			while (i < (MAX_ROW_FIRST_PAGE + j*FULL_PAGE_SIZE)) {
 				if (i+6 < tableRowList.size()) {
 					otherFullTableList.add(tableRowList.get(i));
 					i++;
 				} else {
-					extraLineBreaks = (MAX_ROW_FIRST_PAGE + j*FULL_PAGE_SIZE) - i;
 					break;
 				}
 			}
@@ -586,7 +613,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		}
 		
 		// create last table
-		ArrayList<String[]> lastTable = new ArrayList<String[]>();
+		ArrayList<TableRow> lastTable = new ArrayList<TableRow>();
 		while (i < tableRowList.size()) {
 			lastTable.add(tableRowList.get(i));
 			i++;
@@ -596,12 +623,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return tableList;
 	}
 
-	private PdfPTable createTable(ArrayList<String[]> currentRowList, boolean lastPage, Customer customer) throws Exception {
+	private PdfPTable createTable(ArrayList<TableRow> currentRowList, boolean lastPage, Customer customer) throws Exception {
 		PdfPTable table = createTableHeader(customer);
 		if (table != null) {
 			if (lastPage) {
-				ArrayList<String[]> bodyList = new ArrayList<String[]>();
-				ArrayList<String[]> endList = new ArrayList<String[]>();
+				ArrayList<TableRow> bodyList = new ArrayList<TableRow>();
+				ArrayList<TableRow> endList = new ArrayList<TableRow>();
 				for (int i = 0; i < (currentRowList.size() - 4); i++) {
 					bodyList.add(currentRowList.get(i));
 				}
@@ -621,16 +648,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 	
 	private PdfPTable createTableEnd(PdfPTable table,
-			ArrayList<String[]> tableEndList) {
+			ArrayList<TableRow> tableEndList) {
 		Font tableFontBold = new Font(bf_arial, 9);
 		tableFontBold.setStyle(Font.BOLD);
 		PdfPCell cell = new PdfPCell();
 		cell.setPaddingTop(1);
 		cell.setPaddingBottom(5);
 		cell.setBorder(Rectangle.NO_BORDER);
-		Iterator<String[]> it = tableEndList.iterator();
+		Iterator<TableRow> it = tableEndList.iterator();
 		while (it.hasNext()) {
-			String[] cellS = it.next();
+			TableRow tr = it.next();
+			String[] cellS = tr.getInvoiceRow();
 //			cell.setPhrase(new Phrase("", tableFontBold));
 //			table.addCell(cell);
 			for (int i = 0; i < cellS.length; i++) {
@@ -639,15 +667,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				else if (i + 1 == cellS.length)
 					cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 				cell.setPhrase(new Phrase(cellS[i], tableFontBold));
-				cell.setFixedHeight(14);
+				if (tr.getInvoiceRows() == 1)
+					cell.setFixedHeight(14);
 				table.addCell(cell);
 			}
 		}
 		return table;
 	}
 
-	private PdfPTable createTableBody(PdfPTable table, ArrayList<String[]> tableRowList) {
-		Iterator<String[]> it = tableRowList.iterator();
+	private PdfPTable createTableBody(PdfPTable table, ArrayList<TableRow> tableRowList) {
+		Iterator<TableRow> it = tableRowList.iterator();
 		Font tableFont = null;
 		if (tableRowList.size() > 5) {
 			
@@ -657,7 +686,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		} else 
 			tableFont = new Font(bf_arial, 9);
 		PdfPCell cell = new PdfPCell();
-		cell.setFixedHeight(14);
 		cell.setPaddingTop(1);
 		cell.setPaddingBottom(5);
 		cell.setBorder(Rectangle.NO_BORDER);
@@ -665,7 +693,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		
 		while (it.hasNext()) {
 			pos++;
-			String[] cellS = it.next();
+			TableRow tr = it.next();
+			String[] cellS = tr.getInvoiceRow();
+			if (tr.getInvoiceRows() == 1)
+				cell.setFixedHeight(14);
 			cell.setPhrase(new Phrase(""+pos, tableFont));
 			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			table.addCell(cell);
@@ -717,13 +748,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		}
 		
 		HashMap<String, Float> columnSizes = model.getColumnSize();
-		colSizes[0] = columnSizes.get(Model.COLUMN_POS);
-		colSizes[1] = columnSizes.get(Model.COLUMN_AMOUNT);
+		try {
+			colSizes[0] = columnSizes.get(Model.COLUMN_POS);
+			colSizes[1] = columnSizes.get(Model.COLUMN_AMOUNT);
 
-		for (int i = 0; i < cols.size(); i++) {
-			colSizes[i+2] = columnSizes.get(cols.get(i));
+			for (int i = 0; i < cols.size(); i++) {
+				colSizes[i+2] = columnSizes.get(cols.get(i));
+			}
+			colSizes[2+cols.size()] = columnSizes.get(Model.COLUMN_TOTAL_PRICE);
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
-		colSizes[2+cols.size()] = columnSizes.get(Model.COLUMN_TOTAL_PRICE);
 		
 		
 		PdfPTable tableHeader = new PdfPTable(colSizes);
@@ -842,5 +877,76 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private Calendar getPeriodMaxCalcDate(String creationFrequency, Calendar calcMonth) {
+		Calendar periodMaxCalcDate = Calendar.getInstance();
+		periodMaxCalcDate.set(calcMonth.get(Calendar.YEAR), calcMonth.get(Calendar.MONTH), 1, 0, 0, 0);
+		periodMaxCalcDate.set(Calendar.MILLISECOND, 0);
+		
+		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY)) {
+			// Nothing to be done - Date set to first day of current month
+		} else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY)) {
+			if (calcMonth.get(Calendar.MONTH) < Calendar.APRIL)
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.APRIL);
+			else if (calcMonth.get(Calendar.MONTH) < Calendar.JULY)
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JULY);
+			else if (calcMonth.get(Calendar.MONTH) < Calendar.OCTOBER)
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.OCTOBER);
+			else {
+				periodMaxCalcDate.add(Calendar.YEAR, 1);
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JANUARY);
+			}
+		} else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY)) {
+			if (calcMonth.get(Calendar.MONTH) < Calendar.JULY)
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JULY);
+			else {
+				periodMaxCalcDate.add(Calendar.YEAR, 1);
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JULY);
+			}
+		} else {
+			// Jährliche Rechnung - darf aktuell auch erst abgerechnet werden, wenn das Jahr zuende ist
+			periodMaxCalcDate.add(Calendar.YEAR, 1);
+			periodMaxCalcDate.set(Calendar.MONTH, Calendar.JANUARY);
+		}
+		
+		return periodMaxCalcDate;
+	}
+
+	private int getMonthAmount(String creationFrequency, Date activationDate, Calendar periodMaxCalcDate) {
+		int monthAmount = 0;
+		Calendar activationCal = Calendar.getInstance();
+		activationCal.setTime(activationDate);
+		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY))
+			return 1;
+		else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY)) {
+			if (activationCal.get(Calendar.YEAR) == periodMaxCalcDate.get(Calendar.YEAR)) {
+				monthAmount = periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+				if (monthAmount > 3)
+					return 3;
+			} else if (activationCal.get(Calendar.YEAR)+1 == periodMaxCalcDate.get(Calendar.YEAR)) {
+				monthAmount = 12 + periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+				if (monthAmount > 3)
+					return 3;
+			} else {
+				return 3;			}
+		} else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY)) {
+			if (activationCal.get(Calendar.YEAR) == periodMaxCalcDate.get(Calendar.YEAR)) {
+				monthAmount = periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+				if (monthAmount > 6)
+					return 6;
+			} else if (activationCal.get(Calendar.YEAR)+1 == periodMaxCalcDate.get(Calendar.YEAR)) {
+				monthAmount = 12 + periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+				if (monthAmount > 6)
+					return 6;
+			} else {
+				return 6;
+			}
+		} else if (creationFrequency.equals(Model.FREQUENCY_YEARLY)) {
+			// Sonderbehandlung nötig
+		}
+		
+		
+		return monthAmount;
 	}
 }
