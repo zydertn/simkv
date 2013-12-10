@@ -101,7 +101,8 @@
 						<h:inputText size="8" maxlength="9"
 							value="#{cardController.cardBean.phoneNrSecond}" />
 					</h:panelGrid>
-
+				</h:panelGrid>
+				<h:panelGrid columns="5">				
 					<h:outputText value="Standard-Preis: " />
 					<h:panelGrid id="checkPanel" columns="3">
 						<h:selectBooleanCheckbox id="myCheckbox" onclick="hideOrShow(this.checked);" value="#{cardController.cardBean.standardPrice}" />
@@ -110,9 +111,15 @@
 						</h:selectOneMenu>
 						<h:inputHidden id="myCheckHidden" binding="#{cardController.cardPriceHidden}" value="#{cardController.cardBean.simPrice}"></h:inputHidden>
 					</h:panelGrid>
-					
-				</h:panelGrid>
-				<h:panelGrid columns="5">				
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="Rechnungszeilen: " />
+					<h:selectOneMenu value="#{cardController.cardBean.invoiceRows}">
+						<f:selectItems value="#{actionController.model.invoiceRowList}" />
+					</h:selectOneMenu>
+
+
 					<h:outputText value="Kartenlieferant: " />
 					<h:panelGrid>
 						<h:selectOneMenu onchange="hideOrShowCardTypeSelector(this.value)" value="#{cardController.cardBean.supplier}">

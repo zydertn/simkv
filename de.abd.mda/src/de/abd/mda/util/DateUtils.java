@@ -15,5 +15,5 @@ public class DateUtils {
 	public static String getMonthAsString(int month) {
 	    return new DateFormatSymbols().getMonths()[month];
 	}
-	
+
 }
