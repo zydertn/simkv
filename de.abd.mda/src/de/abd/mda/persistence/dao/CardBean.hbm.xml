@@ -34,7 +34,8 @@
 	 	<property name="factoryNumber" type="string" column="CARD_INSTALL_FACTORY_NUMBER" length="200" />
 	 	<property name="vpnProfile" type="string" column="CARD_INSTALL_VPN_PROFILE" length="15" />
 	 	<property name="comment" type="string" column="CARD_COMMENT" />
-	 	<property name="lastCalculationDate" type="timestamp" column="CARD_CALCULATION_DATE" />
+	 	<!-- property name="lastCalculationDate" type="timestamp" column="CARD_CALCULATION_DATE" /-->
+	 	<property name="lastCalculationYear" type="int" column="CARD_CALC_YEAR" not-null="false" />
 	 	<property name="project" type="string" column="CARD_PROJECT" length="50" />
 	 	<property name="countryCode" type="string" column="CARD_COUNTRY_CODE" length="3" />
 		<property name="country" type="string" column="CARD_COUNTRY" length="2" />
@@ -43,6 +44,7 @@
 		<property name="cardAutType" type="string" column="CARD_AUT_TYPE" length="15" />
 		<property name="cardAutActivatedAs" type="string" column="CARD_AUT_ACT_AS" length="15" />
 		<property name="standardPrice" type="boolean" column="CARD_STANDARD_PRICE" />
+		<property name="flatrateCard" type="boolean" column="CARD_IS_FLATRATE_CARD" />
 		<property name="relation" type="string" column="CARD_RELATION" length="70" />
 	 	<property name="anlagenNr" type="string" column="CARD_ANLAGEN_NR" length="50" />
 	 	<property name="equipmentNr" type="string" column="CARD_EQUIPMENT_NR" length="50" />

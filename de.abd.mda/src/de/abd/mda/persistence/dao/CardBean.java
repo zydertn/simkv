@@ -41,9 +41,11 @@ public class CardBean extends DaoObject {
 	private String factoryNumber;
 	private String vpnProfile;
 	private String comment;
-	private Date lastCalculationDate;
+//	private Date lastCalculationDate;
+	private int lastCalculationYear;
 	private String project;
 	private Boolean standardPrice;
+	private Boolean flatrateCard;
 	private int simPrice;
 	private String relation;	
 	
@@ -73,13 +75,13 @@ public class CardBean extends DaoObject {
 	
 //	private List comments;
 	
-	public Date getLastCalculationDate() {
-		return lastCalculationDate;
-	}
-
-	public void setLastCalculationDate(Date lastCalculationDate) {
-		this.lastCalculationDate = lastCalculationDate;
-	}
+//	public Date getLastCalculationDate() {
+//		return lastCalculationDate;
+//	}
+//
+//	public void setLastCalculationDate(Date lastCalculationDate) {
+//		this.lastCalculationDate = lastCalculationDate;
+//	}
 
 	public CardBean() {	
 		this.cardNumberFirst = "";
@@ -104,6 +106,7 @@ public class CardBean extends DaoObject {
 		this.comment = "";
 		this.project = "";
 		this.standardPrice = true;
+		this.flatrateCard = false;
 		this.simPrice = 0;
 		this.anlagenNr = "";
 		this.equipmentNr = "";
@@ -141,6 +144,7 @@ public class CardBean extends DaoObject {
 		this.comment = "";
 		this.project = "";
 		this.standardPrice = true;
+		this.flatrateCard = false;
 		this.simPrice = 0;
 		this.anlagenNr = "";
 		this.equipmentNr = "";
@@ -629,6 +633,22 @@ public class CardBean extends DaoObject {
 
 	public void setInvoiceRows(int invoiceRows) {
 		this.invoiceRows = invoiceRows;
+	}
+
+	public int getLastCalculationYear() {
+		return lastCalculationYear;
+	}
+
+	public void setLastCalculationYear(int lastCalculationYear) {
+		this.lastCalculationYear = lastCalculationYear;
+	}
+
+	public Boolean getFlatrateCard() {
+		return flatrateCard;
+	}
+
+	public void setFlatrateCard(Boolean flatrateCard) {
+		this.flatrateCard = flatrateCard;
 	}
 
 	

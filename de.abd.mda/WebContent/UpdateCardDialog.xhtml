@@ -125,6 +125,16 @@
 						<f:selectItems value="#{actionController.model.invoiceRowList}" />
 					</h:selectOneMenu>
 
+					<h:outputText value="Standard-Preis: " />
+					<h:panelGrid>
+						<h:selectBooleanCheckbox value="#{cardController.cardBean.flatrateCard}" />
+					</h:panelGrid>
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText />
+					<h:outputText />
+
 						
 					<h:outputText value="Kartenlieferant: " />
 					<h:panelGrid>
