@@ -129,6 +129,7 @@ public class CardActionController extends ActionController {
 				card.setSupplier(ccCardBean.getSupplier());
 				card.setStatus(ccCardBean.getStatus());
 				card.setStandardPrice(ccCardBean.getStandardPrice());
+				card.setFlatrateCard(ccCardBean.getFlatrateCard());
 				card.setSimPrice(ccCardBean.getSimPrice());
 				card.setInvoiceRows(ccCardBean.getInvoiceRows());
 				card.setRelation(ccCardBean.getRelation());
