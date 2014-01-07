@@ -61,7 +61,7 @@ public class FlatrateImporter_13_12_27 {
 					
 					FileReader file = null;
 	
-					file = new FileReader(path + "Flatrate_Karten.csv");
+					file = new FileReader(path + "Flatrate_Karten_Update.csv");
 					readDataFromFile(file);
 //					writeOutList(list);
 					
