@@ -53,7 +53,8 @@ public class ConfigurationActionController extends DaoController {
 		ConfigurationController cc = new ConfigurationController();
 		simPriceMap = cc.getSimPricesFromDB();
 		if (simPriceKey != null && simPriceKey.length() > 0) {
-				simPriceMap.put(new Integer(simPriceKey), simPrice);
+				Integer simKey = new Integer(simPriceKey);
+				simPriceMap.put(simKey, simPrice);
 		}
 		dataOptionMap = cc.getDataOptionPricesFromDB();
 		if (dataOptionKey != null && dataOptionKey.length() > 0) {
