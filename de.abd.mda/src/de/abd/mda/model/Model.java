@@ -53,6 +53,7 @@ public class Model {
 	public static String COLUMN_CARD_NR = "Kartennummer";
 	public static String COLUMN_TEL_NR = "Rufnummer";
 	public static String COLUMN_BESTELL_NR = "Bestell-Nr.";
+	public static String COLUMN_VERTRAG_NR = "Vertragsnummer";
 //	public static String COLUMN_SINGLE_PRICE = "Preis";
 	public static String COLUMN_TOTAL_PRICE = "Preis";
 	
@@ -149,6 +150,7 @@ public class Model {
 		invoiceColumns.add(COLUMN_EQUIP_NR);
 		invoiceColumns.add(COLUMN_AUFTRAGS_NR);
 		invoiceColumns.add(COLUMN_BESTELL_NR);
+		invoiceColumns.add(COLUMN_VERTRAG_NR);
 //		invoiceColumns.add(COLUMN_SINGLE_PRICE);
 		
 		columnSize = new HashMap<String, Float>();
@@ -164,6 +166,7 @@ public class Model {
 		columnSize.put(COLUMN_EQUIP_NR, 5f);
 		columnSize.put(COLUMN_AUFTRAGS_NR, 4f);
 		columnSize.put(COLUMN_BESTELL_NR, 4f);
+		columnSize.put(COLUMN_VERTRAG_NR, 4f);
 //		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
 		columnSize.put(COLUMN_TOTAL_PRICE, 3f);
 		

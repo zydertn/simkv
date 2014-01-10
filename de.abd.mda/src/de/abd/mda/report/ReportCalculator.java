@@ -13,12 +13,15 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
+
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.DateUtils;
 import de.abd.mda.util.FacesUtil;
 
 public class ReportCalculator implements Runnable {
@@ -59,7 +62,7 @@ public class ReportCalculator implements Runnable {
 		Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(System.currentTimeMillis());
 		now.set(Calendar.YEAR, 2014);
-		now.set(Calendar.MONTH, 0);
+		now.set(Calendar.MONTH, 1);
 		now.set(Calendar.DAY_OF_MONTH, 5);
 		// Um den Fehlerfall auszuschließen, wenn jemand exakt am 1. eines Monats um 0 Uhr auf den Knopf drückt (damit dieser Monat auch berechnet wird):
 		now.set(Calendar.SECOND, 1);
@@ -81,11 +84,12 @@ public class ReportCalculator implements Runnable {
 		Iterator<DaoObject> cusIt = customers.iterator();
 		int i = 0;
 		int cusNum = 0;
+		boolean flatrateCalc = false;
 
 		while (cusIt.hasNext()) {
 			cusNum++;
 			Calendar calcMonth = Calendar.getInstance();
-			calcMonth.set(2000, Calendar.JANUARY, 1, 0, 0, 0);
+			calcMonth.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
 			calcMonth.set(Calendar.MILLISECOND, 0);
 			
 			
@@ -95,48 +99,36 @@ public class ReportCalculator implements Runnable {
 			logger.info("Aktueller Kunde: " + customer.getListString()
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
-			if (customer.getCustomernumber().equals("20147")) {
-				System.out.println("Jetzt");
-			} else {
-				System.out.println(customer.getCustomernumber() + ", " + customer.getName());
-				continue;
-			}
-			
 			Calendar maxCalcDate = getMaxCalcDate(customer.getInvoiceConfiguration().getCreationFrequency(), now);
 			
 			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
 				System.out.println("YEARLY CUSTOMER ****************; SPEZIALBEHANDLUNG *************");
 				System.out.println("Customer: " + customer.getCustomernumber() + ", " + customer.getName());
-				continue;
+			}
+			
+			if (customer.getCustomernumber().equals("20057")) {
+				System.out.println("Jetzt");
 			}
 			
 			while (calcMonth.before(maxCalcDate)) {
 				session = SessionFactoryUtil.getInstance().getCurrentSession();
 				tx = createTransaction(session);
 				
-				List<DaoObject> customerCards = searchCards(customer, calcMonth, tx, session);
+				List<DaoObject> customerCards = searchCards(customer, calcMonth, tx, session, flatrateCalc);
 
 				if (customerCards != null && customerCards.size() > 0) {
 					i++;
-					IReportGenerator rp = null;
-//					if (customer.getInvoiceConfiguration().getFormat().equals(Model.FORMAT_QUERFORMAT)) {
-//						rp = new ReportGenerator_landscape();
-//					} else {
-						rp = new ReportGenerator_portrait();
-//					}
 
-					boolean generatedWithoutError = rp.generateReport(customerCards, customer, calcMonth);
-					if (generatedWithoutError) {
-//						Iterator<DaoObject> cIt = customerCards.iterator();
-//						while (cIt.hasNext()) {
-//							CardBean card = (CardBean) cIt.next();
-//							card.setLastCalculationDate(calcMonth.getTime());
-//						}
-					} else {
-						// Aus der Schleife für diesen Kunden aussteigen
-						// Folgemonate dürfen nicht mehr berechnet werden
-						// Mit nächstem Kunde weitermachen
+					boolean generatedWithoutErrors = generateReport(customer, customerCards, calcMonth, false);
+					if (!generatedWithoutErrors)
 						break;
+					
+					if (customer.getCustomernumber().equals("20243")) {
+						// Kunde OTIS - braucht auch eine Flatrate-Rechnung
+						customerCards = searchCards(customer, calcMonth, tx, session, true);
+						generatedWithoutErrors = generateReport(customer, customerCards, calcMonth, true);
+						if (!generatedWithoutErrors)
+							break;
 					}
 				}
 				
@@ -175,8 +167,8 @@ public class ReportCalculator implements Runnable {
 		return true;
 	}
 
-	private Calendar getMaxCalcDate(String creationFrequency, Calendar now) {
 		Calendar maxCalcDate = Calendar.getInstance();
+		private Calendar getMaxCalcDate(String creationFrequency, Calendar now) {
 		maxCalcDate.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), 1, 0, 0, 0);
 		maxCalcDate.set(Calendar.MILLISECOND, 0);
 		
@@ -197,11 +189,56 @@ public class ReportCalculator implements Runnable {
 			else
 				maxCalcDate.set(Calendar.MONTH, Calendar.JULY);
 		} else {
-			// Jährliche Rechnung - darf aktuell auch erst abgerechnet werden, wenn das Jahr zuende ist
-			maxCalcDate.set(Calendar.MONTH, Calendar.JANUARY);
+			/*
+			 * Jährliche Rechnung 
+			 * darf jederzeit im Jahr erstellt werden; 
+			 * Je nach Aktivierungsdatum wird eine bestimmte Anzahl Monate berechnet; Also z.B. 11 Monate für dieses Jahr, wenn die Karte im Februar dieses Jahres aktiviert wurde.
+			 * Eine für das Jahr bereits in Rechnung gestellte Karte darf nicht erneut in Rechnung gestellt werden bei späterer erneuter Jahresabrechnungs-Erstellung.
+			 * Pro Monat soll dabei eine Rechnung erstellt werden.
+			 * Handling bzgl. maxCalcDate ist daher wie bei monatlicher Rechnungsstellung.
+			 * Es muss also nichts getan werden.
+			 */
 		}
 		
 		return maxCalcDate;
+	}
+		
+	private boolean generateReport(Customer customer, List<DaoObject> customerCards, Calendar calcMonth, boolean flatrateCalc) {
+		IReportGenerator rp = null;
+		rp = new ReportGenerator_portrait();
+
+		boolean generatedWithoutError = rp.generateReport(customerCards, customer, calcMonth, flatrateCalc);
+		if (generatedWithoutError) {
+			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
+				/*
+				 * Bei Jahreskunden muss das LastCalculationDate auf den Karten gespeichert werden.
+				 * Jahresrechnungen werden jeden Monat erstellt mit den Karten, die seit der letzten Rechnungserstellung (normalerweise im letzten Monat) hinzugekommen sind.
+				 * Es werden nur Rechnungen für ganze Monate erstellt - das heißt, wenn am 5. eines Monats ein Rechnungslauf stattfindet, dann werden die Karten, die zw. 1. und 5. 
+				 * dieses Monats aktiviert wurden, noch nicht beachtet - erst im Folgemonat.
+				 * Eigentlich ist nur das Jahr relevant, aber historisch bedingt wird das ganze Datum gespeichert. Wenn eine Karte in einem Jahr schon einmal in Rechnung gestellt 
+				 * wurde (für das ganze Jahr ab dem Monat der Aktivierung), dann muss die Karte erst im Folgejahr wieder in Rechnung gestellt werden.
+				 */
+				Iterator<DaoObject> cIt = customerCards.iterator();
+				while (cIt.hasNext()) {
+					CardBean card = (CardBean) cIt.next();
+					card.setLastCalculationYear(calcMonth.get(Calendar.YEAR));
+				}
+			} else {
+				/*
+				 * Bei allen anderen Rechnungsläufen muss nur pro Kunde das LastCalculationDate gesetzt werden.
+				 */
+				
+				customer.setLastCalculationDate(calcMonth.getTime());
+			}
+		} else {
+			// Aus der Schleife für diesen Kunden aussteigen
+			// Folgemonate dürfen nicht mehr berechnet werden
+			// Mit nächstem Kunde weitermachen
+			logger.error("Fehler bei Report-Erstellung für Kunde: " + customer.getCustomernumber() + ", Monat: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
+			return false;
+		}
+		
+		return true;
 	}
 
 	public int getProgress() {
@@ -228,7 +265,8 @@ public class ReportCalculator implements Runnable {
 			} else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY)) {
 				calcMonth.add(Calendar.MONTH, 6);
 			} else if (creationFrequency.equals(Model.FREQUENCY_YEARLY)) {
-				calcMonth.add(Calendar.YEAR, 1);
+				// Jahreskunden bekommen monatlich eine inkrementelle Rechnung
+				calcMonth.add(Calendar.MONTH, 1);
 			}
 		} else {
 			// treat like monthly creation
@@ -256,31 +294,58 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private List<DaoObject> searchCards(Customer customer, Calendar calcMonth,Transaction tx,
-			Session session) {
+			Session session, boolean flatrateCalc) {
 		Calendar maxActivationDate = Calendar.getInstance();
 		maxActivationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
 		maxActivationDate = addMonthsToMaxActivationDate(customer.getInvoiceConfiguration().getCreationFrequency(), maxActivationDate);
 		Calendar maxLastCalculationDate = Calendar.getInstance();
 		maxLastCalculationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String select = "select distinct card from CardBean card where card.customer = '"
-				+ customer.getId() + "' and card.status = 'Aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (customer.lastCalculationDate IS NULL or customer.lastCalculationDate < '" + sdf.format(maxLastCalculationDate.getTime()) + "')";
-		
-		DateComparator dc = new DateComparator();
-		List<DaoObject> cardList = searchObjects(select, tx, session);
-		Collections.sort(cardList, dc);
-		return cardList;
+		Calendar customerLastCalcDate = Calendar.getInstance();
+		if (customer.getLastCalculationDate() != null) {
+			customerLastCalcDate.setTime(customer.getLastCalculationDate());
+		}
+
+		if (customer.getLastCalculationDate() == null || customerLastCalcDate.before(maxLastCalculationDate)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String select = "select distinct card from CardBean card where card.customer = '"
+					+ customer.getId() + "' and card.status = 'aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and NOT card.flatrateCard IS TRUE";
+			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
+				select = "select distinct card from CardBean card where card.customer = '"
+						+ customer.getId() + "' and card.status = 'Aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '" + maxLastCalculationDate.get(Calendar.YEAR) + "') and NOT card.flatrateCard IS TRUE";
+			}
+			if (flatrateCalc) {
+				select = "select distinct card from CardBean card where card.customer = '"
+						+ customer.getId() + "' and card.status = 'Aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and card.flatrateCard IS TRUE";
+				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
+					select = "select distinct card from CardBean card where card.customer = '"
+							+ customer.getId() + "' and card.status = 'Aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '" + maxLastCalculationDate.get(Calendar.YEAR) + "') and card.flatrateCard IS TRUE";
+				}
+			}
+
+			DateComparator dc = new DateComparator();
+			List<DaoObject> cardList = searchObjects(select, tx, session);
+			if (cardList != null && cardList.size() > 0) {
+				System.out.println("Size = " + cardList.size());
+			}
+			Collections.sort(cardList, dc);
+			return cardList;
+		}
+		return null;
 	}
 
 	private Calendar addMonthsToMaxActivationDate(String creationFrequency, Calendar maxActivationDate) {
 		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY))
 			maxActivationDate.add(Calendar.MONTH, 1);
 		else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY))
-			maxActivationDate.add(Calendar.MONTH, 3);
+			maxActivationDate.add(Calendar.MONTH, (maxActivationDate.get(Calendar.MONTH) + 1) % 3);
 		else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY))
-			maxActivationDate.add(Calendar.MONTH, 6);
-		else
-			maxActivationDate.add(Calendar.MONTH, 12);
+			maxActivationDate.add(Calendar.MONTH, (maxActivationDate.get(Calendar.MONTH) + 1) % 6);
+		else {
+			// JAHRESKUNDE, zu behandeln wie Monatskunde
+			maxActivationDate.add(Calendar.MONTH, 1);
+//			maxActivationDate.add(Calendar.YEAR, 1);
+//			maxActivationDate.set(Calendar.MONTH, 0);
+		}
 		return maxActivationDate;
 	}
 

@@ -65,7 +65,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		loadBaseFonts();
 	}
 
-	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth) {
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc) {
 		try {
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
 			String month = "";
@@ -76,8 +76,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			}
 			
 			String year = "" + calcMonth.get(Calendar.YEAR);
+
+			String flatrateString = "";
+			if (flatrateCalc)
+				flatrateString = "_flatrate";
 			
-			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + ".pdf";
+			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + flatrateString + ".pdf";
 //			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
 			File dir = new File("C:/Temp/report/" + year + "/" + month);
 			dir.mkdirs();
@@ -106,7 +110,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			document.open();
 
-			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth);
+			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc);
 			if (generatedWithErrors) {
 				return false;
 			}
@@ -182,7 +186,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return footer;
 	}
 
-	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth) {
+	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc) {
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 
@@ -200,6 +204,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			cb.setColorFill(Color.BLACK);
 			cb.setFontAndSize(bf_arial, 11);
 			String companyString = "Firma";
+			if (customer.getContactPerson().getGender() != null) {
+				companyString = customer.getContactPerson().getGender();
+			}
 			y = y - 20;
 			int d = 11;
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, companyString, x, y,
@@ -259,6 +266,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			int invNum = 30001;
 			if (calcMonth.get(Calendar.MONTH) == Calendar.NOVEMBER) {
 				invNum = 30201;
+			} else if (calcMonth.get(Calendar.MONTH) == Calendar.DECEMBER) {
+				invNum = 30401;
 			}
 			String invoiceNumber = "";
 			String[] invNums = new String[] {"20074", "20190", "20208", "20206", "20216", "20166", "20120", 
@@ -269,7 +278,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					"20040", "20054", "20183", "20213", "20221", "20017", "20059", "20119", "20228",
 					"20002", "20014", "20015", "20048", "20070", "20073", "20075", "20102", "20164",
 					"20041", "20065", "20130", "20147", "20155", "20163", "20184", "20191", "20235",
-					"20237", "20238", "20239", "20240", "20087"};
+					"20237", "20238", "20239", "20240", "20087", "20182", "20194", "20156", "20234",
+					"20169", "20170", "20241", "20242", "20244", "20160", "20101", "20210", "20133",
+					"20203", "20134", "20092", "20205", "20135", "20132", "20100", "20136", "20175",
+					"20196", "20224", "20169", "20170", "20241", "20242", "20013", "20036", "20050",
+					"20055", "20063", "20093", "20110", "20111", "20121", "20126", "20177", "20193",
+					"20230", "20090", "20097", "20127", "20159", "20161", "20172", "20220", "20229",
+					"20251", "20252", "20253", "20254", "20255", "20256", "20243", "20243_flatrate",
+					"20245", "20217", "20038", "20257", "20258", "20003", "20259", "20006", "20260",
+					"20004", "20005", "20057", "20020", "20021", "20022", "20008", "20023", "20007",
+					"20010", "20009"};
 			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
 			for (String s: invNums) {
 				invNumMap.put(s, invNum);
@@ -279,7 +297,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			
 			// Rechnungsnummer
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Rechnung - Nr.", 425, 600, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invNumMap.get(customer.getCustomernumber()), 510, 600, 0);
+			int invoiceNum = 0;
+			try {
+				invoiceNum = invNumMap.get(customer.getCustomernumber());
+			} catch (NullPointerException e) {
+				logger.error("Nullpointer bei " + customer.getCustomernumber());
+			}
+			// Sonderlocke
+			if (flatrateCalc)
+				invoiceNum = invNumMap.get("20243_flatrate");
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNum, 510, 600, 0);
 
 			// Kundennr.
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 425, 589, 0);
@@ -303,7 +330,14 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			y = 715;
 
 			Font invoiceFont = new Font(bf_arial, 12, Font.BOLD);
-			Chunk invoice = new Chunk(addNewLines(15) + "Rechnung", invoiceFont);
+			String invoiceS = "Rechnung";
+			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY))
+				invoiceS = "Quartalsrechnung";
+			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY))
+				invoiceS = "Halbjahresrechnung";
+			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
+				invoiceS = "Jahresrechnung";
+			Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
 			Font timeframeFont = new Font(bf_arial, 11);
 			Font timeframeFontBold = new Font(bf_arial, 11, Font.BOLD);
 			String calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH));
@@ -311,6 +345,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 2);
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY))
 				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 5);
+			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
+				calcTimeString += " - " + DateUtils.getMonthAsString(Calendar.DECEMBER);
 			calcTimeString += " " + calcMonth.get(Calendar.YEAR);
 			Chunk timeframe = new Chunk(
 					addNewLines(2)
@@ -373,7 +409,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			BigDecimal calcSum = new BigDecimal("0.0");
 			
-			int zahl = 0;
 			while (iter.hasNext()) {
 				CardBean card = (CardBean) iter.next();
 				BigDecimal simPrice = new BigDecimal("0.0");
@@ -386,31 +421,14 @@ public class ReportGenerator_portrait implements IReportGenerator {
 						logger.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
 					}
 				}
-
-				zahl++;
-				System.out.println("Jetzt: Kunde " + customer.getCustomernumber() + ", " + zahl);
-				
-				if (customer.getCustomernumber().equals("20165") && zahl == 67) {
-					System.out.println("Jetzt");
-				}
-				
 				
 				ArrayList<String> invoiceRowList = new ArrayList<String>();
-				
-				if (customer.getCustomernumber().equals("20074")) {
-					System.out.println("Kunde 20074");
-				}
 				
 				List<String> columns = Arrays.asList(customer.getInvoiceConfiguration().getColumns());
 //				if (columns.contains(Model.COLUMN_AMOUNT)) {
 				int monthAmount = 1;
-				if (card.getFactoryNumber().equals("40514290")) {
-					System.out.println("Jetzt");
-				}
-				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY)) {
-					Calendar periodMaxCalcDate = getPeriodMaxCalcDate(customer.getInvoiceConfiguration().getCreationFrequency(), calcMonth);
-					monthAmount = getMonthAmount(customer.getInvoiceConfiguration().getCreationFrequency(), card.getActivationDate(), periodMaxCalcDate);
-				}
+				Calendar periodMaxCalcDate = getPeriodMaxCalcDate(customer.getInvoiceConfiguration().getCreationFrequency(), calcMonth);
+				monthAmount = getMonthAmount(customer.getInvoiceConfiguration().getCreationFrequency(), card.getActivationDate(), periodMaxCalcDate);
 				calcSum = calcSum.add(simPrice.multiply(new BigDecimal(monthAmount)));
 
 				BigDecimal dataOptionPrice = new BigDecimal("0.0");
@@ -445,7 +463,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					invoiceRowList.add(card.getInstallAddress().getStreet());
 				}
 				if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
-					invoiceRowList.add(card.getFactoryNumber());
+					if (flatrateCalc && customer.getCustomernumber().equals("20243")) {
+						invoiceRowList.add("GSM Datenflat für Leitstand Otisstraße Berlin");
+					} else {
+						invoiceRowList.add(card.getFactoryNumber());
+					}
 				}
 				if (columns.contains(Model.COLUMN_EQUIP_NR)) {
 					invoiceRowList.add(card.getEquipmentNr());
@@ -455,6 +477,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				}
 				if (columns.contains(Model.COLUMN_BESTELL_NR)) {
 					invoiceRowList.add(card.getBestellNummer());
+				}
+				if (columns.contains(Model.COLUMN_VERTRAG_NR)) {
+					invoiceRowList.add(card.getVertrag());
 				}
 //				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
 				 	BigDecimal rowPrice = (simPrice.add(dataOptionPrice)).multiply(new BigDecimal(monthAmount));
@@ -479,7 +504,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			
 //			tableRowList = addDummyRows(tableRowList);
 			
-			ArrayList<PdfPTable> tables = prepareTables(tableRowList, customer);
+			ArrayList<PdfPTable> tables = prepareTables(tableRowList, customer, flatrateCalc);
 			int i = 0;
 			while (i < tables.size()) {
 				doc.add(tables.get(i));
@@ -537,9 +562,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 		BigDecimal mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
 		
-		if (customer.getCustomernumber().equals("20018")) {
-			System.out.println("Jetzt");
-		}
 		int firstcols = customer.getInvoiceConfiguration().getColumns().length;
 	
 		
@@ -569,12 +591,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return row;
 	}
 
-	private ArrayList<PdfPTable> prepareTables(ArrayList<TableRow> tableRowList, Customer customer) throws Exception {
+	private ArrayList<PdfPTable> prepareTables(ArrayList<TableRow> tableRowList, Customer customer, Boolean flatrateCalc) throws Exception {
 		ArrayList<PdfPTable> tableList = new ArrayList<PdfPTable>();
 		
 		// check, ob alles inkl. Tabellenende auf 1 Seite passt
 		if (tableRowList.size() < MAX_ROW_FIRST_PAGE) {
-			tableList.add(createTable(tableRowList, true, customer));
+			tableList.add(createTable(tableRowList, true, customer, flatrateCalc));
 			return tableList;
 		}
 		
@@ -596,20 +618,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				break;
 			}
 		}
-		tableList.add(createTable(firstPageList, false, customer));
+		tableList.add(createTable(firstPageList, false, customer, flatrateCalc));
 		
 		// create tables for other full pages
 		for (int j=1; j<fullTableCount+1; j++) {
 			ArrayList<TableRow> otherFullTableList = new ArrayList<TableRow>();
-			while (i < (MAX_ROW_FIRST_PAGE + j*FULL_PAGE_SIZE)) {
-				if (i+6 < tableRowList.size()) {
+			while (tablePos < (MAX_ROW_FIRST_PAGE + j*FULL_PAGE_SIZE)) {
+				if (tablePos+6 < tableRowList.size()) {
 					otherFullTableList.add(tableRowList.get(i));
 					i++;
+					tablePos += tableRowList.get(i).getInvoiceRows();
 				} else {
 					break;
 				}
 			}
-			tableList.add(createTable(otherFullTableList, false, customer));
+			tableList.add(createTable(otherFullTableList, false, customer, flatrateCalc));
 		}
 		
 		// create last table
@@ -618,13 +641,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			lastTable.add(tableRowList.get(i));
 			i++;
 		}
-		tableList.add(createTable(lastTable, true, customer));
+		tableList.add(createTable(lastTable, true, customer, flatrateCalc));
 		
 		return tableList;
 	}
 
-	private PdfPTable createTable(ArrayList<TableRow> currentRowList, boolean lastPage, Customer customer) throws Exception {
-		PdfPTable table = createTableHeader(customer);
+	private PdfPTable createTable(ArrayList<TableRow> currentRowList, boolean lastPage, Customer customer, Boolean flatrateCalc) throws Exception {
+		PdfPTable table = createTableHeader(customer, flatrateCalc);
 		if (table != null) {
 			if (lastPage) {
 				ArrayList<TableRow> bodyList = new ArrayList<TableRow>();
@@ -635,10 +658,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				for (int i = (currentRowList.size() - 4); i < currentRowList.size(); i++) {
 					endList.add(currentRowList.get(i));
 				}
-				table = createTableBody(table, bodyList);
+				table = createTableBody(table, bodyList, flatrateCalc);
 				table = createTableEnd(table, endList);
 			} else {
-				table = createTableBody(table, currentRowList);
+				table = createTableBody(table, currentRowList, flatrateCalc);
 				
 			}
 		} else {
@@ -651,13 +674,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			ArrayList<TableRow> tableEndList) {
 		Font tableFontBold = new Font(bf_arial, 9);
 		tableFontBold.setStyle(Font.BOLD);
-		PdfPCell cell = new PdfPCell();
-		cell.setPaddingTop(1);
-		cell.setPaddingBottom(5);
-		cell.setBorder(Rectangle.NO_BORDER);
 		Iterator<TableRow> it = tableEndList.iterator();
 		while (it.hasNext()) {
 			TableRow tr = it.next();
+			PdfPCell cell = new PdfPCell();
+			cell.setPaddingTop(1);
+			cell.setPaddingBottom(5);
+			cell.setBorder(Rectangle.NO_BORDER);
 			String[] cellS = tr.getInvoiceRow();
 //			cell.setPhrase(new Phrase("", tableFontBold));
 //			table.addCell(cell);
@@ -675,7 +698,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return table;
 	}
 
-	private PdfPTable createTableBody(PdfPTable table, ArrayList<TableRow> tableRowList) {
+	private PdfPTable createTableBody(PdfPTable table, ArrayList<TableRow> tableRowList, Boolean flatrateCalc) {
 		Iterator<TableRow> it = tableRowList.iterator();
 		Font tableFont = null;
 		if (tableRowList.size() > 5) {
@@ -685,14 +708,14 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			FULL_PAGE_SIZE = 41;
 		} else 
 			tableFont = new Font(bf_arial, 9);
-		PdfPCell cell = new PdfPCell();
-		cell.setPaddingTop(1);
-		cell.setPaddingBottom(5);
-		cell.setBorder(Rectangle.NO_BORDER);
 
 		
 		while (it.hasNext()) {
 			pos++;
+			PdfPCell cell = new PdfPCell();
+			cell.setPaddingTop(1);
+			cell.setPaddingBottom(5);
+			cell.setBorder(Rectangle.NO_BORDER);
 			TableRow tr = it.next();
 			String[] cellS = tr.getInvoiceRow();
 			if (tr.getInvoiceRows() == 1)
@@ -716,7 +739,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return table;
 	}
 
-	private PdfPTable createTableHeader(Customer customer) throws Exception {
+	private PdfPTable createTableHeader(Customer customer, Boolean flatrateCalc) throws Exception {
 		List<String> columns = null;
 		ArrayList<String> cols = new ArrayList<String>();
 		if (customer != null) {
@@ -743,17 +766,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		Model model = new Model();
 		model.createModel();
 
-		if (customer.getCustomernumber().equals("20215")) {
-			System.out.println("Jetzt");
-		}
-		
 		HashMap<String, Float> columnSizes = model.getColumnSize();
 		try {
 			colSizes[0] = columnSizes.get(Model.COLUMN_POS);
 			colSizes[1] = columnSizes.get(Model.COLUMN_AMOUNT);
 
 			for (int i = 0; i < cols.size(); i++) {
-				colSizes[i+2] = columnSizes.get(cols.get(i));
+				if (flatrateCalc && cols.get(i).equals(Model.COLUMN_PLANT_NUMBER)) {
+					colSizes[i+2] = 8f;
+				} else {
+					colSizes[i+2] = columnSizes.get(cols.get(i));
+				}
 			}
 			colSizes[2+cols.size()] = columnSizes.get(Model.COLUMN_TOTAL_PRICE);
 		} catch (NullPointerException e) {
@@ -818,7 +841,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_PLANT_NUMBER)) {
-				cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
+				if (flatrateCalc && customer.getCustomernumber().equals("20243")) {
+					cell.setPhrase(new Phrase("Beschreibung", tableFont));
+				} else {
+					cell.setPhrase(new Phrase(Model.COLUMN_PLANT_NUMBER, tableFont));
+				}
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
@@ -834,6 +861,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			}
 			if (cols.contains(Model.COLUMN_BESTELL_NR)) {
 				cell.setPhrase(new Phrase(Model.COLUMN_BESTELL_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_VERTRAG_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_VERTRAG_NR, tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
@@ -943,9 +975,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				return 6;
 			}
 		} else if (creationFrequency.equals(Model.FREQUENCY_YEARLY)) {
-			// Sonderbehandlung nötig
+			if (activationCal.get(Calendar.YEAR) + 1 == periodMaxCalcDate.get(Calendar.YEAR))
+				monthAmount = 12 - activationCal.get(Calendar.MONTH);
+			else 
+				monthAmount = 12;
 		}
-		
 		
 		return monthAmount;
 	}

@@ -66,70 +66,70 @@ public class ExcelImporter_13_12_17 {
 					readDataFromFile(file, "20090");
 					writeOutList(list);
 					
-					logger.info("************ 20097_JAHR_GSM-Tel._Fa._Stadtverwaltung_Holzgerlingen.csv **************");
-					file = new FileReader(path + "20097_JAHR_GSM-Tel._Fa._Stadtverwaltung_Holzgerlingen.csv");
-					readDataFromFile(file, "20097");
-					writeOutList(list);
-					
-					logger.info("************ 20127_JAHR_GSM-Tel._Fa.Liebersell_Stiftung.csv **************");
-					file = new FileReader(path + "20127_JAHR_GSM-Tel._Fa.Liebersell_Stiftung.csv");
-					readDataFromFile(file, "20127");
-					writeOutList(list);
-
-					logger.info("************ 20159_HALBJAHR_GSM-Tel._KSK_München-Starnberg-Ebersberg.csv **************");
-					file = new FileReader(path + "20159_HALBJAHR_GSM-Tel._KSK_München-Starnberg-Ebersberg.csv");
-					readDataFromFile(file, "20159");
-					writeOutList(list);
-
-					logger.info("************ 20161_JAHR_GSM-SIM_Karten._Amtsgerich_Wolfsburg.csv **************");
-					file = new FileReader(path + "20161_JAHR_GSM-SIM_Karten._Amtsgerich_Wolfsburg.csv");
-					readDataFromFile(file, "20161");
-					writeOutList(list);
-
-					logger.info("************ 20172_JAHR_GSM-Tel_Fa_Hundt_Consulting.csv **************");
-					file = new FileReader(path + "20172_JAHR_GSM-Tel_Fa_Hundt_Consulting.csv");
-					readDataFromFile(file, "20172");
-					writeOutList(list);
-
-					logger.info("************ 20220_JAHR_GSM_Liste_Bau-und_Immobilienmanagement_Odenwaldkreis.csv **************");
-					file = new FileReader(path + "20220_JAHR_GSM_Liste_Bau-und_Immobilienmanagement_Odenwaldkreis.csv");
-					readDataFromFile(file, "20220");
-					writeOutList(list);
-
-					logger.info("************ 20229_JAHR_GSM_Liste_Land_Berlin.csv **************");
-					file = new FileReader(path + "20229_JAHR_GSM_Liste_Land_Berlin.csv");
-					readDataFromFile(file, "20229");
-					writeOutList(list);
-
-					logger.info("************ 20251_JAHR_GSM-SIM_Karten._Amtsgerich_Gifhorn.csv **************");
-					file = new FileReader(path + "20251_JAHR_GSM-SIM_Karten._Amtsgerich_Gifhorn.csv");
-					readDataFromFile(file, "20251");
-					writeOutList(list);
-
-					logger.info("************ 20252_JAHR_GSM-SIM_Karten._Amtsgerich_Salzgitter.csv **************");
-					file = new FileReader(path + "20252_JAHR_GSM-SIM_Karten._Amtsgerich_Salzgitter.csv");
-					readDataFromFile(file, "20252");
-					writeOutList(list);
-
-					logger.info("************ 20253_JAHR_GSM-Tel._Behördenhaus_Braunschweig.csv **************");
-					file = new FileReader(path + "20253_JAHR_GSM-Tel._Behördenhaus_Braunschweig.csv");
-					readDataFromFile(file, "20253");
-					writeOutList(list);
-
-					logger.info("************ 20254_QUARTAL_Liste_GSM_FA_Peine.csv **************");
-					file = new FileReader(path + "20254_QUARTAL_Liste_GSM_FA_Peine.csv");
-					readDataFromFile(file, "20254");
-					writeOutList(list);
-
-					logger.info("************ 20255_JAHR_GSM-SIM_Karten.Katasteramt_Gifhorn.csv **************");
-					file = new FileReader(path + "20255_JAHR_GSM-SIM_Karten.Katasteramt_Gifhorn.csv");
-					readDataFromFile(file, "20255");
-					writeOutList(list);
-
-					logger.info("************ 20256_JAHR_GSM-Tel._Polizeidirektion.csv **************");
-					file = new FileReader(path + "20256_JAHR_GSM-Tel._Polizeidirektion.csv");
-					readDataFromFile(file, "20256");
-					writeOutList(list);
+//					logger.info("************ 20097_JAHR_GSM-Tel._Fa._Stadtverwaltung_Holzgerlingen.csv **************");
+//					file = new FileReader(path + "20097_JAHR_GSM-Tel._Fa._Stadtverwaltung_Holzgerlingen.csv");
+//					readDataFromFile(file, "20097");
+//					writeOutList(list);
+//					
+//					logger.info("************ 20127_JAHR_GSM-Tel._Fa.Liebersell_Stiftung.csv **************");
+//					file = new FileReader(path + "20127_JAHR_GSM-Tel._Fa.Liebersell_Stiftung.csv");
+//					readDataFromFile(file, "20127");
+//					writeOutList(list);
+//
+//					logger.info("************ 20159_HALBJAHR_GSM-Tel._KSK_München-Starnberg-Ebersberg.csv **************");
+//					file = new FileReader(path + "20159_HALBJAHR_GSM-Tel._KSK_München-Starnberg-Ebersberg.csv");
+//					readDataFromFile(file, "20159");
+//					writeOutList(list);
+//
+//					logger.info("************ 20161_JAHR_GSM-SIM_Karten._Amtsgerich_Wolfsburg.csv **************");
+//					file = new FileReader(path + "20161_JAHR_GSM-SIM_Karten._Amtsgerich_Wolfsburg.csv");
+//					readDataFromFile(file, "20161");
+//					writeOutList(list);
+//
+//					logger.info("************ 20172_JAHR_GSM-Tel_Fa_Hundt_Consulting.csv **************");
+//					file = new FileReader(path + "20172_JAHR_GSM-Tel_Fa_Hundt_Consulting.csv");
+//					readDataFromFile(file, "20172");
+//					writeOutList(list);
+//
+//					logger.info("************ 20220_JAHR_GSM_Liste_Bau-und_Immobilienmanagement_Odenwaldkreis.csv **************");
+//					file = new FileReader(path + "20220_JAHR_GSM_Liste_Bau-und_Immobilienmanagement_Odenwaldkreis.csv");
+//					readDataFromFile(file, "20220");
+//					writeOutList(list);
+//
+//					logger.info("************ 20229_JAHR_GSM_Liste_Land_Berlin.csv **************");
+//					file = new FileReader(path + "20229_JAHR_GSM_Liste_Land_Berlin.csv");
+//					readDataFromFile(file, "20229");
+//					writeOutList(list);
+//
+//					logger.info("************ 20251_JAHR_GSM-SIM_Karten._Amtsgerich_Gifhorn.csv **************");
+//					file = new FileReader(path + "20251_JAHR_GSM-SIM_Karten._Amtsgerich_Gifhorn.csv");
+//					readDataFromFile(file, "20251");
+//					writeOutList(list);
+//
+//					logger.info("************ 20252_JAHR_GSM-SIM_Karten._Amtsgerich_Salzgitter.csv **************");
+//					file = new FileReader(path + "20252_JAHR_GSM-SIM_Karten._Amtsgerich_Salzgitter.csv");
+//					readDataFromFile(file, "20252");
+//					writeOutList(list);
+//
+//					logger.info("************ 20253_JAHR_GSM-Tel._Behördenhaus_Braunschweig.csv **************");
+//					file = new FileReader(path + "20253_JAHR_GSM-Tel._Behördenhaus_Braunschweig.csv");
+//					readDataFromFile(file, "20253");
+//					writeOutList(list);
+//
+//					logger.info("************ 20254_QUARTAL_Liste_GSM_FA_Peine.csv **************");
+//					file = new FileReader(path + "20254_QUARTAL_Liste_GSM_FA_Peine.csv");
+//					readDataFromFile(file, "20254");
+//					writeOutList(list);
+//
+//					logger.info("************ 20255_JAHR_GSM-SIM_Karten.Katasteramt_Gifhorn.csv **************");
+//					file = new FileReader(path + "20255_JAHR_GSM-SIM_Karten.Katasteramt_Gifhorn.csv");
+//					readDataFromFile(file, "20255");
+//					writeOutList(list);
+//
+//					logger.info("************ 20256_JAHR_GSM-Tel._Polizeidirektion.csv **************");
+//					file = new FileReader(path + "20256_JAHR_GSM-Tel._Polizeidirektion.csv");
+//					readDataFromFile(file, "20256");
+//					writeOutList(list);
 
 			} catch (FileNotFoundException e) {
 				logger.error("Datei nicht gefunden");

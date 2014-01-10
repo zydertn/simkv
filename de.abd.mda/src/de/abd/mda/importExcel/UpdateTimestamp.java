@@ -44,10 +44,10 @@ public class UpdateTimestamp {
 						System.out.println("Activation Date: " + card.getCardnumberString() + ", " + card.getActivationDate());
 						card.getActivationDate().setHours(2);
 					}
-					if (card.getLastCalculationDate() != null) {
-						System.out.println("CalculationDate: " + card.getCardnumberString() + ", " + card.getLastCalculationDate());
-						card.getLastCalculationDate().setHours(2);
-					}
+//					if (card.getLastCalculationDate() != null) {
+//						System.out.println("CalculationDate: " + card.getCardnumberString() + ", " + card.getLastCalculationDate());
+//						card.getLastCalculationDate().setHours(2);
+//					}
 				}
 			else
 				System.out.println("No card found");
