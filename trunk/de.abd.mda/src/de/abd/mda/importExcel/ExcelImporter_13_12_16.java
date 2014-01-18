@@ -61,65 +61,65 @@ public class ExcelImporter_13_12_16 {
 					
 					FileReader file = null;
 	
-					logger.info("************ 20013_QUARTAL_GSM-Tabelle_Schindler_NL_Frankfurt.csv **************");
-					file = new FileReader(path + "20013_QUARTAL_GSM-Tabelle_Schindler_NL_Frankfurt.csv");
-					readDataFromFile(file, "20013");
-					writeOutList(list);
-					
-					logger.info("************ 20036_GSM-Tel._Karten_NL_Karlsruhe.csv **************");
-					file = new FileReader(path + "20036_GSM-Tel._Karten_NL_Karlsruhe.csv");
-					readDataFromFile(file, "20036");
-					writeOutList(list);
+//					logger.info("************ 20013_QUARTAL_GSM-Tabelle_Schindler_NL_Frankfurt.csv **************");
+//					file = new FileReader(path + "20013_QUARTAL_GSM-Tabelle_Schindler_NL_Frankfurt.csv");
+//					readDataFromFile(file, "20013");
+//					writeOutList(list);
+//					
+//					logger.info("************ 20036_GSM-Tel._Karten_NL_Karlsruhe.csv **************");
+//					file = new FileReader(path + "20036_GSM-Tel._Karten_NL_Karlsruhe.csv");
+//					readDataFromFile(file, "20036");
+//					writeOutList(list);
 					
 					logger.info("************ 20050_GSM-Tel._Karten_NL_Mannheim_02.03.2012.csv **************");
 					file = new FileReader(path + "20050_GSM-Tel._Karten_NL_Mannheim_02.03.2012.csv");
 					readDataFromFile(file, "20050");
 					writeOutList(list);
 
-					logger.info("************ 20055_GSM-Tel._Karten_NL_Hamburg.csv **************");
-					file = new FileReader(path + "20055_GSM-Tel._Karten_NL_Hamburg.csv");
-					readDataFromFile(file, "20055");
-					writeOutList(list);
-
-					logger.info("************ 20063_GSM-Tel._Fa._Sieben_Aufzüge.csv **************");
-					file = new FileReader(path + "20063_GSM-Tel._Fa._Sieben_Aufzüge.csv");
-					readDataFromFile(file, "20063");
-					writeOutList(list);
-
-					logger.info("************ 20093_GSM-Tel._Karten_NL_Neuss.csv **************");
-					file = new FileReader(path + "20093_GSM-Tel._Karten_NL_Neuss.csv");
-					readDataFromFile(file, "20093");
-					writeOutList(list);
-
-					logger.info("************ 20110_GSM-Tel._Karten_NL_Radolfzell.csv **************");
-					file = new FileReader(path + "20110_GSM-Tel._Karten_NL_Radolfzell.csv");
-					readDataFromFile(file, "20110");
-					writeOutList(list);
-
-					logger.info("************ 20111_GSM-Tel._Karten_NL_Stuttgart.csv **************");
-					file = new FileReader(path + "20111_GSM-Tel._Karten_NL_Stuttgart.csv");
-					readDataFromFile(file, "20111");
-					writeOutList(list);
-
-					logger.info("************ 20121_GSM-Tel._Schindler_NL_Magdeburg.csv **************");
-					file = new FileReader(path + "20121_GSM-Tel._Schindler_NL_Magdeburg.csv");
-					readDataFromFile(file, "20121");
-					writeOutList(list);
-
-					logger.info("************ 20126_QUARTAL_GSM-Tel._Karten_NL_Laatzen_b.Hannover.csv **************");
-					file = new FileReader(path + "20126_QUARTAL_GSM-Tel._Karten_NL_Laatzen_b.Hannover.csv");
-					readDataFromFile(file, "20126");
-					writeOutList(list);
-
-					logger.info("************ 20177_GSM-Tel._Schindler_NL_München_02.03.2012.csv **************");
-					file = new FileReader(path + "20177_GSM-Tel._Schindler_NL_München_02.03.2012.csv");
-					readDataFromFile(file, "20177");
-					writeOutList(list);
-
-					logger.info("************ 20193_GSM-Tel._SchindlerService_Center_Münster.csv **************");
-					file = new FileReader(path + "20193_GSM-Tel._SchindlerService_Center_Münster.csv");
-					readDataFromFile(file, "20193");
-					writeOutList(list);
+//					logger.info("************ 20055_GSM-Tel._Karten_NL_Hamburg.csv **************");
+//					file = new FileReader(path + "20055_GSM-Tel._Karten_NL_Hamburg.csv");
+//					readDataFromFile(file, "20055");
+//					writeOutList(list);
+//
+//					logger.info("************ 20063_GSM-Tel._Fa._Sieben_Aufzüge.csv **************");
+//					file = new FileReader(path + "20063_GSM-Tel._Fa._Sieben_Aufzüge.csv");
+//					readDataFromFile(file, "20063");
+//					writeOutList(list);
+//
+//					logger.info("************ 20093_GSM-Tel._Karten_NL_Neuss.csv **************");
+//					file = new FileReader(path + "20093_GSM-Tel._Karten_NL_Neuss.csv");
+//					readDataFromFile(file, "20093");
+//					writeOutList(list);
+//
+//					logger.info("************ 20110_GSM-Tel._Karten_NL_Radolfzell.csv **************");
+//					file = new FileReader(path + "20110_GSM-Tel._Karten_NL_Radolfzell.csv");
+//					readDataFromFile(file, "20110");
+//					writeOutList(list);
+//
+//					logger.info("************ 20111_GSM-Tel._Karten_NL_Stuttgart.csv **************");
+//					file = new FileReader(path + "20111_GSM-Tel._Karten_NL_Stuttgart.csv");
+//					readDataFromFile(file, "20111");
+//					writeOutList(list);
+//
+//					logger.info("************ 20121_GSM-Tel._Schindler_NL_Magdeburg.csv **************");
+//					file = new FileReader(path + "20121_GSM-Tel._Schindler_NL_Magdeburg.csv");
+//					readDataFromFile(file, "20121");
+//					writeOutList(list);
+//
+//					logger.info("************ 20126_QUARTAL_GSM-Tel._Karten_NL_Laatzen_b.Hannover.csv **************");
+//					file = new FileReader(path + "20126_QUARTAL_GSM-Tel._Karten_NL_Laatzen_b.Hannover.csv");
+//					readDataFromFile(file, "20126");
+//					writeOutList(list);
+//
+//					logger.info("************ 20177_GSM-Tel._Schindler_NL_München_02.03.2012.csv **************");
+//					file = new FileReader(path + "20177_GSM-Tel._Schindler_NL_München_02.03.2012.csv");
+//					readDataFromFile(file, "20177");
+//					writeOutList(list);
+//
+//					logger.info("************ 20193_GSM-Tel._SchindlerService_Center_Münster.csv **************");
+//					file = new FileReader(path + "20193_GSM-Tel._SchindlerService_Center_Münster.csv");
+//					readDataFromFile(file, "20193");
+//					writeOutList(list);
 
 			} catch (FileNotFoundException e) {
 				logger.error("Datei nicht gefunden");
