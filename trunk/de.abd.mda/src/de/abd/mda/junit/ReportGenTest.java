@@ -36,7 +36,7 @@ public class ReportGenTest {
 //				"'20224', '20216', '20208', '20206'" +
 //				")";
 
-		String select = "select distinct customer from Customer customer where customer.customernumber = '20229'";
+		String select = "select distinct customer from Customer customer where customer.customernumber = '20121'";
 		
 		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
 
@@ -57,8 +57,9 @@ public class ReportGenTest {
 			Customer customer = (Customer) it2.next();
 
 			Calendar calcMonth = Calendar.getInstance();
-			calcMonth.set(2013, Calendar.SEPTEMBER, 1, 0, 0, 0);
+			calcMonth.set(2013, Calendar.DECEMBER, 1, 0, 0, 0);
 			List<DaoObject> cards = rg.searchCards(customer, calcMonth, tx, session);
+
 //			IReportGenerator repGen = new ReportGenerator_landscape();
 			IReportGenerator repGen = new ReportGenerator_portrait();
 			boolean generatedWithoutError = repGen.generateReport(cards, customer, calcMonth, false);

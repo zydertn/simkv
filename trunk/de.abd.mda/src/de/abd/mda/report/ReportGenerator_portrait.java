@@ -257,6 +257,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			// Date
 //			y = y - 5 * d;
 			Date date = new Date();
+			// Temporär auf 14. Januar gesetzt
+			date.setDate(14);
 			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
@@ -340,7 +342,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
 			Font timeframeFont = new Font(bf_arial, 11);
 			Font timeframeFontBold = new Font(bf_arial, 11, Font.BOLD);
+
 			String calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH));
+			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
+				calcTimeString = getStartMonthFromCards(calcMonth.get(Calendar.YEAR), customerCards); 
 			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY))
 				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 2);
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY))
@@ -456,8 +461,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				if (columns.contains(Model.COLUMN_INST_PLZ)) {
 					invoiceRowList.add(card.getInstallAddress().getPostcode());
 				}
-				if (columns.contains(Model.COLUMN_INST_CITY)) {
-					invoiceRowList.add(card.getInstallAddress().getCity());
+				if (columns.contains(Model.COLUMN_EINSATZORT)) {
+					invoiceRowList.add(card.getEinsatzort());
 				}
 				if (columns.contains(Model.COLUMN_INST_STREET)) {
 					invoiceRowList.add(card.getInstallAddress().getStreet());
@@ -830,8 +835,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
-			if (cols.contains(Model.COLUMN_INST_CITY)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_INST_CITY, tableFont));
+			if (cols.contains(Model.COLUMN_EINSATZORT)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_EINSATZORT, tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
@@ -983,4 +988,33 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		
 		return monthAmount;
 	}
+	
+	/*
+	 * Methode für Jahreskarten, um den Anfangsmonat für den Berechnungszeitraum zu ermitteln
+	 * Die Karten, die hier untersucht werden, sind alle in diesem Jahr oder davor aktiviert worden.
+	 */
+	private String getStartMonthFromCards(int year, List<DaoObject> customerCards) {
+		String startMonth = null;
+		// Initialisierung mit spätestem Zeitpunkt im Berechnungsjahr
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, Calendar.DECEMBER);
+		for (DaoObject cardDao : customerCards) {
+			Calendar cardCal = Calendar.getInstance();
+			cardCal.setTime(((CardBean) cardDao).getActivationDate());
+			if (cardCal.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) {
+				if (cardCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
+					cal.set(Calendar.MONTH, cardCal.get(Calendar.MONTH));
+				}
+			} else if (cardCal.get(Calendar.YEAR) < cal.get(Calendar.YEAR)) {
+				cal.set(Calendar.MONTH, Calendar.JANUARY);
+				break;
+			}
+		}
+		
+		startMonth = DateUtils.getMonthAsString(cal.get(Calendar.MONTH));
+		
+		return startMonth;
+	}
+
 }

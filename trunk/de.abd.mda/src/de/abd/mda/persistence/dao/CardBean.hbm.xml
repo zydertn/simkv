@@ -61,6 +61,7 @@
 	 	<property name="bestellNummer" type="string" column="CARD_BESTELL_NR" length="50" />
 	 	<property name="pin" type="string" column="CARD_PIN" length="4" />
 	 	<property name="invoiceRows" type="int" column="CARD_INVOICE_ROWS" />
+	 	<property name="baNummer" type="string" column="CARD_BA_NUMBER" length="15" />
 		<!-- list name="comments" cascade="all">
 
          <key column="comment_id"/>

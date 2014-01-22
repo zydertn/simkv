@@ -46,7 +46,7 @@ public class Model {
 	public static String COLUMN_DESCRIPTION = "Bezeichnung";
 	public static String COLUMN_PLANT_NUMBER = "Anlagen Nr.";
 	public static String COLUMN_INST_PLZ = "PLZ";
-	public static String COLUMN_INST_CITY = "Einsatzort";
+	public static String COLUMN_EINSATZORT = "Einsatzort";
 	public static String COLUMN_INST_STREET = "Straﬂe";
 	public static String COLUMN_EQUIP_NR = "Equipment Nr.";
 	public static String COLUMN_AUFTRAGS_NR = "Auftrags-Nr.";
@@ -54,6 +54,9 @@ public class Model {
 	public static String COLUMN_TEL_NR = "Rufnummer";
 	public static String COLUMN_BESTELL_NR = "Bestell-Nr.";
 	public static String COLUMN_VERTRAG_NR = "Vertragsnummer";
+	public static String COLUMN_BA_NR = "BA-Nummer";
+	public static String COLUMN_WE_NR = "WE-Nummer";
+	public static String COLUMN_COST_CENTER = "Kostenstelle";
 //	public static String COLUMN_SINGLE_PRICE = "Preis";
 	public static String COLUMN_TOTAL_PRICE = "Preis";
 	
@@ -144,13 +147,16 @@ public class Model {
 		invoiceColumns.add(COLUMN_CARD_NR);
 		invoiceColumns.add(COLUMN_TEL_NR);
 		invoiceColumns.add(COLUMN_INST_PLZ);
-		invoiceColumns.add(COLUMN_INST_CITY);
+		invoiceColumns.add(COLUMN_EINSATZORT);
 		invoiceColumns.add(COLUMN_INST_STREET);
 		invoiceColumns.add(COLUMN_PLANT_NUMBER);
 		invoiceColumns.add(COLUMN_EQUIP_NR);
 		invoiceColumns.add(COLUMN_AUFTRAGS_NR);
 		invoiceColumns.add(COLUMN_BESTELL_NR);
 		invoiceColumns.add(COLUMN_VERTRAG_NR);
+		invoiceColumns.add(COLUMN_BA_NR);
+		invoiceColumns.add(COLUMN_WE_NR);
+		invoiceColumns.add(COLUMN_COST_CENTER);
 //		invoiceColumns.add(COLUMN_SINGLE_PRICE);
 		
 		columnSize = new HashMap<String, Float>();
@@ -160,13 +166,16 @@ public class Model {
 		columnSize.put(COLUMN_CARD_NR, 5f);
 		columnSize.put(COLUMN_TEL_NR, 6f);
 		columnSize.put(COLUMN_INST_PLZ, 1.5f);
-		columnSize.put(COLUMN_INST_CITY, 4f);
+		columnSize.put(COLUMN_EINSATZORT, 9f);
 		columnSize.put(COLUMN_INST_STREET, 8f);
 		columnSize.put(COLUMN_PLANT_NUMBER, 5f);
 		columnSize.put(COLUMN_EQUIP_NR, 5f);
 		columnSize.put(COLUMN_AUFTRAGS_NR, 4f);
-		columnSize.put(COLUMN_BESTELL_NR, 4f);
+		columnSize.put(COLUMN_BESTELL_NR, 6f);
 		columnSize.put(COLUMN_VERTRAG_NR, 4f);
+		columnSize.put(COLUMN_BA_NR, 4f);
+		columnSize.put(COLUMN_WE_NR, 4f);
+		columnSize.put(COLUMN_COST_CENTER, 4f);
 //		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
 		columnSize.put(COLUMN_TOTAL_PRICE, 3f);
 		
