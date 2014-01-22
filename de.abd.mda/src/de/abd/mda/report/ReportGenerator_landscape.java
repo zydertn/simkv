@@ -243,6 +243,8 @@ public class ReportGenerator_landscape implements IReportGenerator {
 			phrase.add(invoice);
 			doc.add(phrase);
 
+			String startMonth = getStartMonthFromCards(calcMonth.get(Calendar.YEAR), customerCards);
+			
 			ArrayList<String> cellStrings = new ArrayList<String>();
 			cellStrings.add("Berechnungszeitraum für die Servicegebühr: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
 			cellStrings.add("Projekt: HOWOGE");
@@ -300,7 +302,7 @@ public class ReportGenerator_landscape implements IReportGenerator {
 				if (columns.contains(Model.COLUMN_INST_PLZ)) {
 					invoiceRowList.add(card.getInstallAddress().getPostcode());
 				}
-				if (columns.contains(Model.COLUMN_INST_CITY)) {
+				if (columns.contains(Model.COLUMN_EINSATZORT)) {
 					invoiceRowList.add(card.getInstallAddress().getCity());
 				}
 				if (columns.contains(Model.COLUMN_INST_STREET)) {
@@ -370,6 +372,34 @@ public class ReportGenerator_landscape implements IReportGenerator {
 		return false;
 	}
 	
+	/*
+	 * Methode für Jahreskarten, um den Anfangsmonat für den Berechnungszeitraum zu ermitteln
+	 * Die Karten, die hier untersucht werden, sind alle in diesem Jahr oder davor aktiviert worden.
+	 */
+	private String getStartMonthFromCards(int year, List<DaoObject> customerCards) {
+		String startMonth = null;
+		// Initialisierung mit spätestem Zeitpunkt im Berechnungsjahr
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, Calendar.DECEMBER);
+		for (DaoObject cardDao : customerCards) {
+			Calendar cardCal = Calendar.getInstance();
+			cardCal.setTime(((CardBean) cardDao).getActivationDate());
+			if (cardCal.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) {
+				if (cardCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
+					cal.set(Calendar.MONTH, cardCal.get(Calendar.MONTH));
+				}
+			} else if (cardCal.get(Calendar.YEAR) < cal.get(Calendar.YEAR)) {
+				cal.set(Calendar.MONTH, Calendar.JANUARY);
+				break;
+			}
+		}
+		
+		startMonth = DateUtils.getMonthAsString(cal.get(Calendar.MONTH));
+		
+		return startMonth;
+	}
+
 	private ArrayList<String[]> addCalculationRows(
 			ArrayList<String[]> tableRowList,
 			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum) {
@@ -601,7 +631,7 @@ public class ReportGenerator_landscape implements IReportGenerator {
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_DESCRIPTION, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_PLANT_NUMBER, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_INST_PLZ, tableHeader);
-			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_INST_CITY, tableHeader);
+			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_EINSATZORT, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_INST_STREET, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_EQUIP_NR, tableHeader);
 			tableHeader = addCell(cell, columns, tableFont, Model.COLUMN_AUFTRAGS_NR, tableHeader);

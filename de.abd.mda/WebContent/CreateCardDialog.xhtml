@@ -356,6 +356,16 @@
 							size="13">
 						</h:inputText>
 					</h:panelGrid>
+
+					<h:outputText style="margin-right:100px"/>								
+
+					<h:outputText value="BA-Nr.: " />
+					<h:panelGrid>
+						<h:inputText maxlength="4"
+							value="#{cardController.cardBean.baNummer}"
+							size="13">
+						</h:inputText>
+					</h:panelGrid>
 				</h:panelGrid>
 				<h:outputText/>
 				<h:panelGrid columns="2">

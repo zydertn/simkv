@@ -153,6 +153,7 @@ public class CardActionController extends ActionController {
 				card.setCardAutActivatedAs(ccCardBean.getCardAutActivatedAs());
 				card.setCardAutType(ccCardBean.getCardAutType());
 				card.setCardDeType(ccCardBean.getCardDeType());
+				card.setBaNummer(ccCardBean.getBaNummer());
 			} else
 				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			tx.commit();
