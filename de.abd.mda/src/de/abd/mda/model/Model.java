@@ -59,7 +59,9 @@ public class Model {
 	public static String COLUMN_COST_CENTER = "Kostenstelle";
 //	public static String COLUMN_SINGLE_PRICE = "Preis";
 	public static String COLUMN_TOTAL_PRICE = "Preis";
-	
+
+	public static String BILLING_WE_NR = "WE-Nummer";
+	public static String BILLING_SAP_NR = "SAP-Nummer";
 	
 	public static String GENDER_MAN = "Herr";
 	public static String GENDER_WOMAN = "Frau";
@@ -112,6 +114,7 @@ public class Model {
 	private List<String> invoiceColumns;
 	private List<String> paymentMethods;
 	private List<Integer> invoiceRowList;
+	private List<String> billingCriteria;
 	
 	public Model() {
 	}
@@ -178,6 +181,10 @@ public class Model {
 		columnSize.put(COLUMN_COST_CENTER, 4f);
 //		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
 		columnSize.put(COLUMN_TOTAL_PRICE, 3f);
+
+		billingCriteria = new ArrayList<String>();
+		billingCriteria.add(BILLING_WE_NR);
+		billingCriteria.add(BILLING_SAP_NR);
 		
 		relationList = new ArrayList<String>();
 		relationList.add(RELATION_0);
@@ -508,6 +515,14 @@ public class Model {
 
 	public void setInvoiceRowList(List<Integer> invoiceRowList) {
 		this.invoiceRowList = invoiceRowList;
+	}
+
+	public List<String> getBillingCriteria() {
+		return billingCriteria;
+	}
+
+	public void setBillingCriteria(List<String> billingCriteria) {
+		this.billingCriteria = billingCriteria;
 	}
 
 }

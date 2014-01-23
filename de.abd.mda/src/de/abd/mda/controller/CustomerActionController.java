@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
@@ -59,6 +60,10 @@ public class CustomerActionController extends ActionController {
 	private HtmlInputText emailBinding;
 	private HtmlInputText de_mailBinding;
 	private HtmlInputText commentBinding;
+	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
+	private HtmlSelectBooleanCheckbox invoiceconfigSeparateBillingBinding;
+	private HtmlSelectManyCheckbox invoiceconfigBillingCriteriaBinding;
+	
 	private String relation;
 	private List<CardBean> cardList;
 //	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
@@ -167,6 +172,9 @@ public class CustomerActionController extends ActionController {
 			emailBinding.setDisabled(false);
 			de_mailBinding.setDisabled(false);
 			commentBinding.setDisabled(false);
+			invoiceconfigColumnsBinding.setDisabled(false);
+			invoiceconfigBillingCriteriaBinding.setDisabled(false);
+			invoiceconfigSeparateBillingBinding.setDisabled(false);
 //			invoiceconfigColumnsBinding.setDisabled(false);
 			getRequest().setAttribute("componentDisabled", false);
 
@@ -277,6 +285,8 @@ public class CustomerActionController extends ActionController {
 			ic.setDataOptionSurcharge(cic.getDataOptionSurcharge());
 			ic.setFormat(cic.getFormat());
 			ic.setSimPrice(cic.getSimPrice());
+			ic.setSeparateBilling(cic.getSeparateBilling());
+			ic.setSeparateBillingCriteria(cic.getSeparateBillingCriteria());
 			
 			tx.commit();
 		} catch (RuntimeException e) {
@@ -708,6 +718,33 @@ public class CustomerActionController extends ActionController {
 
 	public void setCommentBinding(HtmlInputText commentBinding) {
 		this.commentBinding = commentBinding;
+	}
+
+	public HtmlSelectManyCheckbox getInvoiceconfigColumnsBinding() {
+		return invoiceconfigColumnsBinding;
+	}
+
+	public void setInvoiceconfigColumnsBinding(
+			HtmlSelectManyCheckbox invoiceconfigColumnsBinding) {
+		this.invoiceconfigColumnsBinding = invoiceconfigColumnsBinding;
+	}
+
+	public HtmlSelectBooleanCheckbox getInvoiceconfigSeparateBillingBinding() {
+		return invoiceconfigSeparateBillingBinding;
+	}
+
+	public void setInvoiceconfigSeparateBillingBinding(
+			HtmlSelectBooleanCheckbox invoiceconfigSeparateBillingBinding) {
+		this.invoiceconfigSeparateBillingBinding = invoiceconfigSeparateBillingBinding;
+	}
+
+	public HtmlSelectManyCheckbox getInvoiceconfigBillingCriteriaBinding() {
+		return invoiceconfigBillingCriteriaBinding;
+	}
+
+	public void setInvoiceconfigBillingCriteriaBinding(
+			HtmlSelectManyCheckbox invoiceconfigBillingCriteriaBinding) {
+		this.invoiceconfigBillingCriteriaBinding = invoiceconfigBillingCriteriaBinding;
 	}
 
 

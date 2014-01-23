@@ -47,7 +47,8 @@
 						style="margin-right: 34px;" />
 					<h:outputText value="Lieferanten-Nr.:"/>
 					<h:inputText size="15"
-						value="#{customerController.customer.supplierNumber}" />
+						value="#{customerController.customer.supplierNumber}" 
+						style="margin-left: 36px;" />
 					<h:outputText />
 					<h:outputText />
 
@@ -158,6 +159,20 @@
 						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">
 						<f:selectItems value="#{actionController.model.dataOptionSurcharges.entrySet()}" var="dataOptionVar" itemLabel="#{dataOptionVar.key} - #{dataOptionVar.value}" itemValue="#{dataOptionVar.key}" />
 					</h:selectOneMenu>
+
+					<h:outputText value="Einzelrechnungen: " />
+					<h:panelGrid>
+						<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.separateBilling}" style="margin-left: 14px;"/>
+					</h:panelGrid>
+
+					<h:outputText value="Einzelrechnungskriterien:" />
+					<ice:panelGroup style="overflow-y:auto; width:200px; height:50px;">
+						<ice:selectManyCheckbox layout="pageDirection"
+							value="#{customerController.customer.invoiceConfiguration.separateBillingCriteria}">
+							<f:selectItems value="#{actionController.model.billingCriteria}"/>
+						</ice:selectManyCheckbox>
+					</ice:panelGroup>
+
 
 					<h:outputText value="Format: " />
 					<h:selectOneMenu
