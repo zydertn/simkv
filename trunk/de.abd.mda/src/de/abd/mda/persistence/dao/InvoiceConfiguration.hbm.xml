@@ -17,5 +17,10 @@
 			<element column="IC_COLUMNS" type="java.lang.String" />
 		</array>
 		<property type="string" name="creationFrequency" column="IC_CREATION_FREQUENCY" length="13"></property>
+		<array name="separateBillingCriteria">
+			<key column="id" />
+			<list-index base="0" />
+			<element column="IC_BILLING_CRITERIA" type="java.lang.String" />
+		</array>
 	</class>
 </hibernate-mapping>

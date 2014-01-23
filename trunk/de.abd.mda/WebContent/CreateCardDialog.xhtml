@@ -361,9 +361,17 @@
 
 					<h:outputText value="BA-Nr.: " />
 					<h:panelGrid>
-						<h:inputText maxlength="4"
+						<h:inputText maxlength="13"
 							value="#{cardController.cardBean.baNummer}"
 							size="13">
+						</h:inputText>
+					</h:panelGrid>
+
+					<h:outputText value="SAP-Nr.: " />
+					<h:panelGrid>
+						<h:inputText maxlength="15"
+							value="#{cardController.cardBean.sapNummer}"
+							size="15">
 						</h:inputText>
 					</h:panelGrid>
 				</h:panelGrid>

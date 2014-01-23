@@ -39,7 +39,8 @@
 					<h:outputText value="Lieferanten-Nr.:"/>
 					<h:inputText size="15" disabled="#{customerController.componentDisabled}"
 						binding="#{customerController.supplierNumberBinding}"
-						value="#{customerController.customer.supplierNumber}" />
+						value="#{customerController.customer.supplierNumber}" 
+						style="margin-left: 36px;"/>
 					<h:outputText />
 					<h:outputText />
 
@@ -49,12 +50,13 @@
 						binding="#{customerController.branchBinding}"
 						value="#{customerController.customer.branch}"
 						disabled="#{customerController.componentDisabled}"
-						style="margin-left: 36px;" />
+						style="margin-left: 2px;" />
 					<h:outputText value="z.Hd.:" />
 					<h:inputText size="20"
 						binding="#{customerController.faoBinding}"
 						value="#{customerController.customer.fao}" 
-						disabled="#{customerController.componentDisabled}" />
+						disabled="#{customerController.componentDisabled}" 
+						style="margin-left: 36px;"/>
 					<h:outputText />
 					<h:outputText />
 
@@ -210,6 +212,19 @@
 							itemValue="#{dataOptionVar.key}" />
 					</h:selectOneMenu>
 
+					<h:outputText value="Einzelrechnungen: " />
+					<h:panelGrid>
+						<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.separateBilling}" disabled="#{customerController.componentDisabled}" binding="#{customerController.invoiceconfigSeparateBillingBinding}" style="margin-left: 14px;"/>
+					</h:panelGrid>
+
+					<h:outputText value="Einzelrechnungskriterien:" />
+					<ice:panelGroup style="overflow-y:auto; width:200px; height:50px;">
+						<ice:selectManyCheckbox layout="pageDirection" binding="#{customerController.invoiceconfigBillingCriteriaBinding}"
+							value="#{customerController.customer.invoiceConfiguration.separateBillingCriteria}" disabled="#{customerController.componentDisabled}">
+							<f:selectItems value="#{actionController.model.billingCriteria}"/>
+						</ice:selectManyCheckbox>
+					</ice:panelGroup>
+					
 					<h:outputText value="Format: " />
 					<h:selectOneMenu
 						binding="#{customerController.invoiceconfigFormatBinding}"
@@ -230,12 +245,12 @@
 
 					<h:outputText value="Spalten:" />
 					<ice:panelGroup style="overflow-y:auto; width:200px; height:150px;">
-						<ice:selectManyCheckbox layout="pageDirection"
+						<ice:selectManyCheckbox layout="pageDirection" binding="#{customerController.invoiceconfigColumnsBinding}"
 							value="#{customerController.customer.invoiceConfiguration.columns}">
 							<f:selectItems value="#{actionController.model.invoiceColumns}" disabled="#{customerController.componentDisabled}" />
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
-					
+
 					<h:outputText value="Kommentar:" />
 					<h:inputText size="100" maxlength="100" 
 						binding="#{customerController.commentBinding}"

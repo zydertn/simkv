@@ -14,6 +14,9 @@ public class InvoiceConfiguration extends DaoObject {
 	private String format;
 	private String[] columns;
 	private String creationFrequency;
+	private Boolean separateBilling;
+	private String[] separateBillingCriteria;
+	
 	
 	public InvoiceConfiguration() {
 		this.format = "Hochformat";
@@ -80,6 +83,22 @@ public class InvoiceConfiguration extends DaoObject {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String[] getSeparateBillingCriteria() {
+		return separateBillingCriteria;
+	}
+
+	public void setSeparateBillingCriteria(String[] separateBillingCriteria) {
+		this.separateBillingCriteria = separateBillingCriteria;
+	}
+
+	public Boolean getSeparateBilling() {
+		return separateBilling;
+	}
+
+	public void setSeparateBilling(Boolean separateBilling) {
+		this.separateBilling = separateBilling;
 	}
 	
 }
