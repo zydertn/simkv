@@ -219,8 +219,8 @@
 
 					<h:outputText value="Einzelrechnungskriterien:" />
 					<ice:panelGroup style="overflow-y:auto; width:200px; height:50px;">
-						<ice:selectManyCheckbox layout="pageDirection" binding="#{customerController.invoiceconfigBillingCriteriaBinding}"
-							value="#{customerController.customer.invoiceConfiguration.separateBillingCriteria}" disabled="#{customerController.componentDisabled}">
+						<ice:selectManyCheckbox layout="pageDirection"
+							value="#{customerController.customer.invoiceConfiguration.separateBillingCriteria}">
 							<f:selectItems value="#{actionController.model.billingCriteria}"/>
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
@@ -245,9 +245,9 @@
 
 					<h:outputText value="Spalten:" />
 					<ice:panelGroup style="overflow-y:auto; width:200px; height:150px;">
-						<ice:selectManyCheckbox layout="pageDirection" binding="#{customerController.invoiceconfigColumnsBinding}"
+						<ice:selectManyCheckbox layout="pageDirection"
 							value="#{customerController.customer.invoiceConfiguration.columns}">
-							<f:selectItems value="#{actionController.model.invoiceColumns}" disabled="#{customerController.componentDisabled}" />
+							<f:selectItems value="#{actionController.model.invoiceColumns}" />
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
 
