@@ -17,6 +17,7 @@
 			<element column="IC_COLUMNS" type="java.lang.String" />
 		</array>
 		<property type="string" name="creationFrequency" column="IC_CREATION_FREQUENCY" length="13"></property>
+		<property name="separateBilling" type="boolean" column="CARD_SEPARATE_BILLING" />
 		<array name="separateBillingCriteria">
 			<key column="id" />
 			<list-index base="0" />
