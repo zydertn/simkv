@@ -456,6 +456,9 @@ public class ExcelImporter_14_01_30 {
 		if (spalten.containsKey("SIE IAO Equipment")) {
 			card.setEquipmentNr(split[spalten.get("SIE IAO Equipment")]);
 		}
+		if (spalten.containsKey("Kst.")) {
+			card.setKostenstelle(split[spalten.get("Kst.")]);
+		}
 		
 		card.setCustomer(customer);
 //		if (spalten.containsKey("Aufzug Nr.")) {
