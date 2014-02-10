@@ -61,9 +61,9 @@ public class ReportCalculator implements Runnable {
 		
 		Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(System.currentTimeMillis());
-		now.set(Calendar.YEAR, 2014);
-		now.set(Calendar.MONTH, 1);
-		now.set(Calendar.DAY_OF_MONTH, 5);
+//		now.set(Calendar.YEAR, 2014);
+//		now.set(Calendar.MONTH, 1);
+//		now.set(Calendar.DAY_OF_MONTH, 5);
 		// Um den Fehlerfall auszuschließen, wenn jemand exakt am 1. eines Monats um 0 Uhr auf den Knopf drückt (damit dieser Monat auch berechnet wird):
 		now.set(Calendar.SECOND, 1);
 		Calendar frequencyDate = Calendar.getInstance();
@@ -89,7 +89,7 @@ public class ReportCalculator implements Runnable {
 		while (cusIt.hasNext()) {
 			cusNum++;
 			Calendar calcMonth = Calendar.getInstance();
-			calcMonth.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
+			calcMonth.set(2013, Calendar.JANUARY, 1, 0, 0, 0);
 			calcMonth.set(Calendar.MILLISECOND, 0);
 			
 			
@@ -99,6 +99,10 @@ public class ReportCalculator implements Runnable {
 			logger.info("Aktueller Kunde: " + customer.getListString()
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
+			if (customer.getCustomernumber().equals("20124")) {
+				System.out.println("Jetzt");
+			}
+			
 			Calendar maxCalcDate = getMaxCalcDate(customer.getInvoiceConfiguration().getCreationFrequency(), now);
 			
 			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
@@ -135,6 +139,12 @@ public class ReportCalculator implements Runnable {
 
 				tx.commit();
 				calcMonth = raiseMonth(calcMonth, customer);
+				String dfs = "yyyy-MM-dd_HH-mm-ss";
+				SimpleDateFormat sd = new SimpleDateFormat(dfs);
+				
+				System.out.println("CalcMonth: " + sd.format(calcMonth.getTime()));
+				System.out.println("maxCalcDate: " + sd.format(maxCalcDate.getTime()));
+				System.out.println("-------------------------------------------------");
 			}
 
 			Double prog = (new Double(cusNum) / new Double(customers.size())) * 100.0;

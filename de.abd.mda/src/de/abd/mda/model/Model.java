@@ -163,19 +163,19 @@ public class Model {
 //		invoiceColumns.add(COLUMN_SINGLE_PRICE);
 		
 		columnSize = new HashMap<String, Float>();
-		columnSize.put(COLUMN_POS, 1.5f);
-		columnSize.put(COLUMN_AMOUNT, 2.3f);
+		columnSize.put(COLUMN_POS, 1.8f);
+		columnSize.put(COLUMN_AMOUNT, 2.5f);
 		columnSize.put(COLUMN_DESCRIPTION, 12.5f);
 		columnSize.put(COLUMN_CARD_NR, 5f);
 		columnSize.put(COLUMN_TEL_NR, 6f);
 		columnSize.put(COLUMN_INST_PLZ, 1.5f);
-		columnSize.put(COLUMN_EINSATZORT, 9f);
+		columnSize.put(COLUMN_EINSATZORT, 5f);
 		columnSize.put(COLUMN_INST_STREET, 8f);
 		columnSize.put(COLUMN_PLANT_NUMBER, 5f);
 		columnSize.put(COLUMN_EQUIP_NR, 5f);
 		columnSize.put(COLUMN_AUFTRAGS_NR, 4f);
 		columnSize.put(COLUMN_BESTELL_NR, 6f);
-		columnSize.put(COLUMN_VERTRAG_NR, 4f);
+		columnSize.put(COLUMN_VERTRAG_NR, 5.3f);
 		columnSize.put(COLUMN_BA_NR, 4f);
 		columnSize.put(COLUMN_WE_NR, 4f);
 		columnSize.put(COLUMN_COST_CENTER, 4f);
