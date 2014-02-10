@@ -24,6 +24,7 @@ import javax.persistence.Column;
 import org.apache.log4j.Logger;
 
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Paragraph;
 import com.lowagie.text.Anchor;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -258,7 +259,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			y = y - 5 * d;
 			Date date = new Date();
 			// Temporär auf 14. Januar gesetzt
-			date.setDate(14);
+//			date.setDate(5);
 			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
@@ -270,6 +271,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				invNum = 30201;
 			} else if (calcMonth.get(Calendar.MONTH) == Calendar.DECEMBER) {
 				invNum = 30401;
+			} else if (calcMonth.get(Calendar.MONTH) == Calendar.JANUARY) {
+				invNum = 30601;
 			}
 			String invoiceNumber = "";
 			String[] invNums = new String[] {"20074", "20190", "20208", "20206", "20216", "20166", "20120", 
@@ -289,14 +292,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					"20251", "20252", "20253", "20254", "20255", "20256", "20243", "20243_flatrate",
 					"20245", "20217", "20038", "20257", "20258", "20003", "20259", "20006", "20260",
 					"20004", "20005", "20057", "20020", "20021", "20022", "20008", "20023", "20007",
-					"20010", "20009"};
+					"20010", "20009", "20263", "20123", "20058", "20045", "20047", "20052", "20091",
+					"20095", "20114", "20115", "20124", "20131", "20146", "20150", "20167", "20176",
+					"20181", "20185", "20199", "20233", "20072", "20011", "20051", "20067", "20109",
+					"20113", "20117", "20118", "20125", "20152", "20226", "20261", "20042", "20099",
+					"20103", "20108", "20122", "20158", "20222", "20232", "20056"};
 			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
 			for (String s: invNums) {
 				invNumMap.put(s, invNum);
 				invNum++;
 			}
-
-			
+		
 			// Rechnungsnummer
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Rechnung - Nr.", 425, 600, 0);
 			int invoiceNum = 0;
@@ -309,7 +315,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			if (flatrateCalc)
 				invoiceNum = invNumMap.get("20243_flatrate");
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNum, 510, 600, 0);
-
+//			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "07075", 516, 600, 0);
+			
 			// Kundennr.
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 425, 589, 0);
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 516, 589, 0);
@@ -486,6 +493,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				if (columns.contains(Model.COLUMN_VERTRAG_NR)) {
 					invoiceRowList.add(card.getVertrag());
 				}
+				if (columns.contains(Model.COLUMN_BA_NR)) {
+					invoiceRowList.add(card.getBaNummer());
+				}
+				if (columns.contains(Model.COLUMN_WE_NR)) {
+					invoiceRowList.add(card.getWe());
+				}
+				if (columns.contains(Model.COLUMN_COST_CENTER)) {
+					invoiceRowList.add(card.getKostenstelle());
+				}
+				
 //				if (columns.contains(Model.COLUMN_TOTAL_PRICE)) {
 				 	BigDecimal rowPrice = (simPrice.add(dataOptionPrice)).multiply(new BigDecimal(monthAmount));
 					String price = ("" + rowPrice.setScale(2) + " €").replace(".", ",");
@@ -527,7 +544,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				i++;
 			}
 			
-			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den Rechnungsbetrag innerhalb von 15 Tagen ab Rechnungsdatum ", timeframeFont);
+			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den Rechnungsbetrag rein netto innerhalb von 10 Tagen ab Rechnungsdatum ", timeframeFont);
 			Chunk paymentDueDateEnd = new Chunk("unter Angabe der Rechnungsnummer." + addNewLines(2), timeframeFontBold);
 			Phrase payPhrase = new Phrase(paymentDueDate);
 			payPhrase.add(paymentDueDateEnd);
@@ -550,7 +567,44 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Chunk phoneChunk = new Chunk(addNewLines(1) + "Tel.Nr.: 07031-9858-444");
 			doc.add(new Phrase(phoneChunk));
 
+			Chunk correctionChunk = new Chunk(addNewLines(3) + "Bitte prüfen Sie diese Rechnung. Ihnen ist eine Unstimmigkeit aufgefallen? Dann können Sie sich mit Ihrem Widerspruch sehr gerne innerhalb von 6 Wochen an unsere Service Abteilung wenden:" + addNewLines(1));
+			doc.add(new Phrase(correctionChunk));
 			
+			Chunk mailChunk = new Chunk(addNewLines(1) + "            per Mail:           ", timeframeFontBold);
+			Chunk mailAddChunk = new Chunk("kontakt@siwaltec.de", mailFont).setAnchor("mailto:kontakt@siwaltec.de");
+			doc.add(mailChunk);
+			doc.add(mailAddChunk);
+
+			Chunk faxChunk = new Chunk(addNewLines(1) + "            per Fax:", timeframeFontBold);
+			Chunk numberChunk = new Chunk("            07031 98 58 317", timeframeFont);
+			doc.add(faxChunk);
+			doc.add(numberChunk);
+			
+
+			Chunk postChunk = new Chunk(addNewLines(1) + "            per Post:", timeframeFontBold);
+			Chunk siwalChunk = new Chunk("           SiwalTec GmbH", timeframeFont);
+			doc.add(postChunk);
+			doc.add(siwalChunk);
+			
+			Chunk rechnungsprüfungChunk = new Chunk(addNewLines(1) + "                                    -Rechnungsprüfung-", timeframeFont);
+			doc.add(rechnungsprüfungChunk);
+
+			Chunk streetChunk = new Chunk(addNewLines(1) + "                                     Max-Eyth-Straße 35", timeframeFont);
+			doc.add(streetChunk);
+
+			Chunk addressChunk = new Chunk(addNewLines(1) + "                                     71088 Holzgerlingen", timeframeFont);
+			doc.add(addressChunk);
+
+			Chunk appendixChunk = new Chunk(addNewLines(2) + "Nach diesem Zeitraum gilt die Rechnung als geprüft und von Ihnen anerkannt. Durch die Freischaltung der SiwalTec SimKarte erkennen Sie unsere AGBs an.");
+			doc.add(appendixChunk);
+
+			Chunk sepa1Chunk = new Chunk(addNewLines(6) + "Sepa Kontodaten SiwalTec GmbH:");
+			Chunk sepa2Chunk = new Chunk(addNewLines(1) + "          IBAN:   DE72 6039 0000 0406 1280 06");
+			Chunk sepa3Chunk = new Chunk(addNewLines(1) + "          BIC:     GENODES1BBV");
+			doc.add(sepa1Chunk);
+			doc.add(sepa2Chunk);
+			doc.add(sepa3Chunk);
+	
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return true;
@@ -571,11 +625,24 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	
 		
 		String[] cr1 = createCalcRow(firstcols, "Netto Summe", df.format(nettoSum).replace(".", ",") + " €");;
+//		String[] cr1_1 = new String[6];
+//		cr1_1[0] = "";
+//		cr1_1[1] = "42";
+//		cr1_1[2] = "Gutschrift für Oktober 2013";
+//		cr1_1[3] = "";
+//		cr1_1[4] = "";
+//		cr1_1[5] = "-71,40 €";
+//		BigDecimal netSumAfterVoucher = nettoSum.subtract(new BigDecimal(71.4));
+//		String[] cr1_2 = createCalcRow(firstcols, "", "" + df.format(netSumAfterVoucher).replace(".", ",") + " €");
+//		mwst = netSumAfterVoucher.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
 		String[] cr2 = createCalcRow(firstcols, "19% MWST.", "" + df.format(mwst).replace(".", ",") + " €");
 		String[] cr3 = createCalcRow(firstcols, "", "");
 		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(nettoSum)).replace(".", ",") + " €");
+//		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(netSumAfterVoucher)).replace(".", ",") + " €");
 
 		tableRowList.add(new TableRow(1, cr1));
+//		tableRowList.add(new TableRow(1, cr1_1));
+//		tableRowList.add(new TableRow(1, cr1_2));
 		tableRowList.add(new TableRow(1, cr2));
 		tableRowList.add(new TableRow(1, cr3));
 		tableRowList.add(new TableRow(1, cr4));
@@ -657,9 +724,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			if (lastPage) {
 				ArrayList<TableRow> bodyList = new ArrayList<TableRow>();
 				ArrayList<TableRow> endList = new ArrayList<TableRow>();
+//				for (int i = 0; i < (currentRowList.size() - 6); i++) {
 				for (int i = 0; i < (currentRowList.size() - 4); i++) {
 					bodyList.add(currentRowList.get(i));
 				}
+//				for (int i = (currentRowList.size() - 6); i < currentRowList.size(); i++) {
 				for (int i = (currentRowList.size() - 4); i < currentRowList.size(); i++) {
 					endList.add(currentRowList.get(i));
 				}
@@ -679,6 +748,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			ArrayList<TableRow> tableEndList) {
 		Font tableFontBold = new Font(bf_arial, 9);
 		tableFontBold.setStyle(Font.BOLD);
+		Font tableFont = new Font(bf_arial, 9);
 		Iterator<TableRow> it = tableEndList.iterator();
 		while (it.hasNext()) {
 			TableRow tr = it.next();
@@ -690,11 +760,18 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			cell.setPhrase(new Phrase("", tableFontBold));
 //			table.addCell(cell);
 			for (int i = 0; i < cellS.length; i++) {
-				if (i + 2 == cellS.length)
+				if (i == 1) {
+					cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				}
+				if (i == 2)
 					cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				else if (i + 1 == cellS.length)
 					cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-				cell.setPhrase(new Phrase(cellS[i], tableFontBold));
+				if (i > 2) {
+					cell.setPhrase(new Phrase(cellS[i], tableFontBold));
+				} else {
+					cell.setPhrase(new Phrase(cellS[i], tableFont));
+				}
 				if (tr.getInvoiceRows() == 1)
 					cell.setFixedHeight(14);
 				table.addCell(cell);
@@ -871,6 +948,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			}
 			if (cols.contains(Model.COLUMN_VERTRAG_NR)) {
 				cell.setPhrase(new Phrase(Model.COLUMN_VERTRAG_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_BA_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_BA_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_WE_NR)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_WE_NR, tableFont));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				tableHeader.addCell(cell);
+			}
+			if (cols.contains(Model.COLUMN_COST_CENTER)) {
+				cell.setPhrase(new Phrase(Model.COLUMN_COST_CENTER, tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}

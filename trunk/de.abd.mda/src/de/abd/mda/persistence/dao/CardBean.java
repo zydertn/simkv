@@ -71,7 +71,6 @@ public class CardBean extends DaoObject {
 	private boolean actAsDisabled;
 	private String pin;
 	private String baNummer;
-	private String sapNummer;
 	
 	private Map<Integer, Double> simPriceMap;
 	
@@ -124,7 +123,6 @@ public class CardBean extends DaoObject {
 		this.einsatzort = "";
 		this.baNummer = "";
 		this.lastCalculationYear = 1999;
-		this.sapNummer = "";
 	}
 	
 	public CardBean(String cNFirst, String cNSecond, String countryCode, String country, String phoneFirst, String phoneSecond, int seqNum) {
@@ -165,7 +163,6 @@ public class CardBean extends DaoObject {
 		this.einsatzort = "";
 		this.baNummer = "";
 		this.lastCalculationYear = 1999;
-		this.sapNummer = "";
 	}
 
 	public String getCardNumber() {
@@ -667,15 +664,6 @@ public class CardBean extends DaoObject {
 		this.baNummer = baNummer;
 	}
 
-	public String getSapNummer() {
-		return sapNummer;
-	}
-
-	public void setSapNummer(String sapNummer) {
-		this.sapNummer = sapNummer;
-	}
-
-	
 //	public int getId() {
 //		return id;
 //	}
