@@ -61,90 +61,90 @@ public class ExcelImporter_14_01_21 {
 					
 					FileReader file = null;
 	
-					logger.info("************ 20045_GSM-Tel._Fa._GWH_Aufzüge_GmbH.csv **************");
-					file = new FileReader(path + "20045_GSM-Tel._Fa._GWH_Aufzüge_GmbH.csv");
-					readDataFromFile(file, "20045");
-					writeOutList(list);
-					logger.info("************ 20052_GSM-Tel._Fa._Haisch_Aufzüge_GmbH.csv **************");
-					file = new FileReader(path + "20052_GSM-Tel._Fa._Haisch_Aufzüge_GmbH.csv");
-					readDataFromFile(file, "20052");
-					writeOutList(list);
-					
-					logger.info("************ 20095_GSM-Tel_Fa_ThyssenKrupp_NLGießen.csv **************");
-					file = new FileReader(path + "20095_GSM-Tel_Fa_ThyssenKrupp_NLGießen.csv");
-					readDataFromFile(file, "20095");
-					writeOutList(list);
-
-					logger.info("************ 20114_GSM-Tel_Fa_ThyssenKrupp_GmbH_NL_Hamburg.csv **************");
-					file = new FileReader(path + "20114_GSM-Tel_Fa_ThyssenKrupp_GmbH_NL_Hamburg.csv");
-					readDataFromFile(file, "20114");
-					writeOutList(list);
-
-					logger.info("************ 20115_GSM-Tel_Fa_Christian_Hein_GmbH-Aufzüge_17_07_12.csv **************");
-					file = new FileReader(path + "20115_GSM-Tel_Fa_Christian_Hein_GmbH-Aufzüge_17_07_12.csv");
-					readDataFromFile(file, "20115");
-					writeOutList(list);
-
-					logger.info("************ 20124_QUARTAL_GSM-Tel_Fa._TKA_NL_Bielefeld.csv **************");
-					file = new FileReader(path + "20124_QUARTAL_GSM-Tel_Fa._TKA_NL_Bielefeld.csv");
-					readDataFromFile(file, "20124");
-					writeOutList(list);
-
-					logger.info("************ 20131_GSM-Tel_Fa._TKA_NL_Berlin.csv **************");
-					file = new FileReader(path + "20131_GSM-Tel_Fa._TKA_NL_Berlin.csv");
-					readDataFromFile(file, "20131");
-					writeOutList(list);
-
-					logger.info("************ 20146_GSM-Tel_TKA_NL_Essen.csv **************");
-					file = new FileReader(path + "20146_GSM-Tel_TKA_NL_Essen.csv");
-					readDataFromFile(file, "20146");
-					writeOutList(list);
-
-					logger.info("************ 20150_GSM-Tel_Fa._TKA_NL_Düsseldorf.csv **************");
-					file = new FileReader(path + "20150_GSM-Tel_Fa._TKA_NL_Düsseldorf.csv");
-					readDataFromFile(file, "20150");
-					writeOutList(list);
-
-					logger.info("************ 20167_GSM-Tel_Fa._TKA_NL_Dortmund.csv **************");
-					file = new FileReader(path + "20167_GSM-Tel_Fa._TKA_NL_Dortmund.csv");
-					readDataFromFile(file, "20167");
-					writeOutList(list);
-
-					logger.info("************ 20176_GSM_Liste_TKA_NL_Dresden.csv **************");
-					file = new FileReader(path + "20176_GSM_Liste_TKA_NL_Dresden.csv");
-					readDataFromFile(file, "20176");
-					writeOutList(list);
+//					logger.info("************ 20045_GSM-Tel._Fa._GWH_Aufzüge_GmbH.csv **************");
+//					file = new FileReader(path + "20045_GSM-Tel._Fa._GWH_Aufzüge_GmbH.csv");
+//					readDataFromFile(file, "20045");
+//					writeOutList(list);
+//					logger.info("************ 20052_GSM-Tel._Fa._Haisch_Aufzüge_GmbH.csv **************");
+//					file = new FileReader(path + "20052_GSM-Tel._Fa._Haisch_Aufzüge_GmbH.csv");
+//					readDataFromFile(file, "20052");
+//					writeOutList(list);
+//					
+//					logger.info("************ 20095_GSM-Tel_Fa_ThyssenKrupp_NLGießen.csv **************");
+//					file = new FileReader(path + "20095_GSM-Tel_Fa_ThyssenKrupp_NLGießen.csv");
+//					readDataFromFile(file, "20095");
+//					writeOutList(list);
+//
+//					logger.info("************ 20114_GSM-Tel_Fa_ThyssenKrupp_GmbH_NL_Hamburg.csv **************");
+//					file = new FileReader(path + "20114_GSM-Tel_Fa_ThyssenKrupp_GmbH_NL_Hamburg.csv");
+//					readDataFromFile(file, "20114");
+//					writeOutList(list);
+//
+//					logger.info("************ 20115_GSM-Tel_Fa_Christian_Hein_GmbH-Aufzüge_17_07_12.csv **************");
+//					file = new FileReader(path + "20115_GSM-Tel_Fa_Christian_Hein_GmbH-Aufzüge_17_07_12.csv");
+//					readDataFromFile(file, "20115");
+//					writeOutList(list);
+//
+//					logger.info("************ 20124_QUARTAL_GSM-Tel_Fa._TKA_NL_Bielefeld.csv **************");
+//					file = new FileReader(path + "20124_QUARTAL_GSM-Tel_Fa._TKA_NL_Bielefeld.csv");
+//					readDataFromFile(file, "20124");
+//					writeOutList(list);
+//
+//					logger.info("************ 20131_GSM-Tel_Fa._TKA_NL_Berlin.csv **************");
+//					file = new FileReader(path + "20131_GSM-Tel_Fa._TKA_NL_Berlin.csv");
+//					readDataFromFile(file, "20131");
+//					writeOutList(list);
+//
+//					logger.info("************ 20146_GSM-Tel_TKA_NL_Essen.csv **************");
+//					file = new FileReader(path + "20146_GSM-Tel_TKA_NL_Essen.csv");
+//					readDataFromFile(file, "20146");
+//					writeOutList(list);
+//
+//					logger.info("************ 20150_GSM-Tel_Fa._TKA_NL_Düsseldorf.csv **************");
+//					file = new FileReader(path + "20150_GSM-Tel_Fa._TKA_NL_Düsseldorf.csv");
+//					readDataFromFile(file, "20150");
+//					writeOutList(list);
+//
+//					logger.info("************ 20167_GSM-Tel_Fa._TKA_NL_Dortmund.csv **************");
+//					file = new FileReader(path + "20167_GSM-Tel_Fa._TKA_NL_Dortmund.csv");
+//					readDataFromFile(file, "20167");
+//					writeOutList(list);
+//
+//					logger.info("************ 20176_GSM_Liste_TKA_NL_Dresden.csv **************");
+//					file = new FileReader(path + "20176_GSM_Liste_TKA_NL_Dresden.csv");
+//					readDataFromFile(file, "20176");
+//					writeOutList(list);
 
 					logger.info("************ 20185_GSM-Tel_Fa._TKA_NL_Bremen.csv **************");
 					file = new FileReader(path + "20185_GSM-Tel_Fa._TKA_NL_Bremen.csv");
 					readDataFromFile(file, "20185");
 					writeOutList(list);
 
-					logger.info("************ 20199_GSM-Tel_Fa._TKA_NL_Freiburg.csv **************");
-					file = new FileReader(path + "20199_GSM-Tel_Fa._TKA_NL_Freiburg.csv");
-					readDataFromFile(file, "20199");
-					writeOutList(list);
-
-					logger.info("************ 20233_GSM-SIM_Karten_ThyssenKrupp_NL_Bayreuth.csv **************");
-					file = new FileReader(path + "20233_GSM-SIM_Karten_ThyssenKrupp_NL_Bayreuth.csv");
-					readDataFromFile(file, "20233");
-					writeOutList(list);
-
-					                          
-					logger.info("************ 20091_GSM_Liste_FA._Tepper_mit_Vertragsnummern.csv **************");
-					file = new FileReader(path + "20091_GSM_Liste_FA._Tepper_mit_Vertragsnummern.csv");
-					readDataFromFile(file, "20091");
-					writeOutList(list);
-
-					logger.info("************ 20181_GSM-Tel._Fa._GMT_Aufzug-Service_GmbH.csv **************");
-					file = new FileReader(path + "20181_GSM-Tel._Fa._GMT_Aufzug-Service_GmbH.csv");
-					readDataFromFile(file, "20181");
-					writeOutList(list);
-
-					logger.info("************ 20047_GSM-Tel_Fa_Liftservice_u_Montage_GmbH_29.03.2012.csv **************");
-					file = new FileReader(path + "20047_GSM-Tel_Fa_Liftservice_u_Montage_GmbH_29.03.2012.csv");
-					readDataFromFile(file, "20047");
-					writeOutList(list);
+//					logger.info("************ 20199_GSM-Tel_Fa._TKA_NL_Freiburg.csv **************");
+//					file = new FileReader(path + "20199_GSM-Tel_Fa._TKA_NL_Freiburg.csv");
+//					readDataFromFile(file, "20199");
+//					writeOutList(list);
+//
+//					logger.info("************ 20233_GSM-SIM_Karten_ThyssenKrupp_NL_Bayreuth.csv **************");
+//					file = new FileReader(path + "20233_GSM-SIM_Karten_ThyssenKrupp_NL_Bayreuth.csv");
+//					readDataFromFile(file, "20233");
+//					writeOutList(list);
+//
+//					                          
+//					logger.info("************ 20091_GSM_Liste_FA._Tepper_mit_Vertragsnummern.csv **************");
+//					file = new FileReader(path + "20091_GSM_Liste_FA._Tepper_mit_Vertragsnummern.csv");
+//					readDataFromFile(file, "20091");
+//					writeOutList(list);
+//
+//					logger.info("************ 20181_GSM-Tel._Fa._GMT_Aufzug-Service_GmbH.csv **************");
+//					file = new FileReader(path + "20181_GSM-Tel._Fa._GMT_Aufzug-Service_GmbH.csv");
+//					readDataFromFile(file, "20181");
+//					writeOutList(list);
+//
+//					logger.info("************ 20047_GSM-Tel_Fa_Liftservice_u_Montage_GmbH_29.03.2012.csv **************");
+//					file = new FileReader(path + "20047_GSM-Tel_Fa_Liftservice_u_Montage_GmbH_29.03.2012.csv");
+//					readDataFromFile(file, "20047");
+//					writeOutList(list);
 
 			} catch (FileNotFoundException e) {
 				logger.error("Datei nicht gefunden");
