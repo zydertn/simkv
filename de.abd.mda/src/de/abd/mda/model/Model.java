@@ -61,7 +61,7 @@ public class Model {
 	public static String COLUMN_TOTAL_PRICE = "Preis";
 
 	public static String BILLING_WE_NR = "WE-Nummer";
-	public static String BILLING_SAP_NR = "SAP-Nummer";
+	public static String BILLING_BESTELL_NR = "Bestell-Nr.";
 	
 	public static String GENDER_MAN = "Herr";
 	public static String GENDER_WOMAN = "Frau";
@@ -184,7 +184,7 @@ public class Model {
 
 		billingCriteria = new ArrayList<String>();
 		billingCriteria.add(BILLING_WE_NR);
-		billingCriteria.add(BILLING_SAP_NR);
+		billingCriteria.add(BILLING_BESTELL_NR);
 		
 		relationList = new ArrayList<String>();
 		relationList.add(RELATION_0);
