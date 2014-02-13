@@ -61,59 +61,59 @@ public class ExcelImporter_14_01_30 {
 					
 					FileReader file = null;
 	
-					logger.info("************ 20011_GSM-Tel._Karten_Thyssen_Köln-Hürthl.csv **************");
-					file = new FileReader(path + "20011_GSM-Tel._Karten_Thyssen_Köln-Hürthl.csv");
-					readDataFromFile(file, "20011");
-					writeOutList(list);
+//					logger.info("************ 20011_GSM-Tel._Karten_Thyssen_Köln-Hürthl.csv **************");
+//					file = new FileReader(path + "20011_GSM-Tel._Karten_Thyssen_Köln-Hürthl.csv");
+//					readDataFromFile(file, "20011");
+//					writeOutList(list);
 					logger.info("************ 20051_GSM-Tel._Fa._Thyssen_Mannheim.csv **************");
 					file = new FileReader(path + "20051_GSM-Tel._Fa._Thyssen_Mannheim.csv");
 					readDataFromFile(file, "20051");
 					writeOutList(list);
 					
-					logger.info("************ 20067_QUARTAL_GSM-Tel._Fa._Thyssen_Hannover.csv **************");
-					file = new FileReader(path + "20067_QUARTAL_GSM-Tel._Fa._Thyssen_Hannover.csv");
-					readDataFromFile(file, "20067");
-					writeOutList(list);
-
-					logger.info("************ 20109_HALBJAHR_GSM-Tel._Fa._ThyssenKrupp_GmbH_NL_KA.csv **************");
-					file = new FileReader(path + "20109_HALBJAHR_GSM-Tel._Fa._ThyssenKrupp_GmbH_NL_KA.csv");
-					readDataFromFile(file, "20109");
-					writeOutList(list);
-
-					logger.info("************ 20113_GSM-SIM_Karten_TKA_NL_Leipzig.csv **************");
-					file = new FileReader(path + "20113_GSM-SIM_Karten_TKA_NL_Leipzig.csv");
-					readDataFromFile(file, "20113");
-					writeOutList(list);
-
-					logger.info("************ 20117_GSM-SIM_Karten_ThyssenKrupp_NL_Kiel.csv **************");
-					file = new FileReader(path + "20117_GSM-SIM_Karten_ThyssenKrupp_NL_Kiel.csv");
-					readDataFromFile(file, "20117");
-					writeOutList(list);
-
-					logger.info("************ 20118_GSM-SIM_Karten_ThyssenKrupp_NL_Magdeburg.csv **************");
-					file = new FileReader(path + "20118_GSM-SIM_Karten_ThyssenKrupp_NL_Magdeburg.csv");
-					readDataFromFile(file, "20118");
-					writeOutList(list);
-
-					logger.info("************ 20125_JAHR_GSM-Tel._Karten_ThyssenKrupp_NL_Heilbronn.csv **************");
-					file = new FileReader(path + "20125_JAHR_GSM-Tel._Karten_ThyssenKrupp_NL_Heilbronn.csv");
-					readDataFromFile(file, "20125");
-					writeOutList(list);
-
-					logger.info("************ 20152_GSM-SIM_Karten_ThyssenKrupp_NL_Mainz.csv **************");
-					file = new FileReader(path + "20152_GSM-SIM_Karten_ThyssenKrupp_NL_Mainz.csv");
-					readDataFromFile(file, "20152");
-					writeOutList(list);
-
-					logger.info("************ 20226_GSM_TKA_NL_Kassel.csv **************");
-					file = new FileReader(path + "20226_GSM_TKA_NL_Kassel.csv");
-					readDataFromFile(file, "20226");
-					writeOutList(list);
-
-					logger.info("************ 20261_JAHR_GSM-Tel._MBV_Karlsruhe.csv **************");
-					file = new FileReader(path + "20261_JAHR_GSM-Tel._MBV_Karlsruhe.csv");
-					readDataFromFile(file, "20261");
-					writeOutList(list);
+//					logger.info("************ 20067_QUARTAL_GSM-Tel._Fa._Thyssen_Hannover.csv **************");
+//					file = new FileReader(path + "20067_QUARTAL_GSM-Tel._Fa._Thyssen_Hannover.csv");
+//					readDataFromFile(file, "20067");
+//					writeOutList(list);
+//
+//					logger.info("************ 20109_HALBJAHR_GSM-Tel._Fa._ThyssenKrupp_GmbH_NL_KA.csv **************");
+//					file = new FileReader(path + "20109_HALBJAHR_GSM-Tel._Fa._ThyssenKrupp_GmbH_NL_KA.csv");
+//					readDataFromFile(file, "20109");
+//					writeOutList(list);
+//
+//					logger.info("************ 20113_GSM-SIM_Karten_TKA_NL_Leipzig.csv **************");
+//					file = new FileReader(path + "20113_GSM-SIM_Karten_TKA_NL_Leipzig.csv");
+//					readDataFromFile(file, "20113");
+//					writeOutList(list);
+//
+//					logger.info("************ 20117_GSM-SIM_Karten_ThyssenKrupp_NL_Kiel.csv **************");
+//					file = new FileReader(path + "20117_GSM-SIM_Karten_ThyssenKrupp_NL_Kiel.csv");
+//					readDataFromFile(file, "20117");
+//					writeOutList(list);
+//
+//					logger.info("************ 20118_GSM-SIM_Karten_ThyssenKrupp_NL_Magdeburg.csv **************");
+//					file = new FileReader(path + "20118_GSM-SIM_Karten_ThyssenKrupp_NL_Magdeburg.csv");
+//					readDataFromFile(file, "20118");
+//					writeOutList(list);
+//
+//					logger.info("************ 20125_JAHR_GSM-Tel._Karten_ThyssenKrupp_NL_Heilbronn.csv **************");
+//					file = new FileReader(path + "20125_JAHR_GSM-Tel._Karten_ThyssenKrupp_NL_Heilbronn.csv");
+//					readDataFromFile(file, "20125");
+//					writeOutList(list);
+//
+//					logger.info("************ 20152_GSM-SIM_Karten_ThyssenKrupp_NL_Mainz.csv **************");
+//					file = new FileReader(path + "20152_GSM-SIM_Karten_ThyssenKrupp_NL_Mainz.csv");
+//					readDataFromFile(file, "20152");
+//					writeOutList(list);
+//
+//					logger.info("************ 20226_GSM_TKA_NL_Kassel.csv **************");
+//					file = new FileReader(path + "20226_GSM_TKA_NL_Kassel.csv");
+//					readDataFromFile(file, "20226");
+//					writeOutList(list);
+//
+//					logger.info("************ 20261_JAHR_GSM-Tel._MBV_Karlsruhe.csv **************");
+//					file = new FileReader(path + "20261_JAHR_GSM-Tel._MBV_Karlsruhe.csv");
+//					readDataFromFile(file, "20261");
+//					writeOutList(list);
 
 //					logger.info("************ 20185_GSM-Tel_Fa._TKA_NL_Bremen.csv **************");
 //					file = new FileReader(path + "20185_GSM-Tel_Fa._TKA_NL_Bremen.csv");
