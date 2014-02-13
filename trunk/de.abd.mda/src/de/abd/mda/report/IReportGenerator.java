@@ -8,6 +8,6 @@ import de.abd.mda.persistence.dao.DaoObject;
 
 public interface IReportGenerator {
 
-	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc);
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount);
 	
 }

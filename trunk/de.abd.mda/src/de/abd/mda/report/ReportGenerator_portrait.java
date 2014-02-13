@@ -66,7 +66,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		loadBaseFonts();
 	}
 
-	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc) {
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
 		try {
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
 			String month = "";
@@ -81,8 +81,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			String flatrateString = "";
 			if (flatrateCalc)
 				flatrateString = "_flatrate";
+			String mapCountString = "";
+			if (severalBills)
+				mapCountString = "_" + mapCount;
 			
-			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + flatrateString + ".pdf";
+			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + flatrateString + mapCountString + ".pdf";
 //			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
 			File dir = new File("C:/Temp/report/" + year + "/" + month);
 			dir.mkdirs();
@@ -296,7 +299,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					"20095", "20114", "20115", "20124", "20131", "20146", "20150", "20167", "20176",
 					"20181", "20185", "20199", "20233", "20072", "20011", "20051", "20067", "20109",
 					"20113", "20117", "20118", "20125", "20152", "20226", "20261", "20042", "20099",
-					"20103", "20108", "20122", "20158", "20222", "20232", "20056"};
+					"20103", "20108", "20122", "20158", "20222", "20232", "20056", "20137"};
 			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
 			for (String s: invNums) {
 				invNumMap.put(s, invNum);
