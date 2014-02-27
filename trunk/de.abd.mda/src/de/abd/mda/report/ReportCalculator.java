@@ -29,7 +29,7 @@ public class ReportCalculator implements Runnable {
 	HttpSession facesSession;
 	private boolean taskRunning = true;
 	Thread thread;
-
+	
 	public ReportCalculator() {
 		facesSession = (new FacesUtil()).getSession();
 	}
@@ -89,7 +89,7 @@ public class ReportCalculator implements Runnable {
 		int i = 0;
 		int cusNum = 0;
 		boolean flatrateCalc = false;
-
+		
 		while (cusIt.hasNext()) {
 			cusNum++;
 			Calendar calcMonth = Calendar.getInstance();

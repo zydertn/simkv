@@ -1,9 +1,13 @@
 package de.abd.mda.controller;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
@@ -24,6 +28,7 @@ import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.InvoiceConfiguration;
 import de.abd.mda.persistence.dao.Person;
+import de.abd.mda.persistence.dao.Voucher;
 import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
@@ -54,7 +59,6 @@ public class CustomerActionController extends ActionController {
 	private HtmlInputText invoicePostcodeBinding;
 	private HtmlInputText invoiceCityBinding;
 	private HtmlSelectOneMenu invoiceconfigSimpriceBinding;
-	private HtmlSelectOneMenu invoiceconfigDataoptionBinding;
 	private HtmlSelectOneMenu invoiceconfigFormatBinding;
 	private HtmlSelectOneMenu invoiceconfigCreationFrequencyBinding;
 	private HtmlInputText emailBinding;
@@ -63,6 +67,12 @@ public class CustomerActionController extends ActionController {
 	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
 	private HtmlSelectBooleanCheckbox invoiceconfigSeparateBillingBinding;
 	private HtmlSelectManyCheckbox invoiceconfigBillingCriteriaBinding;
+	private Voucher voucher;
+	private HtmlSelectOneMenu voucherMonthBinding;
+	private HtmlSelectOneMenu voucherYearBinding;
+	private HtmlInputText cardAmountBinding;
+	private HtmlInputText cardVoucherBinding;
+
 	
 	private String relation;
 	private List<CardBean> cardList;
@@ -76,22 +86,14 @@ public class CustomerActionController extends ActionController {
 		customer.setInvoiceConfiguration(new InvoiceConfiguration());
 		customerList = new ArrayList<Customer>();
 		cardList = new ArrayList<CardBean>();
+		voucher = new Voucher();
 	}
 	
 	public void createCustomer() {
 		CustomerController customerController = new CustomerController();
 
-		// CASCADE:
-//		Customer cus = new Customer();
-//		cus.setBranch(customer.getBranch());
-//		cus.setCustomernumber(customer.getCustomernumber());
-//		cus.setName(customer.getName());
-		
-//		createCustomerSubObjects(cus);
-
 		
 		String retMessage = customerController.createObject(customer);
-//		String retMessage = customerController.createObject(cus);
 
 		if (retMessage != null && retMessage.length() > 0) {
 			getRequest().setAttribute("message", retMessage);
@@ -148,41 +150,42 @@ public class CustomerActionController extends ActionController {
 			} else {
 				customer = (Customer) customers.get(0);
 			}
-			
-			branchBinding.setDisabled(false);
-			faoBinding.setDisabled(false);
-			supplierNumberBinding.setDisabled(false);
-			streetBinding.setDisabled(false);
-			housenumberBinding.setDisabled(false);
-			postboxBinding.setDisabled(false);
-			postcodeBinding.setDisabled(false);
-			cityBinding.setDisabled(false);
-			contactGenderBinding.setDisabled(false);
-			contactFirstnameBinding.setDisabled(false);
-			contactNameBinding.setDisabled(false);
-			invoiceStreetBinding.setDisabled(false);
-			invoiceHousenumberBinding.setDisabled(false);
-			invoicePostboxBinding.setDisabled(false);
-			invoicePostcodeBinding.setDisabled(false);
-			invoiceCityBinding.setDisabled(false);
-			invoiceconfigSimpriceBinding.setDisabled(false);
-			invoiceconfigDataoptionBinding.setDisabled(false);
-			invoiceconfigFormatBinding.setDisabled(false);
-			invoiceconfigCreationFrequencyBinding.setDisabled(false);
-			emailBinding.setDisabled(false);
-			de_mailBinding.setDisabled(false);
-			commentBinding.setDisabled(false);
-			invoiceconfigColumnsBinding.setDisabled(false);
-			invoiceconfigBillingCriteriaBinding.setDisabled(false);
-			invoiceconfigSeparateBillingBinding.setDisabled(false);
-//			invoiceconfigColumnsBinding.setDisabled(false);
-			getRequest().setAttribute("componentDisabled", false);
-
+			disableComponents(false);
 		} else {
 			System.out.println("Kein Customer gefunden");
 		}
 	}
 	
+	private void disableComponents(boolean b) {
+		branchBinding.setDisabled(b);
+		faoBinding.setDisabled(b);
+		supplierNumberBinding.setDisabled(b);
+		streetBinding.setDisabled(b);
+		housenumberBinding.setDisabled(b);
+		postboxBinding.setDisabled(b);
+		postcodeBinding.setDisabled(b);
+		cityBinding.setDisabled(b);
+		contactGenderBinding.setDisabled(b);
+		contactFirstnameBinding.setDisabled(b);
+		contactNameBinding.setDisabled(b);
+		invoiceStreetBinding.setDisabled(b);
+		invoiceHousenumberBinding.setDisabled(b);
+		invoicePostboxBinding.setDisabled(b);
+		invoicePostcodeBinding.setDisabled(b);
+		invoiceCityBinding.setDisabled(b);
+		invoiceconfigSimpriceBinding.setDisabled(b);
+		invoiceconfigFormatBinding.setDisabled(b);
+		invoiceconfigCreationFrequencyBinding.setDisabled(b);
+		emailBinding.setDisabled(b);
+		de_mailBinding.setDisabled(b);
+		commentBinding.setDisabled(b);
+		voucherMonthBinding.setDisabled(b);
+		voucherYearBinding.setDisabled(b);
+		cardAmountBinding.setDisabled(b);
+		cardVoucherBinding.setDisabled(b);
+		getRequest().setAttribute("componentDisabled", b);
+	}
+
 	public void searchCustomerCards() {
 		CustomerController cc = new CustomerController();
 		List<DaoObject> customers =	cc.searchCustomer(customer.getCustomernumber(), customer.getName());
@@ -198,6 +201,10 @@ public class CustomerActionController extends ActionController {
 				cardList.add((CardBean) dao);
 			}
 		}
+	}
+	
+	public void updateCustomerAction() {
+		updateCustomer();
 	}
 	
 	public String updateCustomer() {
@@ -231,9 +238,6 @@ public class CustomerActionController extends ActionController {
 			
 			Address ad = dbCustomer.getAddress();
 			Address cad = customer.getAddress();
-//			if (ad == null && cad != null && cad.getCity() != null && cad.getCity().length() > 0) {
-//				ad = (Address) customerController.createMyObject(new Address());
-//			}
 			ad.setCity(cad.getCity());
 			ad.setHousenumber(cad.getHousenumber());
 			ad.setPostbox(cad.getPostbox());
@@ -242,11 +246,6 @@ public class CustomerActionController extends ActionController {
 			
 			Person cp = dbCustomer.getContactPerson();
 			Person cpp = customer.getContactPerson();
-//			if (cp == null && cpp != null && cpp.getName() != null && cpp.getName().length() > 0) {
-//				// HIER GIBT ES EINEN OUT OF MEMORY ERROR
-//				cp = (Person) customerController.createMyObject(cpp);
-//				dbCustomer.setContactPerson(cp);
-//			}
 			
 			cp.setFirstname(cpp.getFirstname());
 			cp.setGender(cpp.getGender());
@@ -264,10 +263,6 @@ public class CustomerActionController extends ActionController {
 
 			Address ia = dbCustomer.getInvoiceAddress();
 			Address cia = customer.getInvoiceAddress();
-//			if (ia == null && cia != null && cia.getCity() != null && cia.getCity().length() > 0) {
-//				ia = (Address) customerController.createMyObject(new Address());
-//				dbCustomer.setInvoiceAddress(ia);
-//			}
 			ia.setCity(cia.getCity());
 			ia.setHousenumber(cia.getHousenumber());
 			ia.setPostbox(cia.getPostbox());
@@ -276,10 +271,6 @@ public class CustomerActionController extends ActionController {
 
 			InvoiceConfiguration ic = dbCustomer.getInvoiceConfiguration();
 			InvoiceConfiguration cic = customer.getInvoiceConfiguration();
-//			if (ic == null) {
-//				ic = (InvoiceConfiguration) customerController.createMyObject(new InvoiceConfiguration());
-//				dbCustomer.setInvoiceConfiguration(ic);
-//			}
 			ic.setColumns(cic.getColumns());
 			ic.setCreationFrequency(cic.getCreationFrequency());
 			ic.setDataOptionSurcharge(cic.getDataOptionSurcharge());
@@ -287,6 +278,20 @@ public class CustomerActionController extends ActionController {
 			ic.setSimPrice(cic.getSimPrice());
 			ic.setSeparateBilling(cic.getSeparateBilling());
 			ic.setSeparateBillingCriteria(cic.getSeparateBillingCriteria());
+			
+			
+			if (voucher.getCardAmount() > 0 && voucher.getCardVoucher() > 0) {
+				Set<Voucher> vouchers = dbCustomer.getVouchers();
+				BigDecimal bd = new BigDecimal(voucher.getCardAmount());
+				bd = bd.multiply(new BigDecimal(voucher.getCardVoucher()));
+				bd = bd.setScale(2, RoundingMode.HALF_UP);
+				voucher.setTotalVoucher(bd.doubleValue());
+				vouchers.add(voucher);
+				
+				voucher = new Voucher();
+				cardAmountBinding.setValue("");
+				cardVoucherBinding.setValue("");
+			}
 			
 			tx.commit();
 		} catch (RuntimeException e) {
@@ -305,25 +310,7 @@ public class CustomerActionController extends ActionController {
 		FacesUtil.writeAttributeToRequest("message", "Änderung gespeichert!");
 		customer = new Customer();
 		if (FacesContext.getCurrentInstance() != null) {
-			branchBinding.setDisabled(true);
-			streetBinding.setDisabled(true);
-			housenumberBinding.setDisabled(true);
-			postboxBinding.setDisabled(true);
-			postcodeBinding.setDisabled(true);
-			cityBinding.setDisabled(true);
-			contactGenderBinding.setDisabled(true);
-			contactFirstnameBinding.setDisabled(true);
-			contactNameBinding.setDisabled(true);
-			invoiceStreetBinding.setDisabled(true);
-			invoiceHousenumberBinding.setDisabled(true);
-			invoicePostboxBinding.setDisabled(true);
-			invoicePostcodeBinding.setDisabled(true);
-			invoiceCityBinding.setDisabled(true);
-			invoiceconfigSimpriceBinding.setDisabled(true);
-			invoiceconfigDataoptionBinding.setDisabled(true);
-			invoiceconfigFormatBinding.setDisabled(true);
-			invoiceconfigCreationFrequencyBinding.setDisabled(true);
-//			invoiceconfigColumnsBinding.setDisabled(true);
+			disableComponents(true);
 		}
 
 		
@@ -342,6 +329,31 @@ public class CustomerActionController extends ActionController {
 		return "finish";
 	}
 
+	public String deleteVoucher(Voucher voucher) {
+		customer.getVouchers().remove(voucher);
+		
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		List<DaoObject> customers = null;
+		CustomerController customerController = new CustomerController();
+
+		
+		try {
+			tx = session.beginTransaction();
+			String whereClause = "";
+			whereClause = " where customer.id = '" + customer.getId() + "'";
+			
+			List<Customer> customerList = session.createQuery("from Customer as customer" + whereClause).list();
+			Customer dbCustomer = customerList.get(0);
+			
+			dbCustomer.setVouchers(customer.getVouchers());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return "openUpdateCustomerDialog";
+	}
+	
 	public void selectCustomer() {
 		Iterator itrCust = customerList.iterator();
 		while (itrCust.hasNext()) {
@@ -355,27 +367,7 @@ public class CustomerActionController extends ActionController {
 				System.out.println("kein Match");
 		}
 
-		branchBinding.setDisabled(false);
-		streetBinding.setDisabled(false);
-		housenumberBinding.setDisabled(false);
-		postboxBinding.setDisabled(false);
-		postcodeBinding.setDisabled(false);
-		cityBinding.setDisabled(false);
-		contactGenderBinding.setDisabled(false);
-		contactFirstnameBinding.setDisabled(false);
-		contactNameBinding.setDisabled(false);
-		invoiceStreetBinding.setDisabled(false);
-		invoiceHousenumberBinding.setDisabled(false);
-		invoicePostboxBinding.setDisabled(false);
-		invoicePostcodeBinding.setDisabled(false);
-		invoiceCityBinding.setDisabled(false);
-		invoiceconfigSimpriceBinding.setDisabled(false);
-		invoiceconfigDataoptionBinding.setDisabled(false);
-		invoiceconfigFormatBinding.setDisabled(false);
-		invoiceconfigCreationFrequencyBinding.setDisabled(false);
-		
-//		invoiceconfigColumnsBinding.setDisabled(false);
-		getRequest().setAttribute("componentDisabled", false);
+		disableComponents(false);
 		opened = !opened;
 	}
 	
@@ -408,15 +400,6 @@ public class CustomerActionController extends ActionController {
 			customer = new Customer();
 			getRequest().removeAttribute("newCustomer");
 		}
-		// CASCADE: Evtl. hier auskommentieren?
-//		if (customer.getAddress() == null)
-//			customer.setAddress(new Address());
-//		if (customer.getContactPerson() == null)
-//			customer.setContactPerson(new Person());
-//		if (customer.getInvoiceAddress() == null)
-//			customer.setInvoiceAddress(new Address());
-//		if (customer.getInvoiceConfiguration() == null)
-//			customer.setInvoiceConfiguration(new InvoiceConfiguration());
 
 		return customer;
 	}
@@ -460,8 +443,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getHousenumberBinding() {
-		if (invoicePostboxBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoicePostboxBinding.setDisabled(true);
+//		if (invoicePostboxBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoicePostboxBinding.setDisabled(true);
 		return housenumberBinding;
 	}
 
@@ -470,8 +453,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getPostboxBinding() {
-		if (invoicePostboxBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoicePostboxBinding.setDisabled(true);
+//		if (invoicePostboxBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoicePostboxBinding.setDisabled(true);
 		return postboxBinding;
 	}
 
@@ -480,8 +463,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getPostcodeBinding() {
-		if (postcodeBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			postcodeBinding.setDisabled(true);
+//		if (postcodeBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			postcodeBinding.setDisabled(true);
 		return postcodeBinding;
 	}
 
@@ -490,8 +473,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getCityBinding() {
-		if (cityBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			cityBinding.setDisabled(true);
+//		if (cityBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			cityBinding.setDisabled(true);
 		return cityBinding;
 	}
 
@@ -500,8 +483,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlSelectOneMenu getGenderBinding() {
-		if (genderBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			genderBinding.setDisabled(true);
+//		if (genderBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			genderBinding.setDisabled(true);
 		return genderBinding;
 	}
 
@@ -510,8 +493,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getInvoiceStreetBinding() {
-		if (invoiceStreetBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceStreetBinding.setDisabled(true);
+//		if (invoiceStreetBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceStreetBinding.setDisabled(true);
 		return invoiceStreetBinding;
 	}
 
@@ -520,8 +503,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getInvoiceHousenumberBinding() {
-		if (invoiceHousenumberBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceHousenumberBinding.setDisabled(true);
+//		if (invoiceHousenumberBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceHousenumberBinding.setDisabled(true);
 		return invoiceHousenumberBinding;
 	}
 
@@ -530,8 +513,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getInvoicePostboxBinding() {
-		if (invoicePostboxBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoicePostboxBinding.setDisabled(true);
+//		if (invoicePostboxBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoicePostboxBinding.setDisabled(true);
 		return invoicePostboxBinding;
 	}
 
@@ -540,8 +523,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getInvoicePostcodeBinding() {
-		if (invoicePostcodeBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoicePostcodeBinding.setDisabled(true);
+//		if (invoicePostcodeBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoicePostcodeBinding.setDisabled(true);
 		return invoicePostcodeBinding;
 	}
 
@@ -550,8 +533,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getInvoiceCityBinding() {
-		if (invoiceCityBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceCityBinding.setDisabled(true);
+//		if (invoiceCityBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceCityBinding.setDisabled(true);
 		return invoiceCityBinding;
 	}
 
@@ -560,8 +543,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlSelectOneMenu getInvoiceconfigSimpriceBinding() {
-		if (invoiceconfigSimpriceBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceconfigSimpriceBinding.setDisabled(true);
+//		if (invoiceconfigSimpriceBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceconfigSimpriceBinding.setDisabled(true);
 		return invoiceconfigSimpriceBinding;
 	}
 
@@ -570,20 +553,9 @@ public class CustomerActionController extends ActionController {
 		this.invoiceconfigSimpriceBinding = invoiceconfigSimpriceBinding;
 	}
 
-	public HtmlSelectOneMenu getInvoiceconfigDataoptionBinding() {
-		if (invoiceconfigDataoptionBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceconfigDataoptionBinding.setDisabled(true);
-		return invoiceconfigDataoptionBinding;
-	}
-
-	public void setInvoiceconfigDataoptionBinding(
-			HtmlSelectOneMenu invoiceconfigDataoptionBinding) {
-		this.invoiceconfigDataoptionBinding = invoiceconfigDataoptionBinding;
-	}
-
 	public HtmlSelectOneMenu getInvoiceconfigFormatBinding() {
-		if (invoiceconfigFormatBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceconfigFormatBinding.setDisabled(true);
+//		if (invoiceconfigFormatBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceconfigFormatBinding.setDisabled(true);
 		return invoiceconfigFormatBinding;
 	}
 
@@ -593,8 +565,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlSelectOneMenu getInvoiceconfigCreationFrequencyBinding() {
-		if (invoiceconfigCreationFrequencyBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			invoiceconfigCreationFrequencyBinding.setDisabled(true);
+//		if (invoiceconfigCreationFrequencyBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			invoiceconfigCreationFrequencyBinding.setDisabled(true);
 		return invoiceconfigCreationFrequencyBinding;
 	}
 
@@ -615,8 +587,8 @@ public class CustomerActionController extends ActionController {
 //	}
 
 	public HtmlInputText getStreetBinding() {
-		if (streetBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			streetBinding.setDisabled(true);
+//		if (streetBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			streetBinding.setDisabled(true);
 		return streetBinding;
 	}
 
@@ -625,8 +597,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getContactFirstnameBinding() {
-		if (contactFirstnameBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			contactFirstnameBinding.setDisabled(true);
+//		if (contactFirstnameBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			contactFirstnameBinding.setDisabled(true);
 		return contactFirstnameBinding;
 	}
 
@@ -635,8 +607,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlSelectOneMenu getContactGenderBinding() {
-		if (contactGenderBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			contactGenderBinding.setDisabled(true);
+//		if (contactGenderBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			contactGenderBinding.setDisabled(true);
 		return contactGenderBinding;
 	}
 
@@ -645,8 +617,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getContactNameBinding() {
-		if (contactNameBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			contactNameBinding.setDisabled(true);
+//		if (contactNameBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			contactNameBinding.setDisabled(true);
 		return contactNameBinding;
 	}
 
@@ -655,8 +627,8 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public HtmlInputText getBranchBinding() {
-		if (branchBinding != null && getRequest().getAttribute("componentDisabled") != null)
-			branchBinding.setDisabled(true);
+//		if (branchBinding != null && getRequest().getAttribute("componentDisabled") != null)
+//			branchBinding.setDisabled(true);
 		return branchBinding;
 	}
 
@@ -745,6 +717,46 @@ public class CustomerActionController extends ActionController {
 	public void setInvoiceconfigBillingCriteriaBinding(
 			HtmlSelectManyCheckbox invoiceconfigBillingCriteriaBinding) {
 		this.invoiceconfigBillingCriteriaBinding = invoiceconfigBillingCriteriaBinding;
+	}
+
+	public Voucher getVoucher() {
+		return voucher;
+	}
+
+	public void setVoucher(Voucher voucher) {
+		this.voucher = voucher;
+	}
+
+	public HtmlSelectOneMenu getVoucherMonthBinding() {
+		return voucherMonthBinding;
+	}
+
+	public void setVoucherMonthBinding(HtmlSelectOneMenu voucherMonthBinding) {
+		this.voucherMonthBinding = voucherMonthBinding;
+	}
+
+	public HtmlSelectOneMenu getVoucherYearBinding() {
+		return voucherYearBinding;
+	}
+
+	public void setVoucherYearBinding(HtmlSelectOneMenu voucherYearBinding) {
+		this.voucherYearBinding = voucherYearBinding;
+	}
+
+	public HtmlInputText getCardAmountBinding() {
+		return cardAmountBinding;
+	}
+
+	public void setCardAmountBinding(HtmlInputText cardAmountBinding) {
+		this.cardAmountBinding = cardAmountBinding;
+	}
+
+	public HtmlInputText getCardVoucherBinding() {
+		return cardVoucherBinding;
+	}
+
+	public void setCardVoucherBinding(HtmlInputText cardVoucherBinding) {
+		this.cardVoucherBinding = cardVoucherBinding;
 	}
 
 

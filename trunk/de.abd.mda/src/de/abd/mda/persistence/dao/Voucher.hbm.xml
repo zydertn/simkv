@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.Voucher" table="VOUCHER">
+		<id name="voucherId" type="int" column="VOUCHER_ID" >
+			<generator class="native"/>
+		</id>
+	 	<property name="month" column="VOUCHER_MONTH" type="int" length="2" />
+	 	<property name="year" column="VOUCHER_YEAR" type="int" length="4" />
+	 	<property name="cardAmount" column="VOUCHER_CARD_AMOUNT" type="int" length="4" />
+	 	<property name="cardVoucher" column="VOUCHER_CARD_VOUCHER" type="double" />
+	 	<property name="totalVoucher" column="VOUCHER_TOTAL_VOUCHER" type="double" />
+	 </class>
+ </hibernate-mapping>

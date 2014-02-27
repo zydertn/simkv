@@ -47,6 +47,7 @@ import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
+import de.abd.mda.persistence.dao.Voucher;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.DateUtils;
 
@@ -55,10 +56,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	BaseFont bf_arial = null;
 	static final Logger logger = Logger.getLogger(ReportGenerator_portrait.class);
 //	private static int MAX_ROW_FIRST_PAGE = 25;
-	private static int MAX_ROW_FIRST_PAGE = 22;
+	private static int MAX_ROW_FIRST_PAGE = 23;
 //	private static int FULL_PAGE_SIZE = 39;
 	private static int FULL_PAGE_SIZE = 37;
 	private int pos = 0;
+	private static int sevBillInvNum = 35000;
+	private boolean billContainsVoucher = false;
 
 
 	
@@ -114,7 +117,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			document.open();
 
-			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc);
+			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills);
 			if (generatedWithErrors) {
 				return false;
 			}
@@ -190,7 +193,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return footer;
 	}
 
-	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc) {
+	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills) {
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 
@@ -228,7 +231,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			if (customer.getFao() != null && customer.getFao().length() > 0) {
 				y = y - d;
-				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "z.Hd. " + customer.getFao(), x, y, 0);
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getFao(), x, y, 0);
 			}
 
 			y = y - d;
@@ -240,7 +243,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Postfach "+ customer.getInvoiceAddress().getPostbox(), x, y, 0);
 			}
 
-			y = y - 2*d;
+			y = y - d;
 			// Firmenort
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
 					y, 0);
@@ -262,7 +265,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			y = y - 5 * d;
 			Date date = new Date();
 			// Temporär auf 14. Januar gesetzt
-//			date.setDate(5);
+			date.setDate(7);
+			date.setMonth(1);
 			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
@@ -299,7 +303,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					"20095", "20114", "20115", "20124", "20131", "20146", "20150", "20167", "20176",
 					"20181", "20185", "20199", "20233", "20072", "20011", "20051", "20067", "20109",
 					"20113", "20117", "20118", "20125", "20152", "20226", "20261", "20042", "20099",
-					"20103", "20108", "20122", "20158", "20222", "20232", "20056", "20137"};
+					"20103", "20108", "20122", "20158", "20222", "20232", "20056", "20137", "20026",
+					"20027", "20028", "20029", "20030", "20031", "20032", "20033", "20035", "20138",
+					"20139", "20140", "20141", "20142", "20143", "20144", "20034"};
 			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
 			for (String s: invNums) {
 				invNumMap.put(s, invNum);
@@ -317,6 +323,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			// Sonderlocke
 			if (flatrateCalc)
 				invoiceNum = invNumMap.get("20243_flatrate");
+			if (customer.getInvoiceConfiguration().getSeparateBilling() != null && customer.getInvoiceConfiguration().getSeparateBilling()) {
+				invoiceNum = new Integer(this.sevBillInvNum);
+				this.sevBillInvNum++;
+			}
+			
+//			invoiceNum = 35593;
+			
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNum, 510, 600, 0);
 //			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "07075", 516, 600, 0);
 			
@@ -366,9 +379,19 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Chunk timeframe = new Chunk(
 					addNewLines(2)
 							+ "Berechnungszeitraum für die Servicegebühr: " + calcTimeString, timeframeFont);
+			String commentSevBills = "";
+			if (severalBills) {
+				for (DaoObject dao : customerCards) {
+					CardBean c = (CardBean) dao;
+					if (c.getBestellNummer() != null && c.getBestellNummer().length() > 0) {
+						commentSevBills += "SAP: " + c.getBestellNummer() + " - ";
+						break;
+					}
+				}
+			}
 			Chunk commentCk = null;
 			if (customer.getComment() != null && customer.getComment().length() > 0) {
-				commentCk = new Chunk(addNewLines(1) + customer.getComment() + addNewLines(1), timeframeFont);
+				commentCk = new Chunk(addNewLines(1) + commentSevBills + customer.getComment() + addNewLines(1), timeframeFont);
 			} else {
 				commentCk = new Chunk(addNewLines(2), timeframeFont);
 			}
@@ -386,35 +409,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			table.setWidthPercentage(100f);
 			table.getDefaultCell().setBackgroundColor(null);
 			table.getDefaultCell().setBorder(0);
-			
-
-			// Table Header
-//			Font tableFont = new Font(bf_arial, 8);
-//			Font tableFont = new Font(bf_arial);
-//			tableFont.setSize(15);
-//			tableFont.setStyle(Font.BOLD);
-//			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
-//
-//			cell.setPaddingTop(10);
-//			cell.setPaddingBottom(10);
-//			cell.setBorderWidthTop(0.5f);
-//			cell.setBorderWidthBottom(0.5f);
-//			cell.setBorder(Rectangle.TOP | Rectangle.BOTTOM);
-//			table.addCell(cell);
-//			cell.setPhrase(new Phrase("Menge", tableFont));
-//			table.addCell(cell);
-//			cell.setPhrase(new Phrase("Bezeichnung", tableFont));
-//			table.addCell(cell);
-//			cell.setPhrase(new Phrase("Anlagen Nr.", tableFont));
-//			table.addCell(cell);
-//			cell.setPhrase(new Phrase("Einzelpreis", tableFont));
-//			table.addCell(cell);
-//			cell.setPhrase(new Phrase("Gesamtpreis", tableFont));
-//			table.addCell(cell);
-//
-//			cell.setPaddingTop(1);
-//			cell.setPaddingBottom(5);
-//			cell.setBorder(Rectangle.NO_BORDER);
 			
 			ArrayList<TableRow> tableRowList = new ArrayList<TableRow>();
 			Iterator<DaoObject> iter = customerCards.iterator();			
@@ -525,7 +519,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				tableRowList.add(new TableRow(card.getInvoiceRows(), invoiceRow));
 			}
 
-			tableRowList = addCalculationRows(tableRowList, customerCards, customer, calcSum);
+			tableRowList = addCalculationRows(tableRowList, customerCards, customer, calcSum, calcMonth);
 			
 //			tableRowList = addDummyRows(tableRowList);
 			
@@ -618,7 +612,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	
 	private ArrayList<TableRow> addCalculationRows(
 			ArrayList<TableRow> tableRowList,
-			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum) {
+			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum, Calendar calcMonth) {
 
 		DecimalFormat df = new DecimalFormat("#0.00");
 
@@ -628,24 +622,39 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	
 		
 		String[] cr1 = createCalcRow(firstcols, "Netto Summe", df.format(nettoSum).replace(".", ",") + " €");;
-//		String[] cr1_1 = new String[6];
-//		cr1_1[0] = "";
-//		cr1_1[1] = "42";
-//		cr1_1[2] = "Gutschrift für Oktober 2013";
-//		cr1_1[3] = "";
-//		cr1_1[4] = "";
-//		cr1_1[5] = "-71,40 €";
-//		BigDecimal netSumAfterVoucher = nettoSum.subtract(new BigDecimal(71.4));
-//		String[] cr1_2 = createCalcRow(firstcols, "", "" + df.format(netSumAfterVoucher).replace(".", ",") + " €");
-//		mwst = netSumAfterVoucher.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
+		tableRowList.add(new TableRow(1, cr1));
+
+		if (customer.getVouchers() != null && customer.getVouchers().size() > 0) {
+			for (Voucher v : customer.getVouchers()) {
+				if (calcMonth.get(Calendar.YEAR) == v.getYear() && calcMonth.get(Calendar.MONTH) == v.getMonth()) {
+					billContainsVoucher = true;
+					String[] cr1_1 = new String[cr1.length];
+					cr1_1[0] = "";
+					cr1_1[1] = "" + v.getCardAmount();
+					cr1_1[2] = "Gutschrift für " + DateUtils.getMonthAsString(v.getMonth()) + " " + v.getYear();
+					int cri = 3;
+					int diff = cr1.length - 4;
+					for (int i = 0; i < diff; i++) {
+						cr1_1[cri + i] = "";
+					}
+//					cr1_1[3] = "";
+					String vs = ("-" + v.getTotalVoucher()).replace(".", ",");
+					if (vs.indexOf(",") == (vs.length() - 2))
+						vs += "0";
+					cr1_1[cr1.length - 1] = vs + " €";
+					nettoSum = nettoSum.subtract(new BigDecimal(v.getTotalVoucher()));
+					String[] cr1_2 = createCalcRow(firstcols, "", "" + df.format(nettoSum).replace(".", ",") + " €");
+					mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
+					tableRowList.add(new TableRow(1, cr1_1));
+					tableRowList.add(new TableRow(1, cr1_2));
+				}
+			}
+		}
 		String[] cr2 = createCalcRow(firstcols, "19% MWST.", "" + df.format(mwst).replace(".", ",") + " €");
 		String[] cr3 = createCalcRow(firstcols, "", "");
 		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(nettoSum)).replace(".", ",") + " €");
 //		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(netSumAfterVoucher)).replace(".", ",") + " €");
 
-		tableRowList.add(new TableRow(1, cr1));
-//		tableRowList.add(new TableRow(1, cr1_1));
-//		tableRowList.add(new TableRow(1, cr1_2));
 		tableRowList.add(new TableRow(1, cr2));
 		tableRowList.add(new TableRow(1, cr3));
 		tableRowList.add(new TableRow(1, cr4));
@@ -727,12 +736,15 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			if (lastPage) {
 				ArrayList<TableRow> bodyList = new ArrayList<TableRow>();
 				ArrayList<TableRow> endList = new ArrayList<TableRow>();
-//				for (int i = 0; i < (currentRowList.size() - 6); i++) {
-				for (int i = 0; i < (currentRowList.size() - 4); i++) {
+				int lastRows = 4;
+				if (billContainsVoucher) {
+					lastRows = 6;
+				}
+				for (int i = 0; i < (currentRowList.size() - lastRows); i++) {
 					bodyList.add(currentRowList.get(i));
 				}
 //				for (int i = (currentRowList.size() - 6); i < currentRowList.size(); i++) {
-				for (int i = (currentRowList.size() - 4); i < currentRowList.size(); i++) {
+				for (int i = (currentRowList.size() - lastRows); i < currentRowList.size(); i++) {
 					endList.add(currentRowList.get(i));
 				}
 				table = createTableBody(table, bodyList, flatrateCalc);

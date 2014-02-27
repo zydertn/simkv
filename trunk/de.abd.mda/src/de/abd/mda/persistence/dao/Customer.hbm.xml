@@ -18,5 +18,9 @@
 	 	<many-to-one name="invoiceConfiguration" class="de.abd.mda.persistence.dao.InvoiceConfiguration" lazy="false" column="CUSTOMER_INVOICE_CONFIGURATION" not-null="false" cascade="all-delete-orphan" unique="true" foreign-key="IC_ID"></many-to-one>
 	 	<property name="comment" type="string" column="CUSTOMER_COMMENT" length="100"/>
 	 	<property name="lastCalculationDate" type="timestamp" column="CUSTOMER_CALCULATION_DATE" />
+		<set name="vouchers" lazy="false">
+			<key column="id" not-null="true" />
+			<element column="CUSTOMER_VOUCHERS" type="de.abd.mda.persistence.dao.Voucher"/>
+		</set>
 	 </class>
  </hibernate-mapping>

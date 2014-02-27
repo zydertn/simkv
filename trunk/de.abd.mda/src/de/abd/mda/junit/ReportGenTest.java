@@ -36,7 +36,7 @@ public class ReportGenTest {
 //				"'20224', '20216', '20208', '20206'" +
 //				")";
 
-		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20125')";
+		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20002')";
 		
 		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
 
