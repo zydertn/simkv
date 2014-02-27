@@ -48,7 +48,6 @@ public class CardActionController extends ActionController {
 		String message = "";
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		CardBean card = null;
 		try {
 			tx = session.beginTransaction();
 			if (ccCardBean.getCardNumberFirst() != null

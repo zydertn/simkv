@@ -1,7 +1,9 @@
 package de.abd.mda.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -71,6 +73,20 @@ public class Model {
 	public static String RELATION_0 = "";
 	public static String RELATION_1 = "Relation1";
 	public static String RELATION_2 = "Relation2";
+
+	public static String JAN = "Januar";
+	public static String FEB = "Februar";
+	public static String MAR = "März";
+	public static String APR = "April";
+	public static String MAY = "Mai";
+	public static String JUN = "Juni";
+	public static String JUL = "Juli";
+	public static String AUG = "August";
+	public static String SEP = "September";
+	public static String OCT = "Oktober";
+	public static String NOV = "November";
+	public static String DEC = "Dezember";
+	
 	
 	public String cardDeAv = "Alt-Voice";
 	public String cardDeAvIp = "Alt-Voice-IP";
@@ -115,6 +131,8 @@ public class Model {
 	private List<String> paymentMethods;
 	private List<Integer> invoiceRowList;
 	private List<String> billingCriteria;
+	private HashMap<Integer, String> months;
+	private List<Integer> years;
 	
 	public Model() {
 	}
@@ -201,8 +219,36 @@ public class Model {
 		invoiceRowList.add(3);
 		invoiceRowList.add(4);
 		invoiceRowList.add(5);
+		
+		months = new HashMap<Integer, String>();
+		months.put(0, JAN);
+		months.put(1, FEB);
+		months.put(2, MAR);
+		months.put(3, APR);
+		months.put(4, MAY);
+		months.put(5, JUN);
+		months.put(6, JUL);
+		months.put(7, AUG);
+		months.put(8, SEP);
+		months.put(9, OCT);
+		months.put(10, NOV);
+		months.put(11, DEC);
+		
+		years = addYears();
 	}
 
+	private List<Integer> addYears() {
+		ArrayList<Integer> years = new ArrayList<Integer>();
+		int year = 2010;
+		Calendar d = Calendar.getInstance();
+		
+		while (year <= d.get(Calendar.YEAR)) {
+			years.add(year);
+			year++;
+		}
+		return years;
+	}
+	
 	public List<SelectItem> getCountryCodes() {
 		List<SelectItem> codes = new ArrayList<SelectItem>();
 		Iterator<Country> it = countries.iterator();
@@ -523,6 +569,22 @@ public class Model {
 
 	public void setBillingCriteria(List<String> billingCriteria) {
 		this.billingCriteria = billingCriteria;
+	}
+
+	public List<Integer> getYears() {
+		return years;
+	}
+
+	public void setYears(List<Integer> years) {
+		this.years = years;
+	}
+
+	public HashMap<Integer, String> getMonths() {
+		return months;
+	}
+
+	public void setMonths(HashMap<Integer, String> months) {
+		this.months = months;
 	}
 
 }

@@ -32,35 +32,31 @@
 			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Kundendaten:" />
 
-				<h:panelGrid columns="6">
+				<h:panelGrid columns="8">
 					<h:outputText value="Firmenname:" />
 					<h:inputText size="15" value="#{customerController.customer.name}"
 						style="margin-right: 34px;" />
 					<h:outputText value="Lieferanten-Nr.:"/>
-					<h:inputText size="15" disabled="#{customerController.componentDisabled}"
+					<h:inputText size="15" disabled="#{customerController.componentDisabled}" 
+						style="margin-right: 34px;"
 						binding="#{customerController.supplierNumberBinding}"
-						value="#{customerController.customer.supplierNumber}" 
-						style="margin-left: 36px;"/>
-					<h:outputText />
-					<h:outputText />
-
-
+						value="#{customerController.customer.supplierNumber}"/>
+					<h:outputText value="Kundennummer:" />
+					<h:inputText size="12" maxlength="15" style="margin-right: 34px;"
+						value="#{customerController.customer.customernumber}" />
 					<h:outputText value="Niederlassung:" />
 					<h:inputText size="15"
 						binding="#{customerController.branchBinding}"
 						value="#{customerController.customer.branch}"
-						disabled="#{customerController.componentDisabled}"
-						style="margin-left: 2px;" />
+						disabled="#{customerController.componentDisabled}" />
+
+
 					<h:outputText value="z.Hd.:" />
-					<h:inputText size="20"
+					<h:inputText size="15"
 						binding="#{customerController.faoBinding}"
 						value="#{customerController.customer.fao}" 
-						disabled="#{customerController.componentDisabled}" 
-						style="margin-left: 36px;"/>
-					<h:outputText />
-					<h:outputText />
-
-					<h:outputText value="Straße:" />
+						disabled="#{customerController.componentDisabled}"/>
+					<h:outputText value="Straße:" style="margin-right: 50px;"/>
 					<h:inputText size="15"
 						binding="#{customerController.streetBinding}"
 						value="#{customerController.customer.address.street}"
@@ -69,31 +65,30 @@
 					<h:inputText size="3"
 						binding="#{customerController.housenumberBinding}"
 						value="#{customerController.customer.address.housenumber}"
-						disabled="#{customerController.componentDisabled}"
-						style="margin-left: 36px;  margin-right: 116px;" />
-					<h:outputText value="Postfach:" style="margin-right: 8px;" />
+						disabled="#{customerController.componentDisabled}"/>
+					<h:outputText/>
+					<h:outputText/>
+						
+						
+					<h:outputText value="Postfach:"/>
 					<h:inputText size="12" maxlength="15"
 						binding="#{customerController.postboxBinding}"
 						value="#{customerController.customer.address.postbox}"
 						disabled="#{customerController.componentDisabled}" />
-
 					<h:outputText value="PLZ:" />
 					<h:inputText size="4" maxlength="5"
 						binding="#{customerController.postcodeBinding}"
 						value="#{customerController.customer.address.postcode}"
 						disabled="#{customerController.componentDisabled}" />
 					<h:outputText value="Ort:" />
-					<h:inputText size="20" binding="#{customerController.cityBinding}"
+					<h:inputText size="15" binding="#{customerController.cityBinding}"
 						value="#{customerController.customer.address.city}"
-						disabled="#{customerController.componentDisabled}"
-						style="margin-left: 36px;" />
+						disabled="#{customerController.componentDisabled}"/>
 					<h:outputText />
-					<h:outputText />
-					<h:outputText value="Kundennummer:" />
-					<h:inputText size="12" maxlength="15"
-						value="#{customerController.customer.customernumber}" />
 					<ice:commandButton value="Suchen"
 						actionListener="#{customerController.searchCustomer}"></ice:commandButton>
+					
+					
 
 					<ice:panelPopup visible="#{customerController.opened}"
 						rendered="#{customerController.opened}" modal="true"
@@ -120,7 +115,7 @@
 			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Rechnungsadresse:"
 					disabled="#{customerController.componentDisabled}" />
-				<h:panelGrid columns="6">
+				<h:panelGrid columns="8">
 					<h:outputText value="Anrede: " />
 					<h:selectOneMenu
 						binding="#{customerController.contactGenderBinding}"
@@ -141,6 +136,9 @@
 						value="#{customerController.customer.contactPerson.name}"
 						disabled="#{customerController.componentDisabled}"
 						style="margin-left: 4px" />
+					<h:outputText/>
+					<h:outputText/>
+
 
 					<h:outputText value="Straße:" style="margin-right: 53px;" />
 					<h:inputText size="15"
@@ -150,9 +148,9 @@
 						style="margin-right: 34px;" />
 					<h:outputText value="Nr.:" />
 					<h:inputText size="3"
+						disabled="#{customerController.componentDisabled}"
 						binding="#{customerController.invoiceHousenumberBinding}"
 						value="#{customerController.customer.invoiceAddress.housenumber}" />
-
 					<h:outputText value="Postfach:" />
 					<h:panelGrid>
 						<h:inputText size="12" maxlength="15"
@@ -160,6 +158,9 @@
 							value="#{customerController.customer.invoiceAddress.postbox}"
 							disabled="#{customerController.componentDisabled}" />
 					</h:panelGrid>
+					<h:outputText/>
+					<h:outputText/>
+					
 
 					<h:outputText value="PLZ:" />
 					<h:inputText size="4" maxlength="5"
@@ -171,9 +172,6 @@
 						binding="#{customerController.invoiceCityBinding}"
 						value="#{customerController.customer.invoiceAddress.city}"
 						disabled="#{customerController.componentDisabled}" />
-					<h:outputText/>
-					<h:outputText/>
-
 					<h:outputText value="E-Mail:" />
 					<h:inputText size="15" disabled="#{customerController.componentDisabled}"
 						binding="#{customerController.emailBinding}"
@@ -189,31 +187,20 @@
 		<h:panelGrid columns="2">
 			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
 				<h:outputText style="font-weight:bold" value="Rechnung:" />
-				<h:panelGrid columns="2">
-					<h:outputText value="Preiskategorie (Standard): " />
+				<h:panelGrid columns="6">
+					<h:outputText value="Preiskategorie" />
 					<h:selectOneMenu
-						binding="#{customerController.invoiceconfigSimpriceBinding}"
-						value="#{customerController.customer.invoiceConfiguration.simPrice}">
+						binding="#{customerController.invoiceconfigSimpriceBinding}" style="margin-right: 81px;"
+						value="#{customerController.customer.invoiceConfiguration.simPrice}"
+						disabled="#{customerController.componentDisabled}">
 						<f:selectItems
 							value="#{actionController.model.simPrices.entrySet()}"
 							var="simPriceVar"
 							itemLabel="#{simPriceVar.key} - #{simPriceVar.value} €"
 							itemValue="#{simPriceVar.key}" />
 					</h:selectOneMenu>
-
-					<h:outputText value="Datenoption Kategorie: " />
-					<h:selectOneMenu
-						binding="#{customerController.invoiceconfigDataoptionBinding}"
-						value="#{customerController.customer.invoiceConfiguration.dataOptionSurcharge}">
-						<f:selectItems
-							value="#{actionController.model.dataOptionSurcharges.entrySet()}"
-							var="dataOptionVar"
-							itemLabel="#{dataOptionVar.key} - #{dataOptionVar.value}"
-							itemValue="#{dataOptionVar.key}" />
-					</h:selectOneMenu>
-
 					<h:outputText value="Einzelrechnungen: " />
-					<h:panelGrid>
+					<h:panelGrid style="margin-right: 90px;">
 						<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.separateBilling}" disabled="#{customerController.componentDisabled}" binding="#{customerController.invoiceconfigSeparateBillingBinding}" style="margin-left: 14px;"/>
 					</h:panelGrid>
 
@@ -232,7 +219,6 @@
 						disabled="#{customerController.componentDisabled}">
 						<f:selectItems value="#{actionController.model.invoiceFormats}" />
 					</h:selectOneMenu>
-
 					<h:outputText value="Frequenz: " />
 					<h:selectOneMenu
 						binding="#{customerController.invoiceconfigCreationFrequencyBinding}"
@@ -241,33 +227,103 @@
 						<f:selectItems
 							value="#{actionController.model.invoiceCreationFrequencies}" />
 					</h:selectOneMenu>
-
-
 					<h:outputText value="Spalten:" />
-					<ice:panelGroup style="overflow-y:auto; width:200px; height:150px;">
+					<ice:panelGroup style="overflow-y:auto; width:200px; height:65px;">
 						<ice:selectManyCheckbox layout="pageDirection"
 							value="#{customerController.customer.invoiceConfiguration.columns}">
 							<f:selectItems value="#{actionController.model.invoiceColumns}" />
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
+				</h:panelGrid>
 
+
+				<h:panelGrid columns="2">
 					<h:outputText value="Kommentar:" />
 					<h:inputText size="100" maxlength="100" 
 						binding="#{customerController.commentBinding}"
 						disabled="#{customerController.componentDisabled}"
 						value="#{customerController.customer.comment}" />
-					
+					<h:outputText/>
+					<h:outputText/>
+					<h:outputText/>
+					<h:outputText/>
+				</h:panelGrid>					
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid columns="2">
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1000">
+				<h:outputText style="font-weight:bold" value="Gutschriften:" />
+				<h:panelGrid columns="8">
+					<h:outputText value="Neue Gutschrift für" />
+					<h:selectOneMenu
+						binding="#{customerController.voucherMonthBinding}"
+						value="#{customerController.voucher.month}"
+						disabled="#{customerController.componentDisabled}">
+						<f:selectItems value="#{actionController.model.months.entrySet()}" var="monthVar" itemLabel="#{monthVar.value}" itemValue="#{monthVar.key}" />
+					</h:selectOneMenu>
+					<h:selectOneMenu
+						binding="#{customerController.voucherYearBinding}"
+						value="#{customerController.voucher.year}"
+						disabled="#{customerController.componentDisabled}">
+						<f:selectItems value="#{actionController.model.years}" />
+					</h:selectOneMenu>
+
+					<h:outputText value="für" />
+					<h:inputText size="4" maxlength="4" 
+						binding="#{customerController.cardAmountBinding}"
+						value="#{customerController.voucher.cardAmount}" />
+					<h:outputText value="Karten à" />
+					<h:inputText size="6" maxlength="6"
+						binding="#{customerController.cardVoucherBinding}" 
+						value="#{customerController.voucher.cardVoucher}" />
+					<h:outputText value="€" />
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
 
+		<h:panelGrid>
+			<ice:dataTable 	value="#{customerController.customer.vouchersSorted}"
+							var="voucher"
+							scrollable="true"
+							scrollHeight="140px"
+							columnWidths="200px, 200px, 200px, 200px, 50px">
+				<ice:column>
+					<f:facet name="header">
+						Rechnung
+					</f:facet>
+					#{voucher.monthYearString}
+				</ice:column>
+				<ice:column>
+					<f:facet name="header">
+						Anzahl Karten
+					</f:facet>
+					#{voucher.cardAmount}
+				</ice:column>
+				<ice:column>
+					<f:facet name="header">
+						Gutschrift pro Karte
+					</f:facet>
+					#{voucher.cardVoucher} €
+				</ice:column>
+				<ice:column>
+					<f:facet name="header">
+						Gesamtgutschrift
+					</f:facet>
+					#{voucher.totalVoucher} €
+				</ice:column>
+				<ice:column>
+					<ice:commandButton image="delete.png" label="löschen" value="löschen"  style="width:20px; height:20px" action="#{customerController.deleteVoucher(voucher)}"></ice:commandButton>
+				</ice:column>
+			</ice:dataTable>
+		</h:panelGrid>
 
 		<h:panelGrid>
 			<h:panelGrid columns="3">
 				<h:commandButton value="Abbrechen"
 					action="#{actionController.cancel}"></h:commandButton>
-				<h:commandButton value="Änderungen speichern"
-					action="#{customerController.updateCustomer}"></h:commandButton>
+				<ice:commandButton value="Änderungen speichern"
+					actionListener="#{customerController.updateCustomerAction}"></ice:commandButton>
 				<h:commandButton value="Löschen"
 					action="#{customerController.deleteCustomer}"></h:commandButton>
 			</h:panelGrid>

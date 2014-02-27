@@ -1,11 +1,18 @@
 package de.abd.mda.persistence.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
+
+import de.abd.mda.util.CustomerComparator;
+import de.abd.mda.util.VoucherComparator;
 
 public class Customer extends DaoObject {
 
@@ -28,6 +35,7 @@ public class Customer extends DaoObject {
 	private String paymentMethod;
 	private String comment;
 	private Date lastCalculationDate;
+	private Set<Voucher> vouchers;
 	
 	private InvoiceConfiguration invoiceConfiguration;
 
@@ -158,6 +166,24 @@ public class Customer extends DaoObject {
 
 	public void setLastCalculationDate(Date lastCalculationDate) {
 		this.lastCalculationDate = lastCalculationDate;
+	}
+
+	public ArrayList<Voucher> getVouchersSorted() {
+		if (vouchers != null) {
+			ArrayList<Voucher> vl = new ArrayList<Voucher>(vouchers);
+			Comparator<Voucher> comparator = new VoucherComparator();
+			Collections.sort(vl, comparator);
+			return vl;
+		}
+		return null;
+	}
+	
+	public Set<Voucher> getVouchers() {
+		return vouchers;
+	}
+
+	public void setVouchers(Set<Voucher> vouchers) {
+		this.vouchers = vouchers;
 	}
 	
 }
