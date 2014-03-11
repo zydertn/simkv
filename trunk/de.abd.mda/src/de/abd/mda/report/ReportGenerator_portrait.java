@@ -1,9 +1,14 @@
 package de.abd.mda.report;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -22,6 +27,8 @@ import java.util.TimeZone;
 import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.hibernate.Session;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Paragraph;
@@ -44,10 +51,12 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import de.abd.mda.model.Model;
+import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.Voucher;
+import de.abd.mda.persistence.dao.controller.BillController;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.DateUtils;
 
@@ -62,11 +71,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	private int pos = 0;
 	private static int sevBillInvNum = 35000;
 	private boolean billContainsVoucher = false;
-
+	private boolean writeToDB = true;
 
 	
 	public ReportGenerator_portrait() {
 		loadBaseFonts();
+	}
+	
+	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
+		writeToDB = false;
+		return generateReport(customerCards, customer, calcMonth, flatrateCalc, severalBills, mapCount);
 	}
 
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
@@ -90,14 +104,31 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			
 			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + flatrateString + mapCountString + ".pdf";
 //			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
-			File dir = new File("C:/Temp/report/" + year + "/" + month);
-			dir.mkdirs();
+//			File dir = new File("C:/Temp/report/" + year + "/" + month);
+//			dir.mkdirs();
+			File dir = new File("C:/Temp/report/");
+			
 			
 			FileOutputStream fos = new FileOutputStream(
 					dir + "/" + filename);
+			
+			
 			PdfWriter writer = PdfWriter.getInstance(document, fos);
-			logger.info("Berechne für Monat: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 1) + " " + calcMonth.get(Calendar.YEAR));
-
+			logger.info("Berechne für Monat: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
+			Bill bill = new Bill();
+			bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
+			bill.setFilename(filename);
+			bill.setYear(calcMonth.get(Calendar.YEAR));
+			bill.setMonth(calcMonth.get(Calendar.MONTH));
+			bill.setMapCount(mapCount);
+			BillController bc = new BillController();
+			Bill dbBill = bc.findBill(bill);
+			int invoiceNumber = -1;
+			if (dbBill != null) {
+				System.out.println("Rechnung bereits in DB enthalten... Hole Rechnungsnummer...");
+				invoiceNumber = dbBill.getBillNumber();
+			}
+			
 			// headers and footers must be added before the document is opened
 			HeaderFooter header = generateHeader(writer);
 			if (header != null) {
@@ -117,18 +148,56 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			document.open();
 
-			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills);
+			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber);
 			if (generatedWithErrors) {
 				return false;
 			}
 			
 			document.close();
-
+			fos.flush();
+			fos.close();
+			
 			logger.info("File " + filename + " created successfully!");
 //			Runtime.getRuntime().exec(
 //					"rundll32 url.dll,FileProtocolHandler "
 //							+ "C:/Temp/report/" + customer.getCustomernumber());
 
+			File file = new File(dir, filename);
+			
+			RandomAccessFile ra = new RandomAccessFile(file, "rw");
+			
+			byte[] b = new byte[(int) file.length()];
+			try {
+				ra.read(b);
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+			if (b != null && b.length > 0) {
+				System.out.println("Byte[] Länge == " + b.length);
+				bill.setFile(b);
+				
+				boolean createdNew = bc.createOrUpdateObject(bill);
+				if (createdNew)
+					System.out.println("Neue Rechnung in DB gespeichert");
+				else
+					System.out.println("Rechnung in DB aktualisiert");
+			}
+
+			
+			
+//			File myFile = new File("Test.pdf");
+//			FileOutputStream fos2 = new FileOutputStream(myFile);
+//			fos2.write(b);
+//			fos2.flush();
+//			fos2.close();
+//
+//			Runtime.getRuntime().exec(
+//			"rundll32 url.dll,FileProtocolHandler "
+//					+ "Test.pdf");
+
+			
 			return true;
 		} catch (Exception ex) {
 			logger.error(ex.getMessage());
@@ -193,7 +262,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return footer;
 	}
 
-	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills) {
+	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber) {
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 
@@ -281,7 +350,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			} else if (calcMonth.get(Calendar.MONTH) == Calendar.JANUARY) {
 				invNum = 30601;
 			}
-			String invoiceNumber = "";
+/*			String invoiceNumber = "";
 			String[] invNums = new String[] {"20074", "20190", "20208", "20206", "20216", "20166", "20120", 
 					"20016", "20039", "20076", "20198", "20200", "20128", "20157", "20012", "20060", 
 					"20105", "20197", "20224", "20066", "20069", "20094", "20107", "20112", "20209", 
@@ -311,10 +380,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				invNumMap.put(s, invNum);
 				invNum++;
 			}
-		
+*/		
 			// Rechnungsnummer
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Rechnung - Nr.", 425, 600, 0);
-			int invoiceNum = 0;
+/*			int invoiceNum = 0;
 			try {
 				invoiceNum = invNumMap.get(customer.getCustomernumber());
 			} catch (NullPointerException e) {
@@ -327,10 +396,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				invoiceNum = new Integer(this.sevBillInvNum);
 				this.sevBillInvNum++;
 			}
-			
+*/			
 //			invoiceNum = 35593;
 			
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNum, 510, 600, 0);
+			
+			
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNumber, 510, 600, 0);
 //			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "07075", 516, 600, 0);
 			
 			// Kundennr.
@@ -541,14 +612,20 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				i++;
 			}
 			
-			Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den Rechnungsbetrag rein netto innerhalb von 10 Tagen ab Rechnungsdatum ", timeframeFont);
-			Chunk paymentDueDateEnd = new Chunk("unter Angabe der Rechnungsnummer." + addNewLines(2), timeframeFontBold);
-			Phrase payPhrase = new Phrase(paymentDueDate);
-			payPhrase.add(paymentDueDateEnd);
-			doc.add(new Phrase(payPhrase));
+			if (customer.getInvoiceConfiguration().getDebtOrder()) {
+				Chunk debtOrder = new Chunk(addNewLines(2) + "Zahlung erfolgt per Lastschrift." + addNewLines(2), timeframeFont);
+				Phrase debtOrderPhrase = new Phrase(debtOrder);
+				doc.add(debtOrderPhrase);
+			} else {
+				Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den Rechnungsbetrag rein netto innerhalb von 10 Tagen ab Rechnungsdatum ", timeframeFont);
+				Chunk paymentDueDateEnd = new Chunk("unter Angabe der Rechnungsnummer." + addNewLines(2), timeframeFontBold);
+				Phrase payPhrase = new Phrase(paymentDueDate);
+				payPhrase.add(paymentDueDateEnd);
+				doc.add(new Phrase(payPhrase));
 
-			Chunk verzugsChunk = new Chunk("Wir weisen Sie darauf hin, dass Sie sich nach diesem Zeitraum bereits in Verzug befinden." + addNewLines(2), timeframeFont);
-			doc.add(new Phrase(verzugsChunk));
+				Chunk verzugsChunk = new Chunk("Wir weisen Sie darauf hin, dass Sie sich nach diesem Zeitraum bereits in Verzug befinden." + addNewLines(2), timeframeFont);
+				doc.add(new Phrase(verzugsChunk));
+			}
 
 			Chunk rückfragenChunk = new Chunk("Bei Rückfragen können Sie sich gerne an folgende Kontaktdaten wenden:" + addNewLines(2), timeframeFont);
 			doc.add(new Phrase(rückfragenChunk));

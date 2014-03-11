@@ -181,15 +181,12 @@
 					</ice:panelGroup>
 				</h:panelGrid>
 
-				<h:panelGrid columns="2">
+				<h:panelGrid columns="4">
 					<h:outputText value="Kommentar:" />
-					<h:inputText size="100" maxlength="100" 
+					<h:inputText size="62" maxlength="100" style="margin-right: 22px;" 
 						value="#{customerController.customer.comment}" />
-					<h:outputText/>
-					<h:outputText/>
-					<h:outputText/>
-					<h:outputText/>
-
+					<h:outputText value="Einzugsermächtigung:" style="margin-right: 28px;"/>
+					<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.debtOrder}"></h:selectBooleanCheckbox>
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>

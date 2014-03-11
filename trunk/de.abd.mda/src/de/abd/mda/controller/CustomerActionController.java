@@ -278,6 +278,7 @@ public class CustomerActionController extends ActionController {
 			ic.setSimPrice(cic.getSimPrice());
 			ic.setSeparateBilling(cic.getSeparateBilling());
 			ic.setSeparateBillingCriteria(cic.getSeparateBillingCriteria());
+			ic.setDebtOrder(cic.getDebtOrder());
 			
 			
 			if (voucher.getCardAmount() > 0 && voucher.getCardVoucher() > 0) {

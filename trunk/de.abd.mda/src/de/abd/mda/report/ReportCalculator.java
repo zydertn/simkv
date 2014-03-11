@@ -1,26 +1,48 @@
 package de.abd.mda.report;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.icesoft.faces.context.Resource;
+
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
 import de.abd.mda.model.Model;
+import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
+import de.abd.mda.persistence.dao.controller.BillController;
+import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.CardComparator;
+import de.abd.mda.util.CustomerComparator;
 import de.abd.mda.util.DateUtils;
 import de.abd.mda.util.FacesUtil;
 
@@ -29,9 +51,10 @@ public class ReportCalculator implements Runnable {
 	HttpSession facesSession;
 	private boolean taskRunning = true;
 	Thread thread;
+		
+	public static final Resource ZIP_RESOURCE = new MyResource("Invoices/Siwaltec_Rechnungen.zip");
 	
 	public ReportCalculator() {
-		facesSession = (new FacesUtil()).getSession();
 	}
 
 	public boolean calculate() {
@@ -102,10 +125,6 @@ public class ReportCalculator implements Runnable {
 			logger.info("Aktueller Kunde: " + customer.getListString()
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
-			if (customer.getCustomernumber().equals("20124")) {
-				System.out.println("Jetzt");
-			}
-
 			Calendar maxCalcDate = getMaxCalcDate(customer
 					.getInvoiceConfiguration().getCreationFrequency(), now);
 
@@ -115,10 +134,6 @@ public class ReportCalculator implements Runnable {
 						.println("YEARLY CUSTOMER ****************; SPEZIALBEHANDLUNG *************");
 				System.out.println("Customer: " + customer.getCustomernumber()
 						+ ", " + customer.getName());
-			}
-
-			if (customer.getCustomernumber().equals("20057")) {
-				System.out.println("Jetzt");
 			}
 
 			while (calcMonth.before(maxCalcDate)) {
@@ -137,7 +152,15 @@ public class ReportCalculator implements Runnable {
 					int mapCountSize = separateBillingSortedCards.keySet().size();
 					int mapCount = 1;
 					for (List<DaoObject> cusCards : separateBillingSortedCards.values()) {
+						Comparator<DaoObject> comparator = new CardComparator();
+						Collections.sort(cusCards, comparator);
+
+						long time1 = System.currentTimeMillis();
 						boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, (mapCountSize > 1), mapCount);
+						long time2 = System.currentTimeMillis();
+						long diff = time2-time1;
+						System.out.println("generateReport Dauer = " + diff);
+						logger.info("GenerateReport Dauer = " + diff);
 						if (!generatedWithoutErrors)
 							break;
 
@@ -202,6 +225,7 @@ public class ReportCalculator implements Runnable {
 	 */
 	private HashMap<Integer, List<DaoObject>> sortCards(Customer customer,
 			List<DaoObject> customerCards) {
+		long time1 = System.currentTimeMillis();
 		HashMap<Integer, List<DaoObject>> cusCardsSeparateBilling = new HashMap<Integer, List<DaoObject>>();
 		if (customer.getInvoiceConfiguration().getSeparateBilling() != null && customer.getInvoiceConfiguration().getSeparateBilling()) {
 			String[] sbCrit = customer.getInvoiceConfiguration()
@@ -234,6 +258,9 @@ public class ReportCalculator implements Runnable {
 			cusCardsSeparateBilling.put(0, customerCards);
 		}
 
+		long time2 = System.currentTimeMillis();
+		long diff = time2-time1;
+		System.out.println("Sort Dauer: " + diff + " Millisekunden");
 		return cusCardsSeparateBilling;
 	}
 
@@ -283,8 +310,13 @@ public class ReportCalculator implements Runnable {
 		IReportGenerator rp = null;
 		rp = new ReportGenerator_portrait();
 
+		long time1 = System.currentTimeMillis();
 		boolean generatedWithoutError = rp.generateReport(customerCards,
 				customer, calcMonth, flatrateCalc, severalBills, mapCount);
+		long time2 = System.currentTimeMillis();
+		long diff = time2 - time1;
+		System.out.println("Inner generateReport Dauer = "+ diff);
+		logger.info("Inner generateReport Dauer = "+ diff);
 		if (generatedWithoutError) {
 			if (customer.getInvoiceConfiguration().getCreationFrequency()
 					.equals(Model.FREQUENCY_YEARLY)) {
@@ -314,8 +346,15 @@ public class ReportCalculator implements Runnable {
 				 * Bei allen anderen Rechnungsläufen muss nur pro Kunde das
 				 * LastCalculationDate gesetzt werden.
 				 */
+				
+				long time3 = System.currentTimeMillis();
+				CustomerController cc = new CustomerController();
+				Customer dbCus = cc.findCustomer(customer.getCustomernumber());
+				dbCus.setLastCalculationDate(calcMonth.getTime());
+				long time4 = System.currentTimeMillis();
+				long diff2 = time4 - time3;
+				System.out.println("Inner generateReport Dauer = "+ diff2);
 
-				customer.setLastCalculationDate(calcMonth.getTime());
 			}
 		} else {
 			// Aus der Schleife für diesen Kunden aussteigen
@@ -403,6 +442,7 @@ public class ReportCalculator implements Runnable {
 		Calendar maxLastCalculationDate = Calendar.getInstance();
 		maxLastCalculationDate.set(new Integer(calcMonth.get(Calendar.YEAR)),
 				new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
+		maxLastCalculationDate.set(Calendar.MILLISECOND, 0);
 		Calendar customerLastCalcDate = Calendar.getInstance();
 		if (customer.getLastCalculationDate() != null) {
 			customerLastCalcDate.setTime(customer.getLastCalculationDate());
@@ -501,6 +541,115 @@ public class ReportCalculator implements Runnable {
 		threadBean.startThread(10, 10, 100);
 	}
 
+	public void downloadMonthBills() {
+		System.out.println("Jetzt");
+		BillController bc = new BillController();
+		List<Bill> bills = bc.findMonthBills(2014, 1);
+		
+		if (bills != null) {
+
+			System.out.println("Gefundene Rechnungen: " + bills.size());
+
+			String testFilename = null;
+			if (bills.size() > 3) {
+				testFilename = bills.get(3).getFilename(); 
+			}
+			
+			for (Bill bill: bills) {
+				File file = new File(bill.getFilename());
+				FileOutputStream fos;
+				try {
+					fos = new FileOutputStream(file);
+//					ZipOutputStream zos = new ZipOutputStream(fos);
+//					ZipEntry ze = new ZipEntry(bill.getFilename());
+//					ze.
+//					zos.putNextEntry(ze);
+					fos.write(bill.getFile());
+					fos.flush();
+					fos.close();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("WEB-INF/../Invoices/");
+//			String path = getServletContext().getRealPath("WEB-INF/../");
+			File file = new File(path);
+			String fullPathToYourWebappRoot = null;
+			try {
+				fullPathToYourWebappRoot = file.getCanonicalPath();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			System.out.println("Pfad: " + fullPathToYourWebappRoot);
+			File zipFile = new File(fullPathToYourWebappRoot,  "Siwaltec_Rechnungen.zip");
+			FileOutputStream zfos;
+			try {
+				zfos = new FileOutputStream(zipFile);
+				ZipOutputStream zos = new ZipOutputStream(zfos);
+				byte[] buffer = new byte[1024];
+				for (Bill bill: bills) {
+					ZipEntry ze = new ZipEntry(bill.getFilename());
+					zos.putNextEntry(ze);
+
+					File f = new File(bill.getFilename());
+					FileInputStream fis = new FileInputStream(f);
+					int length;
+					while ((length = fis.read(buffer)) > 0) {
+						zos.write(buffer, 0, length);
+					}
+					
+//						zos.write(bill.getFile());
+					zos.closeEntry();
+					fis.close();
+				}
+				zos.close();
+				
+//					ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+//					HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//					ServletContext servletContext = (ServletContext) externalContext.getContext();
+//					response.reset();
+//					response.setContentType(servletContext.getMimeType(zipFile.getName()));
+//					response.setContentLength((int) zipFile.length());
+//					response.setHeader("Content-Disposition", "attachment"+ 
+//		                                     "filename=" + zipFile.getName());
+//		            FileInputStream stream = new FileInputStream(zipFile);
+//		            response.setContentLength(stream.available());
+//		            OutputStream os = response.getOutputStream();      
+//		            os.close();
+//		            response.flushBuffer();			
+
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+//			try {
+//				Runtime.getRuntime().exec(
+//				"rundll32 url.dll,FileProtocolHandler " + testFilename);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+
+		}
+
+	}
+	
+	public Resource getZipResource() {
+		return ZIP_RESOURCE;
+	}
+	
 	public boolean getTaskRunning() {
 		return taskRunning;
 	}

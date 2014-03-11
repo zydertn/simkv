@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -36,6 +37,7 @@ public class Customer extends DaoObject {
 	private String comment;
 	private Date lastCalculationDate;
 	private Set<Voucher> vouchers;
+	private Map<String, Bill> bills;
 	
 	private InvoiceConfiguration invoiceConfiguration;
 
@@ -184,6 +186,14 @@ public class Customer extends DaoObject {
 
 	public void setVouchers(Set<Voucher> vouchers) {
 		this.vouchers = vouchers;
+	}
+
+	public Map<String, Bill> getBills() {
+		return bills;
+	}
+
+	public void setBills(Map<String, Bill> bills) {
+		this.bills = bills;
 	}
 	
 }

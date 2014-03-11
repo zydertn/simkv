@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.Util" table="UTIL">
+		<id name="utilId" type="int" column="UTIL_ID" >
+			<generator class="native"/>
+		</id>
+	 	<property name="maxBillNumber" column="MAX_BILL_NUMBER" type="int" length="7" />
+	 </class>
+ </hibernate-mapping>

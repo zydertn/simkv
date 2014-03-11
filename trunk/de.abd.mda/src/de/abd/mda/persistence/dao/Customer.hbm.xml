@@ -22,5 +22,10 @@
 			<key column="id" not-null="true" />
 			<element column="CUSTOMER_VOUCHERS" type="de.abd.mda.persistence.dao.Voucher"/>
 		</set>
+		<!-- map name="bills" table="billTables" cascade="all">  
+			<key column="parent_id"></key>  
+			<index column="bill_date" type="string"></index>  
+			<many-to-many class="de.abd.mda.persistence.dao.Bill" column="billid"></many-to-many>  
+		</map-->  
 	 </class>
  </hibernate-mapping>

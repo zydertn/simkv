@@ -25,9 +25,14 @@ public class DaoController implements IDaoController {
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		String message = "";
 		try {
-			tx = session.beginTransaction();
-			session.save(d);
-			tx.commit();
+			tx = session.getTransaction();
+			if (tx != null) {
+				session.save(d);
+			} else {
+				tx = session.beginTransaction();
+				session.save(d);
+				tx.commit();
+			}
 //			message = d.toString() + " erfolgreich in DB angelegt.";
 		} catch (NonUniqueObjectException e) {
 			MdaLogger.warn(logger, "NonUniqueObjectException");
