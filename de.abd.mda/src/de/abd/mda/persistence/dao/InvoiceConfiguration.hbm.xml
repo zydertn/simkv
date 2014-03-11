@@ -23,5 +23,6 @@
 			<list-index base="0" />
 			<element column="IC_BILLING_CRITERIA" type="java.lang.String" />
 		</array>
+		<property name="debtOrder" type="boolean" column="CARD_DEBT_ORDER" />
 	</class>
 </hibernate-mapping>

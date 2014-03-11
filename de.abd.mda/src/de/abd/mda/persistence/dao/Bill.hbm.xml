@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.Bill" table="BILL">
+		<id name="billId" type="int" column="BILL_ID" >
+			<generator class="native"/>
+		</id>
+	 	<property name="billNumber" column="BILL_NUMBER" type="int" length="6" />
+		<property name="customerNumber" column="BILL_CUS_NUM" type="int" length="15" />
+	 	<property name="year" column="BILL_YEAR" type="int" length="4" />
+	 	<property name="month" column="BILL_MONTH" type="int" length="2" />
+	 	<property name="file" column="BILL_FILE" type="binary" length="1048576" />
+	 	<property name="filename" column="BILL_FILENAME" type="string" />
+	 	<property name="mapCount" column="BILL_MAP_COUNT" type="int" length="3" />
+	 	<property name="finalized" column="BILL_FINALIZED" type="boolean" />
+	 </class>
+ </hibernate-mapping>

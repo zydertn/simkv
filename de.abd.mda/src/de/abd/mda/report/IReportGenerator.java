@@ -3,6 +3,8 @@ package de.abd.mda.report;
 import java.util.Calendar;
 import java.util.List;
 
+import org.hibernate.Session;
+
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 

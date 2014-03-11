@@ -38,6 +38,8 @@
 	    <mapping resource="de/abd/mda/persistence/dao/SequenceNumber.hbm.xml" />
 	    <mapping resource="de/abd/mda/persistence/dao/Configuration.hbm.xml" />
 	    <mapping resource="de/abd/mda/persistence/dao/Voucher.hbm.xml" />
+	    <mapping resource="de/abd/mda/persistence/dao/Bill.hbm.xml" />
+	    <mapping resource="de/abd/mda/persistence/dao/Util.hbm.xml" />
 	    <!-- mapping class="de.abd.mda.persistence.dao.Honey" /-->
     </session-factory>
 </hibernate-configuration>

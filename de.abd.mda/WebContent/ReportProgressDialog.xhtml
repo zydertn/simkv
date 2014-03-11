@@ -31,9 +31,17 @@
             
             <!-- ace:progressBar id="myProgressBar" value="#{longtask.progress}"/-->
                                
-            <h:commandLink id="start" actionListener="#{reportCalculator.startTask}" rendered="#{!longtask.taskRunning}" value="start"></h:commandLink>
+            <h:commandButton id="start" actionListener="#{reportCalculator.startTask}" rendered="#{!longtask.taskRunning}" value="start"></h:commandButton>
 
-            <h:commandLink id="zurücksetzen" rendered="#{!longtask.taskRunning}" value="Zurücksetzen"></h:commandLink>
+            <h:commandButton id="zurücksetzen" rendered="#{!longtask.taskRunning}" value="Zurücksetzen"></h:commandButton>
+
+            <h:commandButton id="monatsRechnungen" actionListener="#{reportCalculator.downloadMonthBills}" rendered="true" value="Monatsrechnungen runterladen"></h:commandButton>
+            <ice:outputResource id="downloadLink"
+            					resource="#{reportCalculator.zipResource}"
+            					attachment="true"
+            					label="Download ZIP"
+            					mimeType="application/zip"
+            					type="text"/>
 		</h:panelGrid>
 	</h:form>
 </h:body>

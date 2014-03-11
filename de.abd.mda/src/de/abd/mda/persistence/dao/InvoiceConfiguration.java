@@ -16,6 +16,7 @@ public class InvoiceConfiguration extends DaoObject {
 	private String creationFrequency;
 	private Boolean separateBilling;
 	private String[] separateBillingCriteria;
+	private Boolean debtOrder;
 	
 	
 	public InvoiceConfiguration() {
@@ -99,6 +100,14 @@ public class InvoiceConfiguration extends DaoObject {
 
 	public void setSeparateBilling(Boolean separateBilling) {
 		this.separateBilling = separateBilling;
+	}
+
+	public Boolean getDebtOrder() {
+		return debtOrder;
+	}
+
+	public void setDebtOrder(Boolean debtOrder) {
+		this.debtOrder = debtOrder;
 	}
 	
 }

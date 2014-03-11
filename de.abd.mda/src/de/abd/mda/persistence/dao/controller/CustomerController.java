@@ -90,6 +90,34 @@ public class CustomerController extends DaoController implements IDaoController 
 		return customers;
 	}
 
+	public Customer findCustomer(String customerNumber) {
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		List<DaoObject> customers = null;
+		Transaction tx = session.getTransaction();
+		try {
+			String whereClause = "";
+			if (customerNumber != null && customerNumber.length() > 0) {
+				whereClause = " where customer.customernumber = '" + customerNumber + "'";
+			}
+			
+			customers = session.createQuery("from Customer as customer" + whereClause).list();
+		} catch (RuntimeException e) {
+			if (tx != null && tx.isActive()) {
+				try {
+					// Second try catch as the rollback could fail as well
+					tx.rollback();
+				} catch (HibernateException e1) {
+					System.out.println("Error rolling back transaction");
+				}
+				// throw again the first exception
+				throw e;
+			}
+
+		}
+		return (Customer) customers.get(0);
+	}
+
+	
 	public List<DaoObject> searchCustomerCards(Customer cus) {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();

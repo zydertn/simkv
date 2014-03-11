@@ -1,5 +1,8 @@
 package de.abd.mda.junit;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -9,10 +12,14 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.sun.faces.config.DbfFactory;
+
 import de.abd.mda.model.Model;
+import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
+import de.abd.mda.persistence.dao.controller.BillController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.report.IReportGenerator;
 import de.abd.mda.report.ReportCalculator;
@@ -36,7 +43,7 @@ public class ReportGenTest {
 //				"'20224', '20216', '20208', '20206'" +
 //				")";
 
-		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20002')";
+		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20069')";
 		
 		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
 
@@ -61,9 +68,10 @@ public class ReportGenTest {
 			List<DaoObject> cards = rg.searchCards(customer, calcMonth, tx, session);
 
 //			IReportGenerator repGen = new ReportGenerator_landscape();
-			IReportGenerator repGen = new ReportGenerator_portrait();
-			boolean generatedWithoutError = repGen.generateReport(cards, customer, calcMonth, false, false, 1);
+			ReportGenerator_portrait repGen = new ReportGenerator_portrait();
+			boolean generatedWithoutError = repGen.generateReportDirect(cards, customer, calcMonth, false, false, 1);
 			if (generatedWithoutError) {
+				System.out.println("Generated without error");
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
 					/*
 					 * Bei Jahreskunden muss das LastCalculationDate auf den Karten gespeichert werden.
@@ -85,6 +93,36 @@ public class ReportGenTest {
 					
 					customer.setLastCalculationDate(calcMonth.getTime());
 				}
+				
+				Bill bill = new Bill();
+				bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
+				bill.setYear(calcMonth.get(Calendar.YEAR));
+				bill.setMonth(calcMonth.get(Calendar.MONTH));
+				bill.setMapCount(1);
+				BillController bc = new BillController();
+				System.out.println("find Bill");
+				Bill dbBill = bc.findBill(bill);
+				if (dbBill != null) {
+					System.out.println("found Bill");
+
+					File myFile = new File(dbBill.getFilename());
+					try {
+						FileOutputStream fos2 = new FileOutputStream(myFile);
+						fos2.write(dbBill.getFile());
+						fos2.flush();
+						fos2.close();
+
+						Runtime.getRuntime().exec(
+								"rundll32 url.dll,FileProtocolHandler "
+										+ dbBill.getFilename());
+						System.out.println("Done");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+	
 			}
 
 		}
@@ -124,7 +162,7 @@ public class ReportGenTest {
 			customerLastCalcDate.setTime(customer.getLastCalculationDate());
 		}
 
-		if (customer.getLastCalculationDate() == null || customerLastCalcDate.before(maxLastCalculationDate)) {
+//		if (customer.getLastCalculationDate() == null || customerLastCalcDate.before(maxLastCalculationDate)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String select = "select distinct card from CardBean card where card.customer = '"
 					+ customer.getId() + "' and card.status = 'aktiv' and card.activationDate < '" + sdf.format(maxActivationDate.getTime()) + "' and NOT card.flatrateCard IS TRUE";
@@ -140,8 +178,8 @@ public class ReportGenTest {
 			}
 			Collections.sort(cardList, dc);
 			return cardList;
-		}
-		return null;
+//		}
+//		return null;
 		
 	}
 
