@@ -61,10 +61,10 @@ public class ExcelImporter_14_02_20 {
 					
 					FileReader file = null;
 	
-					logger.info("************ 20178_HOWOGE_Kone_aktuelle.csv **************");
-					file = new FileReader(path + "20178_HOWOGE_Kone_aktuelle.csv");
-					readDataFromFile(file, "20178");
-					writeOutList(list);
+//					logger.info("************ 20178_HOWOGE_Kone_aktuelle.csv **************");
+//					file = new FileReader(path + "20178_HOWOGE_Kone_aktuelle.csv");
+//					readDataFromFile(file, "20178");
+//					writeOutList(list);
 
 					logger.info("************ 20269_GSM-Tel_Fa_KONE_Nord.csv **************");
 					file = new FileReader(path + "20269_GSM-Tel_Fa_KONE_Nord.csv");
@@ -467,8 +467,14 @@ public class ExcelImporter_14_02_20 {
 		if (spalten.containsKey("Eqiupment Nr.")) {
 			card.setEquipmentNr(split[spalten.get("Eqiupment Nr.")]);
 		}
+		if (spalten.containsKey("Equipment Nr.")) {
+			card.setEquipmentNr(split[spalten.get("Equipment Nr.")]);
+		}
 		if (spalten.containsKey("Eqiupment ID")) {
 			card.setEquipmentNr(split[spalten.get("Eqiupment ID")]);
+		}
+		if (spalten.containsKey("Equipment ID")) {
+			card.setEquipmentNr(split[spalten.get("Equipment ID")]);
 		}
 		if (spalten.containsKey("Equipment Aufteilung")) {
 			card.setEquipmentNr(split[spalten.get("Equipment Aufteilung")]);
