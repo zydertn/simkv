@@ -35,11 +35,6 @@
     <param-name>javax.faces.VALIDATE_EMPTY_FIELDS</param-name>
     <param-value>false</param-value>
   </context-param>
-  <!-- context-param>
-    <description>Google Maps API key is required if gMap component is used. Sign up for an API key from http://code.google.com/apis/maps/signup.html</description>
-    <param-name>com.icesoft.faces.gmapKey</param-name>
-    <param-value>ABQIAAAADlu0ZiSTam64EKaCQr9eTRTOTuQNzJNXRlYRLknj4cQ89tFfpxTEqxQnVWL4k55OPICgF5_SOZE06A</param-value>
-  </context-param-->
   <servlet>
     <servlet-name>Resource Servlet</servlet-name>
     <servlet-class>com.icesoft.faces.webapp.CompatResourceServlet</servlet-class>
@@ -49,31 +44,30 @@
     <servlet-name>Resource Servlet</servlet-name>
     <url-pattern>/xmlhttp/*</url-pattern>
   </servlet-mapping>
-  
-  
+  <servlet>
+  	<servlet-name>ZIPAccessServlet</servlet-name>
+  	<servlet-class>de.abd.mda.report.ZipServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>ZIPAccessServlet</servlet-name>
+  	<url-pattern>/downloadZip/*</url-pattern>
+  </servlet-mapping>
   <security-role>
-  	<role-name>abduser</role-name>
+    <role-name>abduser</role-name>
   </security-role>
-  
-  
-  <!-- Define a Security Constraint on this Application -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Protected Area</web-resource-name>
       <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-       <!-- NOTE:  This role is not present in the default users file -->
-       <role-name>abduser</role-name>
+      <role-name>abduser</role-name>
     </auth-constraint>
   </security-constraint>
-
-  <!-- Define the Login Configuration for this Application -->
   <login-config>
     <auth-method>DIGEST</auth-method>
     <realm-name>UserDatabase</realm-name>
   </login-config>
-
   <error-page>
     <error-code>401</error-code>
     <location>/WEB-INF/jsp/401.jsp</location>
@@ -86,6 +80,4 @@
     <error-code>404</error-code>
     <location>/WEB-INF/jsp/404.jsp</location>
   </error-page>
-  
-  
 </web-app>

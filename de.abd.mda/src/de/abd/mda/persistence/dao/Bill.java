@@ -18,6 +18,7 @@ public class Bill extends DaoObject {
 	private byte[] file;
 	private String filename;
 	private int mapCount;
+	private boolean flatrate;
 	private boolean finalized;
 	
 	public Bill() {
@@ -94,5 +95,13 @@ public class Bill extends DaoObject {
 
 	public void setMapCount(int mapCount) {
 		this.mapCount = mapCount;
+	}
+
+	public boolean isFlatrate() {
+		return flatrate;
+	}
+
+	public void setFlatrate(boolean flatrate) {
+		this.flatrate = flatrate;
 	}
 }

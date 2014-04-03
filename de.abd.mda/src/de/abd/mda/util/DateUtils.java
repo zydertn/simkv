@@ -13,7 +13,13 @@ public class DateUtils {
 	}
 	
 	public static String getMonthAsString(int month) {
+		if (month > 12)
+			month = 12;
 	    return new DateFormatSymbols().getMonths()[month];
 	}
 
+	public static String getCalendarString(Calendar cal) {
+		return (cal.get(Calendar.DATE) + ". " + getMonthAsString(cal.get(Calendar.MONTH)) + " " + cal.get(Calendar.YEAR));
+	}
+	
 }

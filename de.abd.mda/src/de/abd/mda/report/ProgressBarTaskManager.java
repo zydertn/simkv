@@ -95,6 +95,20 @@ public class ProgressBarTaskManager implements Serializable {
                     .getManagedBean(LongTaskPool.BEAN_NAME);
             final PortableRenderer renderer = PushRenderer
                     .getPortableRenderer();
+
+    		Transaction tx = null;
+    		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+    		tx = session.beginTransaction();
+    		String select = "from Configuration";
+    		List<Configuration> list = session.createQuery(select).list();
+    		Configuration c = null;
+    		if (list.size() > 0) {
+    			c = list.get(0);
+    		}
+    		c.setCustomer(0);
+    		c.setReportProgress(0);
+    		tx.commit();
+    		
             // Start a new long running process to simulate a delay
             pool.getThreadPool().execute(new Runnable() {
                 public void run() {

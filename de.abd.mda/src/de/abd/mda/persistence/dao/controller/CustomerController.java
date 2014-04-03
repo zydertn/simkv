@@ -93,7 +93,14 @@ public class CustomerController extends DaoController implements IDaoController 
 	public Customer findCustomer(String customerNumber) {
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
-		Transaction tx = session.getTransaction();
+		Transaction tx = null;
+		boolean transactionStarted = false;
+		if (session.getTransaction() == null || !session.getTransaction().isActive()) {
+			tx = session.beginTransaction();
+			transactionStarted = true;
+		} else {
+			tx = session.getTransaction();
+		}
 		try {
 			String whereClause = "";
 			if (customerNumber != null && customerNumber.length() > 0) {
@@ -101,6 +108,8 @@ public class CustomerController extends DaoController implements IDaoController 
 			}
 			
 			customers = session.createQuery("from Customer as customer" + whereClause).list();
+			if (transactionStarted)
+				tx.commit();
 		} catch (RuntimeException e) {
 			if (tx != null && tx.isActive()) {
 				try {
