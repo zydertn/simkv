@@ -61,25 +61,25 @@ public class ExcelImporter_13_12_03_2 {
 					
 					FileReader file = null;
 	
-					logger.info("************ 20182_GSM-Tel._WEG_Sendlinger_Str._22,_80331_München.csv **************");
-					file = new FileReader(path + "20182_GSM-Tel._WEG_Sendlinger_Str._22,_80331_München.csv");
-					readDataFromFile(file, "20182");
-					writeOutList(list);
-					
-					logger.info("************ 20184_GSM-Tel.WEG_Athosstr._15,_81545_coHV_Marianne_Nöbauer_(Fa.Burger_Aufzüge).csv **************");
-					file = new FileReader(path + "20184_GSM-Tel.WEG_Athosstr._15,_81545_coHV_Marianne_Nöbauer_(Fa.Burger_Aufzüge).csv");
-					readDataFromFile(file, "20184");
-					writeOutList(list);
-					
-					logger.info("************ 20194_QUARTAL_GSM-Tel._Hr._Marcus_Stein.csv **************");
-					file = new FileReader(path + "20194_QUARTAL_GSM-Tel._Hr._Marcus_Stein.csv");
-					readDataFromFile(file, "20194");
-					writeOutList(list);
-
-					logger.info("************ 20237_GSM_Liste_AWO-Leinfelden.csv **************");
-					file = new FileReader(path + "20237_GSM_Liste_AWO-Leinfelden.csv");
-					readDataFromFile(file, "20237");
-					writeOutList(list);
+//					logger.info("************ 20182_GSM-Tel._WEG_Sendlinger_Str._22,_80331_München.csv **************");
+//					file = new FileReader(path + "20182_GSM-Tel._WEG_Sendlinger_Str._22,_80331_München.csv");
+//					readDataFromFile(file, "20182");
+//					writeOutList(list);
+//					
+//					logger.info("************ 20184_GSM-Tel.WEG_Athosstr._15,_81545_coHV_Marianne_Nöbauer_(Fa.Burger_Aufzüge).csv **************");
+//					file = new FileReader(path + "20184_GSM-Tel.WEG_Athosstr._15,_81545_coHV_Marianne_Nöbauer_(Fa.Burger_Aufzüge).csv");
+//					readDataFromFile(file, "20184");
+//					writeOutList(list);
+//					
+//					logger.info("************ 20194_QUARTAL_GSM-Tel._Hr._Marcus_Stein.csv **************");
+//					file = new FileReader(path + "20194_QUARTAL_GSM-Tel._Hr._Marcus_Stein.csv");
+//					readDataFromFile(file, "20194");
+//					writeOutList(list);
+//
+//					logger.info("************ 20237_GSM_Liste_AWO-Leinfelden.csv **************");
+//					file = new FileReader(path + "20237_GSM_Liste_AWO-Leinfelden.csv");
+//					readDataFromFile(file, "20237");
+//					writeOutList(list);
 
 					logger.info("************ 20238_GSM_Liste_Aqua_Hotel.csv **************");
 					file = new FileReader(path + "20238_GSM_Liste_Aqua_Hotel.csv");

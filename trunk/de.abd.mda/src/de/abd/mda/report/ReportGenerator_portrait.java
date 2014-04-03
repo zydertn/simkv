@@ -65,9 +65,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	BaseFont bf_arial = null;
 	static final Logger logger = Logger.getLogger(ReportGenerator_portrait.class);
 //	private static int MAX_ROW_FIRST_PAGE = 25;
-	private static int MAX_ROW_FIRST_PAGE = 23;
+	private static int MAX_ROW_FIRST_PAGE = 25;
 //	private static int FULL_PAGE_SIZE = 39;
-	private static int FULL_PAGE_SIZE = 37;
+	private static int FULL_PAGE_SIZE = 40;
 	private int pos = 0;
 	private static int sevBillInvNum = 35000;
 	private boolean billContainsVoucher = false;
@@ -85,6 +85,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
 		try {
+			long time1 = System.currentTimeMillis();
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
 			String month = "";
 			if ((calcMonth.get(Calendar.MONTH) + 1) > 9) {
@@ -103,9 +104,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				mapCountString = "_" + mapCount;
 			
 			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + flatrateString + mapCountString + ".pdf";
+			long time2 = System.currentTimeMillis();
+			long diff1 = time2-time1;
+			System.out.println("genRep Teil 1 = " + diff1);
+
+			
+			
 //			File dir = new File("C:/Temp/report/" + customer.getCustomernumber());
 //			File dir = new File("C:/Temp/report/" + year + "/" + month);
 //			dir.mkdirs();
+			long time3 = System.currentTimeMillis();
 			File dir = new File("C:/Temp/report/");
 			
 			
@@ -121,12 +129,27 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			bill.setYear(calcMonth.get(Calendar.YEAR));
 			bill.setMonth(calcMonth.get(Calendar.MONTH));
 			bill.setMapCount(mapCount);
+			bill.setFlatrate(flatrateCalc);
 			BillController bc = new BillController();
+			long timefb = System.currentTimeMillis();
 			Bill dbBill = bc.findBill(bill);
+			long timefb2 = System.currentTimeMillis();
+			long difffb = timefb2-timefb;
+			System.out.println("findBill = " + difffb);
+			
+			long time4 = System.currentTimeMillis();
+			long diff2 = time4-time3;
+			System.out.println("genRep Teil 2 = " + diff2);
+
+			long time5 = System.currentTimeMillis();
 			int invoiceNumber = -1;
+			boolean increaseBillNum = false;
 			if (dbBill != null) {
 				System.out.println("Rechnung bereits in DB enthalten... Hole Rechnungsnummer...");
 				invoiceNumber = dbBill.getBillNumber();
+			} else {
+				invoiceNumber = (bc.getMaxBillNumber())+1;
+				increaseBillNum = true;
 			}
 			
 			// headers and footers must be added before the document is opened
@@ -136,7 +159,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			} else {
 				return false;
 			}
+			long time6 = System.currentTimeMillis();
+			long diff3 = time6-time5;
+			System.out.println("genRep Teil 3 = " + diff3);
 
+			long time7 = System.currentTimeMillis();
 			HeaderFooter footer = generateFooter(writer);
 			if (footer != null) {
 				footer.setBorder(Rectangle.NO_BORDER);
@@ -147,7 +174,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			}
 
 			document.open();
+			long time8 = System.currentTimeMillis();
+			long diff4 = time8-time7;
+			System.out.println("genRep Teil 4 = " + diff4);
 
+			long time9 = System.currentTimeMillis();
 			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber);
 			if (generatedWithErrors) {
 				return false;
@@ -156,12 +187,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			document.close();
 			fos.flush();
 			fos.close();
+			long time10 = System.currentTimeMillis();
+			long diff5 = time10-time9;
+			System.out.println("genRep Teil 5 = " + diff5);
+
 			
 			logger.info("File " + filename + " created successfully!");
 //			Runtime.getRuntime().exec(
 //					"rundll32 url.dll,FileProtocolHandler "
 //							+ "C:/Temp/report/" + customer.getCustomernumber());
 
+			long time11 = System.currentTimeMillis();
 			File file = new File(dir, filename);
 			
 			RandomAccessFile ra = new RandomAccessFile(file, "rw");
@@ -178,12 +214,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				System.out.println("Byte[] Länge == " + b.length);
 				bill.setFile(b);
 				
+					
+				long time13 = System.currentTimeMillis();
 				boolean createdNew = bc.createOrUpdateObject(bill);
+				long time14 = System.currentTimeMillis();
+				long diff7 = time14-time13;
+				System.out.println("createOrUpdateObject = " + diff7);
+				
 				if (createdNew)
 					System.out.println("Neue Rechnung in DB gespeichert");
 				else
 					System.out.println("Rechnung in DB aktualisiert");
 			}
+			long time12 = System.currentTimeMillis();
+			long diff6 = time12-time11;
+			System.out.println("genRep Teil 6 = " + diff6);
 
 			
 			
@@ -334,8 +379,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			y = y - 5 * d;
 			Date date = new Date();
 			// Temporär auf 14. Januar gesetzt
-			date.setDate(7);
-			date.setMonth(1);
+			date.setDate(13);
+			date.setMonth(2);
 			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
@@ -612,7 +657,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				i++;
 			}
 			
-			if (customer.getInvoiceConfiguration().getDebtOrder()) {
+			if (customer.getInvoiceConfiguration() != null && customer.getInvoiceConfiguration().getDebtOrder() != null && customer.getInvoiceConfiguration().getDebtOrder()) {
 				Chunk debtOrder = new Chunk(addNewLines(2) + "Zahlung erfolgt per Lastschrift." + addNewLines(2), timeframeFont);
 				Phrase debtOrderPhrase = new Phrase(debtOrder);
 				doc.add(debtOrderPhrase);
@@ -672,7 +717,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Chunk appendixChunk = new Chunk(addNewLines(2) + "Nach diesem Zeitraum gilt die Rechnung als geprüft und von Ihnen anerkannt. Durch die Freischaltung der SiwalTec SimKarte erkennen Sie unsere AGBs an.");
 			doc.add(appendixChunk);
 
-			Chunk sepa1Chunk = new Chunk(addNewLines(6) + "Sepa Kontodaten SiwalTec GmbH:");
+			Chunk sepa1Chunk = new Chunk(addNewLines(6) + "SEPA Kontodaten SiwalTec GmbH:");
 			Chunk sepa2Chunk = new Chunk(addNewLines(1) + "          IBAN:   DE72 6039 0000 0406 1280 06");
 			Chunk sepa3Chunk = new Chunk(addNewLines(1) + "          BIC:     GENODES1BBV");
 			doc.add(sepa1Chunk);
@@ -878,8 +923,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		if (tableRowList.size() > 5) {
 			
 			tableFont = new Font(bf_arial, 8);
-			MAX_ROW_FIRST_PAGE = 25;
-			FULL_PAGE_SIZE = 41;
+//			MAX_ROW_FIRST_PAGE = 25;
+//			FULL_PAGE_SIZE = 40;
 		} else 
 			tableFont = new Font(bf_arial, 9);
 

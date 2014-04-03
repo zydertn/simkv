@@ -36,16 +36,60 @@ public class ReportGenTest {
 		// TODO Auto-generated method stub
 
 		ReportGenTest rg = new ReportGenTest();
-		ReportCalculator rp = new ReportCalculator();
+		
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = rg.createTransaction(session);
+//		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20063', '20125', '20051', '20029', '20030', '20031', '20074')";
+		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20276')";
+		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
+		tx.commit();
+			
+		Calendar calcMonth = Calendar.getInstance();
+		calcMonth.set(2013, Calendar.JULY, 1, 0, 0, 0);
+
+		rg.generateReports(customerList, calcMonth);
+//		for (DaoObject dao : customerList) {
+//			rg.showFile((Customer) dao, calcMonth);
+//		}
+	}
+
+	private void showFile(Customer customer, Calendar calcMonth) {
+		Bill bill = new Bill();
+		bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
+		bill.setYear(calcMonth.get(Calendar.YEAR));
+		bill.setMonth(calcMonth.get(Calendar.MONTH));
+		bill.setMapCount(1);
+		BillController bc = new BillController();
+		System.out.println("find Bill");
+		Bill dbBill = bc.findBill(bill);
+		if (dbBill != null) {
+			System.out.println("found Bill");
+
+			File myFile = new File(dbBill.getFilename());
+			try {
+				FileOutputStream fos2 = new FileOutputStream(myFile);
+				fos2.write(dbBill.getFile());
+				fos2.flush();
+				fos2.close();
+
+				Runtime.getRuntime().exec(
+						"rundll32 url.dll,FileProtocolHandler "
+								+ dbBill.getFilename());
+				System.out.println("Done");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void generateReports(List<DaoObject> customerList, Calendar calcMonth) {
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		Transaction tx = this.createTransaction(session);
 //		String select = "select distinct customer from Customer customer where customer.customernumber IN (" +
 //				"'20224', '20216', '20208', '20206'" +
 //				")";
 
-		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20069')";
-		
-		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
 
 //		Iterator<DaoObject> it = customerList.iterator();
 //		while (it.hasNext()) {
@@ -63,9 +107,7 @@ public class ReportGenTest {
 		while (it2.hasNext()) {
 			Customer customer = (Customer) it2.next();
 
-			Calendar calcMonth = Calendar.getInstance();
-			calcMonth.set(2014, Calendar.JANUARY, 1, 0, 0, 0);
-			List<DaoObject> cards = rg.searchCards(customer, calcMonth, tx, session);
+			List<DaoObject> cards = this.searchCards(customer, calcMonth, tx, session);
 
 //			IReportGenerator repGen = new ReportGenerator_landscape();
 			ReportGenerator_portrait repGen = new ReportGenerator_portrait();
@@ -94,34 +136,7 @@ public class ReportGenTest {
 					customer.setLastCalculationDate(calcMonth.getTime());
 				}
 				
-				Bill bill = new Bill();
-				bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
-				bill.setYear(calcMonth.get(Calendar.YEAR));
-				bill.setMonth(calcMonth.get(Calendar.MONTH));
-				bill.setMapCount(1);
-				BillController bc = new BillController();
-				System.out.println("find Bill");
-				Bill dbBill = bc.findBill(bill);
-				if (dbBill != null) {
-					System.out.println("found Bill");
-
-					File myFile = new File(dbBill.getFilename());
-					try {
-						FileOutputStream fos2 = new FileOutputStream(myFile);
-						fos2.write(dbBill.getFile());
-						fos2.flush();
-						fos2.close();
-
-						Runtime.getRuntime().exec(
-								"rundll32 url.dll,FileProtocolHandler "
-										+ dbBill.getFilename());
-						System.out.println("Done");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
+				showFile(customer, calcMonth);
 	
 			}
 
@@ -129,9 +144,9 @@ public class ReportGenTest {
 
 		tx.commit();
 //		Customer customer = (Customer) customerList.get(0);
-		
-	}
 
+	}
+	
 	private List<DaoObject> searchCards(Customer customer, Calendar calcMonth,Transaction tx,
 			Session session) {
 //		String select = "select distinct card from CardBean card where card.customer = '"

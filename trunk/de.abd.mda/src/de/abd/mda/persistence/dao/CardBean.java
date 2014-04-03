@@ -43,6 +43,7 @@ public class CardBean extends DaoObject {
 	private String comment;
 //	private Date lastCalculationDate;
 	private int lastCalculationYear;
+	private int lastCalculationMonth;
 	private String project;
 	private Boolean standardPrice;
 	private Boolean flatrateCard;
@@ -123,6 +124,7 @@ public class CardBean extends DaoObject {
 		this.einsatzort = "";
 		this.baNummer = "";
 		this.lastCalculationYear = 1999;
+		this.lastCalculationMonth = 0;
 	}
 	
 	public CardBean(String cNFirst, String cNSecond, String countryCode, String country, String phoneFirst, String phoneSecond, int seqNum) {
@@ -163,6 +165,7 @@ public class CardBean extends DaoObject {
 		this.einsatzort = "";
 		this.baNummer = "";
 		this.lastCalculationYear = 1999;
+		this.lastCalculationMonth = 0;
 	}
 
 	public String getCardNumber() {
@@ -662,6 +665,14 @@ public class CardBean extends DaoObject {
 
 	public void setBaNummer(String baNummer) {
 		this.baNummer = baNummer;
+	}
+
+	public int getLastCalculationMonth() {
+		return lastCalculationMonth;
+	}
+
+	public void setLastCalculationMonth(int lastCalculationMonth) {
+		this.lastCalculationMonth = lastCalculationMonth;
 	}
 
 //	public int getId() {

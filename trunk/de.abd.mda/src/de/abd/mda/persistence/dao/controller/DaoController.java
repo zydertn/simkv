@@ -26,7 +26,7 @@ public class DaoController implements IDaoController {
 		String message = "";
 		try {
 			tx = session.getTransaction();
-			if (tx != null) {
+			if (tx != null && tx.isActive()) {
 				session.save(d);
 			} else {
 				tx = session.beginTransaction();
