@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -25,6 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -47,6 +49,7 @@ import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.CardComparator;
 import de.abd.mda.util.CustomerComparator;
+import de.abd.mda.util.CustomerNumberComparator;
 import de.abd.mda.util.DateUtils;
 import de.abd.mda.util.FacesUtil;
 
@@ -71,11 +74,27 @@ public class ReportCalculator implements Runnable {
 	private boolean monthCalcStarted = false;
 	private OutputResource outputLinkBinding;
 	private String customerNumber;
+	private String pdfPath = "";
+	private List<Customer> customerList;
 		
 	public static final Resource ZIP_RESOURCE = new MyResource("Invoices/Siwaltec_Rechnungen.zip");
 //	public static final Resource ZIP_RESOURCE = new MyResource("C://temp//Invoices//Siwaltec_Rechnungen.zip");
 	
 	public ReportCalculator() {
+		Model model = new Model();
+		pdfPath = model.getPdfPath();
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -1);
+		monthRunMonth = cal.get(Calendar.MONTH);
+		monthRunYear = cal.get(Calendar.YEAR);
+		CustomerController cc = new CustomerController();
+		List<DaoObject> daoList = cc.listObjects();
+		customerList = new ArrayList<Customer>();
+		for (DaoObject d: daoList) {
+			customerList.add((Customer) d);
+		}
+		CustomerNumberComparator cusComp = new CustomerNumberComparator();
+		Collections.sort(customerList, cusComp);
 	}
 
 	public boolean calculate() {
@@ -118,11 +137,6 @@ public class ReportCalculator implements Runnable {
 				+ sdf.format(now.getTime()));
 
 		if (calculateCase == CALC_CASE_SINGLE) {
-			if (customerNumber == null || customerNumber.length() == 0) {
-				System.out.println("Keine Kundennummer eingegeben! Reporterstellung wird abgebrochen.");
-				return false;
-			}
-			
 			CustomerController cc = new CustomerController();
 			Customer customer = cc.findCustomer(customerNumber);
 
@@ -172,7 +186,7 @@ public class ReportCalculator implements Runnable {
 				monthCalcStarted = true;
 
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY)) {
-					if ((this.monthRunMonth % 3) != 0) {
+					if ((now.get(Calendar.MONTH) % 3) != 0) {
 						/*
 						 *  Quartalskunden dürfen nur dann beim Monatslauf berücksichtigt werden, 
 						 *  wenn mit diesem Monat das Quartal beginnt.
@@ -182,7 +196,7 @@ public class ReportCalculator implements Runnable {
 				}
 				
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY)) {
-					if ((this.monthRunMonth % 6) != 0) {
+					if ((now.get(Calendar.MONTH) % 6) != 0) {
 						/*
 						 *  Halbjahreskunden dürfen nur dann beim Monatslauf berücksichtigt werden, 
 						 *  wenn mit diesem Monat das Halbjahr beginnt.
@@ -339,15 +353,15 @@ public class ReportCalculator implements Runnable {
 				else
 					reportCount++;
 				
-				if (customer.getCustomernumber().equals("20243")) {
-					// Kunde OTIS - braucht auch eine Flatrate-Rechnung
-					customerCards = searchCards(customer, calcMonth, tx, session, true, calcCase);
-					generatedWithoutErrors = generateReport(customer, customerCards, calcMonth, true, false, 1);
-					if (!generatedWithoutErrors)
-						break;
-					else
-						reportCount++;
-				}
+//				if (customer.getCustomernumber().equals("20243")) {
+//					// Kunde OTIS - braucht auch eine Flatrate-Rechnung
+//					customerCards = searchCards(customer, calcMonth, tx, session, true, calcCase);
+//					generatedWithoutErrors = generateReport(customer, customerCards, calcMonth, true, false, 1);
+//					if (!generatedWithoutErrors)
+//						break;
+//					else
+//						reportCount++;
+//				}
 				
 				mapCount++;
 			}
@@ -589,19 +603,26 @@ public class ReportCalculator implements Runnable {
 	private List<DaoObject> searchMonth(Customer customer, Calendar calcMonth, Calendar maxActivationDate, boolean flatrateCalc, Transaction tx, Session session) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
-					+ "' and card.status = 'aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
-					+ "' and NOT card.flatrateCard IS TRUE";
+					+ "' and card.status = 'aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime()) + "'";
+//					+ "' and NOT card.flatrateCard IS TRUE";
 			if (customer.getInvoiceConfiguration().getCreationFrequency()
 					.equals(Model.FREQUENCY_YEARLY)) {
-				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
+/*				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
 						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear != '" + calcMonth.get(Calendar.YEAR)
 						// TODO: lastCalculationMonth muss noch in DB gespeichert werden!!!
 						+ "' or (card.lastCalculationYear = '" + calcMonth.get(Calendar.YEAR) + "' and card.lastCalculationMonth = '" + calcMonth.get(Calendar.MONTH) + "')"
 //						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
 						+ ") and NOT card.flatrateCard IS TRUE";
+*/
+	
+				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
+						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
+						+ "' and ((YEAR(card.activationDate) = '" + maxActivationDate.get(Calendar.YEAR) + "' and MONTH(card.activationDate) = '" + maxActivationDate.get(Calendar.MONTH) + "')" 
+						+ "or (card.lastCalculationYear != null and card.lastCalculationYear < '"	+ calcMonth.get(Calendar.YEAR) + "' and card.lastCalculationYear > '1999"
+						+ "')) and NOT card.flatrateCard IS TRUE";
 			}
-			if (flatrateCalc) {
+/*			if (flatrateCalc) {
 				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
 						+ "' and card.flatrateCard IS TRUE";
@@ -615,7 +636,7 @@ public class ReportCalculator implements Runnable {
 							+ ") and card.flatrateCard IS TRUE";
 				}
 			}
-
+*/
 			DateComparator dc = new DateComparator();
 			List<DaoObject> cardList = searchObjects(select, tx, session);
 			if (cardList != null && cardList.size() > 0) {
@@ -637,8 +658,11 @@ public class ReportCalculator implements Runnable {
 					.equals(Model.FREQUENCY_YEARLY)) {
 				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
-						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
-						+ "') and NOT card.flatrateCard IS TRUE";
+//						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
+//						+ "') and NOT card.flatrateCard IS TRUE";
+						+ "' and ((card.lastCalculationYear IS NULL and YEAR(card.activationDate) = '" + maxActivationDate.get(Calendar.YEAR) + "' and MONTH(card.activationDate) = '" + maxActivationDate.get(Calendar.MONTH) + "')" 
+						+ "or (card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
+						+ "')) and NOT card.flatrateCard IS TRUE";
 			}
 			if (flatrateCalc) {
 				select = "select distinct card from CardBean card where card.customer = '"
@@ -748,7 +772,7 @@ public class ReportCalculator implements Runnable {
 			}
 			
 			for (Bill bill: bills) {
-				File file = new File(bill.getFilename());
+				File file = new File(pdfPath + bill.getFilename());
 				FileOutputStream fos;
 				try {
 					fos = new FileOutputStream(file);
@@ -801,7 +825,7 @@ public class ReportCalculator implements Runnable {
 					ZipEntry ze = new ZipEntry(bill.getFilename());
 					zos.putNextEntry(ze);
 
-					File f = new File(bill.getFilename());
+					File f = new File(pdfPath + bill.getFilename());
 					FileInputStream fis = new FileInputStream(f);
 					int length;
 					while ((length = fis.read(buffer)) > 0) {
@@ -983,5 +1007,16 @@ public class ReportCalculator implements Runnable {
 		this.customerNumber = customerNumber;
 	}
 
+	public String getMonthRunMonthString() {
+		return DateUtils.getMonthAsString(monthRunMonth);
+	}
+
+	public List<Customer> getCustomerList() {
+		return customerList;
+	}
+
+	public void setCustomerList(List<Customer> customerList) {
+		this.customerList = customerList;
+	}
 
 }

@@ -50,24 +50,14 @@
 					<h1>Monatslauf</h1>
 				</div>
 				<hr/>
-				<h:panelGrid columns="3">
-					<h:outputText value="Rechnungslauf für Monat: "></h:outputText>
-					<h:selectOneMenu
-						binding="#{reportCalculator.monthRunMonthBinding}"
-						value="#{reportCalculator.monthRunMonth}">
-						<f:selectItems value="#{actionController.model.months.entrySet()}" var="monthVar" itemLabel="#{monthVar.value}" itemValue="#{monthVar.key}" />
-					</h:selectOneMenu>
-					<h:selectOneMenu
-						binding="#{reportCalculator.monthRunYearBinding}"
-						value="#{reportCalculator.monthRunYear}">
-						<f:selectItems
-							value="#{actionController.model.years}" />
-					</h:selectOneMenu>
+				<h:panelGrid>
+					<h:outputText value="Rechnungslauf für Monat: #{reportCalculator.monthRunMonthString} #{reportCalculator.monthRunYear}"></h:outputText>
 				</h:panelGrid>
 				<h:panelGrid columns="3">
 					<h:commandButton id="monthRun" actionListener="#{reportCalculator.startMonthRunTask}" rendered="true" value="STARTEN"></h:commandButton>
 		            <!-- h:commandButton id="monatsRechnungen" actionListener="#{reportCalculator.downloadMonthBills}" rendered="true" value="Monatsrechnungen runterladen"></h:commandButton-->
-		            <ice:outputResource id="monthDownloadLink" rendered="true" disabled="#{longtask.taskRunning or !reportCalculator.monthCalcStarted}" binding="#{reportCalculator.outputLinkBinding}"
+		            <!-- ice:outputResource id="monthDownloadLink" rendered="true" disabled="#{longtask.taskRunning or !reportCalculator.monthCalcStarted}" binding="#{reportCalculator.outputLinkBinding}"-->
+		            <ice:outputResource id="monthDownloadLink" rendered="true" binding="#{reportCalculator.outputLinkBinding}"
             					resource="#{reportCalculator.zipResource}"
             					attachment="true"
             					label="Download ZIP"
@@ -76,26 +66,18 @@
 				</h:panelGrid>
 			</h:panelGrid>
 
-			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px">
-				<div align="center" style="color:#848484">
-					<h1>Kompletter Rechnungslauf</h1>
-				</div>
-				<hr/>
-			</h:panelGrid>
-		</h:panelGrid>
-
-		<h:panelGrid width="1000" style="text-align: center; margin-top:20px">
-			<hr/>
-		</h:panelGrid>
-		<h:panelGrid width="1000" style="text-align: center;" columns="2">
-			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px; margin-right: 20px; margin-top:20px">
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px;">
 				<div align="center" style="color:#848484">
 					<h1>Einzelrechnung</h1>
 				</div>
 				<hr/>
 				<h:panelGrid columns="5">
 					<h:outputText value="Rechnungslauf für Kunde: "></h:outputText>
-					<h:inputText value="#{reportCalculator.customerNumber}" size="6"></h:inputText>
+					<h:selectOneMenu
+						value="#{reportCalculator.customerNumber}">
+						<f:selectItems value="#{reportCalculator.customerList}" var="customer" itemLabel="#{customer.customernumber}" itemValue="#{customer.customernumber}"/>
+					</h:selectOneMenu>
+					<!-- h:inputText value="#{reportCalculator.customerNumber}" size="6"></h:inputText-->
 					<h:outputText value=" für Monat: "></h:outputText>
 					<h:selectOneMenu
 						binding="#{reportCalculator.singleInvMonthBinding}"
@@ -121,14 +103,44 @@
 				</h:panelGrid>
 			</h:panelGrid>
 
-			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px; margin-top:20px">
+			<!-- h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px">
+				<div align="center" style="color:#848484">
+					<h1>Kompletter Rechnungslauf</h1>
+				</div>
+				<hr/>
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<h:panelGrid width="1000" style="text-align: center; margin-top:20px"-->
+		</h:panelGrid>
+		
+		<!-- h:panelGrid width="1000" style="text-align: center;" columns="2">
+
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px; margin-right: 20px">
 				<div align="center" style="color:#848484">
 					<h1>Jahresrechnung Spezial</h1>
 				</div>
 				<hr/>
+				<h:panelGrid>
+					<h:outputText value=""></h:outputText>
+				</h:panelGrid>
+				<h:panelGrid columns="3">
+				</h:panelGrid>
 			</h:panelGrid>
-		
-		</h:panelGrid>
+
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px;">
+				<div align="center" style="color:#848484">
+					<h1>Einzelrechnung</h1>
+				</div>
+				<hr/>
+				<h:panelGrid columns="5">
+					<h:outputText value="Rechnungslauf für Kunde: "></h:outputText>
+				</h:panelGrid>
+			</h:panelGrid>
+
+
+
+		</h:panelGrid-->
 		
 	</h:form>
 </h:body>

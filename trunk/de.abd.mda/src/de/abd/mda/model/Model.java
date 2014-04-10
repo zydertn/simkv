@@ -1,5 +1,6 @@
 package de.abd.mda.model;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -44,7 +45,7 @@ public class Model {
 	public static String FREQUENCY_YEARLY = "jährlich";
 	
 	public static String COLUMN_POS = "Pos.";
-	public static String COLUMN_AMOUNT = "Menge";
+	public static String COLUMN_AMOUNT = "Monate";
 	public static String COLUMN_DESCRIPTION = "Bezeichnung";
 	public static String COLUMN_PLANT_NUMBER = "Anlagen Nr.";
 	public static String COLUMN_INST_PLZ = "PLZ";
@@ -133,6 +134,8 @@ public class Model {
 	private List<String> billingCriteria;
 	private HashMap<Integer, String> months;
 	private List<Integer> years;
+	
+	private String pdfPath = "";
 	
 	public Model() {
 	}
@@ -235,6 +238,25 @@ public class Model {
 		months.put(11, DEC);
 		
 		years = addYears();
+		
+		String hostname = "";
+		try {
+			hostname = java.net.InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Hostname" + hostname);
+		
+		
+		if (hostname.equals("STR00108")) {
+			pdfPath = "C:/temp/pdfInvoices/";
+		} else if (hostname.equals("accounting")) {
+			pdfPath = "E:/tmp/pdfInvoices/";
+		} else {
+			System.out.println("**************** WARNING!!! hostname unknown! Can't set pdfPath! ***************");
+		}
+
 	}
 
 	private List<Integer> addYears() {
@@ -585,6 +607,14 @@ public class Model {
 
 	public void setMonths(HashMap<Integer, String> months) {
 		this.months = months;
+	}
+
+	public String getPdfPath() {
+		return pdfPath;
+	}
+
+	public void setPdfPath(String pdfPath) {
+		this.pdfPath = pdfPath;
 	}
 
 }
