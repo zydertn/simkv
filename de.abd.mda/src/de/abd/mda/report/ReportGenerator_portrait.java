@@ -379,8 +379,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			y = y - 5 * d;
 			Date date = new Date();
 			// Temporär auf 14. Januar gesetzt
-			date.setDate(13);
-			date.setMonth(2);
+//			date.setDate(13);
+//			date.setMonth(2);
 			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			df.setTimeZone(TimeZone.getDefault());
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
@@ -483,14 +483,18 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Font timeframeFontBold = new Font(bf_arial, 11, Font.BOLD);
 
 			String calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH));
-			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
-				calcTimeString = getStartMonthFromCards(calcMonth.get(Calendar.YEAR), customerCards); 
-			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY))
-				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 2);
-			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY))
+			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY)) {
+				int diff = calcMonth.get(Calendar.MONTH) % 3;
+				calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) - diff);
+				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 2 - diff);
+			}
+			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY)) {
+				int diff = calcMonth.get(Calendar.MONTH) % 6;
+				calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) - diff);
 				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 5);
+			}
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
-				calcTimeString += " - " + DateUtils.getMonthAsString(Calendar.DECEMBER);
+				calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " - " + DateUtils.getMonthAsString(Calendar.DECEMBER);
 			calcTimeString += " " + calcMonth.get(Calendar.YEAR);
 			Chunk timeframe = new Chunk(
 					addNewLines(2)
@@ -588,7 +592,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					invoiceRowList.add(card.getInstallAddress().getStreet());
 				}
 				if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
-					if (flatrateCalc && customer.getCustomernumber().equals("20243")) {
+					if (card.getFlatrateCard()) {
 						invoiceRowList.add("GSM Datenflat für Leitstand Otisstraße Berlin");
 					} else {
 						invoiceRowList.add(card.getFactoryNumber());
@@ -1025,7 +1029,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			tableHeader.addCell(cell);
 //			if (columns.contains(Model.COLUMN_AMOUNT)) {
-				cell.setPhrase(new Phrase("Menge", tableFont));
+				cell.setPhrase(new Phrase(Model.COLUMN_AMOUNT, tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				tableHeader.addCell(cell);
 //			}
