@@ -772,7 +772,7 @@ public class ReportCalculator implements Runnable {
 				testFilename = bills.get(3).getFilename(); 
 			}
 
-			File file = new File(path);
+			File file = new File(pdfPath);
 			if (!file.exists()) {
 				System.out.println("Creating directory: " + file.getPath());
 				boolean result = file.mkdir();
@@ -809,6 +809,14 @@ public class ReportCalculator implements Runnable {
 //			String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
 //			String path = getServletContext().getRealPath("WEB-INF/../");
 			file = new File(path);
+			if (!file.exists()) {
+				System.out.println("Creating directory: " + file.getPath());
+				boolean result = file.mkdir();
+				
+				if (result) {
+					System.out.println("DIR created!");
+				}
+			}
 			String fullPathToYourWebappRoot = null;
 			try {
 				fullPathToYourWebappRoot = file.getCanonicalPath();
