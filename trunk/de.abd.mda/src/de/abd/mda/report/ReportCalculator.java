@@ -82,6 +82,7 @@ public class ReportCalculator implements Runnable {
 	
 	public ReportCalculator() {
 		Model model = new Model();
+		model.createModel();
 		pdfPath = model.getPdfPath();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -1);
