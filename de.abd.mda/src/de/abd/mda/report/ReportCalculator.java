@@ -770,9 +770,20 @@ public class ReportCalculator implements Runnable {
 			if (bills.size() > 3) {
 				testFilename = bills.get(3).getFilename(); 
 			}
+
+			File file = new File(path);
+			if (!file.exists()) {
+				System.out.println("Creating directory: " + file.getPath());
+				boolean result = file.mkdir();
+				
+				if (result) {
+					System.out.println("DIR created!");
+				}
+			}
+
 			
 			for (Bill bill: bills) {
-				File file = new File(pdfPath + bill.getFilename());
+				file = new File(pdfPath + bill.getFilename());
 				FileOutputStream fos;
 				try {
 					fos = new FileOutputStream(file);
@@ -796,15 +807,7 @@ public class ReportCalculator implements Runnable {
 //			String path = fc.getExternalContext().getRealPath("/Invoices/");
 //			String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
 //			String path = getServletContext().getRealPath("WEB-INF/../");
-			File file = new File(path);
-			if (!file.exists()) {
-				System.out.println("Creating directory: " + file.getPath());
-				boolean result = file.mkdir();
-				
-				if (result) {
-					System.out.println("DIR created!");
-				}
-			}
+			file = new File(path);
 			String fullPathToYourWebappRoot = null;
 			try {
 				fullPathToYourWebappRoot = file.getCanonicalPath();
