@@ -14,7 +14,5 @@
 	 	<property name="file" column="BILL_FILE" type="binary" length="1048576" />
 	 	<property name="filename" column="BILL_FILENAME" type="string" />
 	 	<property name="mapCount" column="BILL_MAP_COUNT" type="int" length="3" />
-	 	<property name="flatrate" column="BILL_FLATRATE" type="boolean" />
-	 	<property name="finalized" column="BILL_FINALIZED" type="boolean" />
 	 </class>
  </hibernate-mapping>
