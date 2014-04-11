@@ -53,7 +53,7 @@ public class BillController extends DaoController {
 		select += " and bill.year = '" + bill.getYear() + "'";
 		select += " and bill.month = '" + bill.getMonth() +"'";
 		select += " and bill.mapCount = '" + bill.getMapCount() + "'"; 
-		select += " and bill.flatrate = " + bill.isFlatrate(); 
+//		select += " and bill.flatrate = " + bill.isFlatrate(); 
 
 //		String monthString = "";
 //		if (bill.getMonth() < 9) {
