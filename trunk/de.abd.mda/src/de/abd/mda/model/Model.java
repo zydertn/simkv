@@ -136,6 +136,7 @@ public class Model {
 	private List<Integer> years;
 	
 	private String pdfPath = "";
+	private String zipPath = "";
 	
 	public Model() {
 	}
@@ -250,9 +251,11 @@ public class Model {
 		
 		
 		if (hostname.equals("STR00108")) {
-			pdfPath = "C:/temp/pdfInvoices/";
+			pdfPath = "C:/temp/Invoices/pdf/";
+			zipPath = "C:/temp/Invoices/zip/";
 		} else if (hostname.equals("accounting")) {
-			pdfPath = "E:/tmp/pdfInvoices/";
+			pdfPath = "E:/tmp/Invoices/pdf/";
+			zipPath = "E:/tmp/Invoices/zip/";
 		} else {
 			System.out.println("**************** WARNING!!! hostname unknown! Can't set pdfPath! ***************");
 		}
@@ -615,6 +618,14 @@ public class Model {
 
 	public void setPdfPath(String pdfPath) {
 		this.pdfPath = pdfPath;
+	}
+
+	public String getZipPath() {
+		return zipPath;
+	}
+
+	public void setZipPath(String zipPath) {
+		this.zipPath = zipPath;
 	}
 
 }

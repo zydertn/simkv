@@ -75,15 +75,17 @@ public class ReportCalculator implements Runnable {
 	private OutputResource outputLinkBinding;
 	private String customerNumber;
 	private String pdfPath = "";
+	private String zipPath = "";
 	private List<Customer> customerList;
 		
-	public static final Resource ZIP_RESOURCE = new MyResource("C:/temp/pdfInvoices/Siwaltec_Rechnungen.zip");
+	public static final Resource ZIP_RESOURCE = new MyResource("Siwaltec_Rechnungen.zip");
 //	public static final Resource ZIP_RESOURCE = new MyResource("C://temp//Invoices//Siwaltec_Rechnungen.zip");
 	
 	public ReportCalculator() {
 		Model model = new Model();
 		model.createModel();
 		pdfPath = model.getPdfPath();
+		zipPath = model.getZipPath();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -1);
 		monthRunMonth = cal.get(Calendar.MONTH);
@@ -779,7 +781,7 @@ public class ReportCalculator implements Runnable {
 				boolean result = file.mkdirs();
 				
 				if (result) {
-					System.out.println("DIR created!");
+					System.out.println("DIR " + file.getPath() + " created!");
 				}
 			}
 
@@ -809,25 +811,17 @@ public class ReportCalculator implements Runnable {
 //			String path = fc.getExternalContext().getRealPath("/Invoices/");
 //			String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
 //			String path = getServletContext().getRealPath("WEB-INF/../");
-			file = new File(pdfPath);
-			if (!file.exists()) {
-				System.out.println("Creating directory: " + file.getPath());
-				boolean result = file.mkdirs();
+
+			File zipFile = new File(zipPath);
+			if (!zipFile.exists()) {
+				System.out.println("Creating directory: " + zipFile.getPath());
+				boolean result = zipFile.mkdirs();
 				
 				if (result) {
-					System.out.println("DIR created!");
+					System.out.println("DIR " + zipFile.getPath() + " created!");
 				}
 			}
-			String fullPathToYourWebappRoot = null;
-			try {
-				fullPathToYourWebappRoot = file.getCanonicalPath();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-			
-			System.out.println("Pfad: " + fullPathToYourWebappRoot);
-			File zipFile = new File(pdfPath,  "Siwaltec_Rechnungen.zip");
+			zipFile = new File(zipPath,  "Siwaltec_Rechnungen.zip");
 			
 			FileOutputStream zfos;
 			try {
