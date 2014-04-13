@@ -178,6 +178,14 @@ public class ReportCalculator implements Runnable {
 			logger.info("Aktueller Kunde: " + customer.getListString()
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
+			if (customer.getCustomernumber().equals("20013")) {
+				System.out.println("Jetzt");
+			} else if (customer.getCustomernumber().equals("20203")) {
+				System.out.println("Jetzt");
+			} else {
+				continue;
+			}
+			
 			/**
 			 * Bis hierhin bleibt alles gleich für alle
 			 */
@@ -702,10 +710,10 @@ public class ReportCalculator implements Runnable {
 			maxActivationDate.add(Calendar.MONTH, 1);
 		else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY))
 			maxActivationDate.add(Calendar.MONTH,
-					(maxActivationDate.get(Calendar.MONTH) + 1) % 3);
+					3 - (maxActivationDate.get(Calendar.MONTH) % 3));
 		else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY))
 			maxActivationDate.add(Calendar.MONTH,
-					(maxActivationDate.get(Calendar.MONTH) + 1) % 6);
+					6 - (maxActivationDate.get(Calendar.MONTH) % 6));
 		else {
 			// JAHRESKUNDE, zu behandeln wie Monatskunde
 			maxActivationDate.add(Calendar.MONTH, 1);
