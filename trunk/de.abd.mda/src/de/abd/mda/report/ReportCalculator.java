@@ -178,14 +178,6 @@ public class ReportCalculator implements Runnable {
 			logger.info("Aktueller Kunde: " + customer.getListString()
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
-			if (customer.getCustomernumber().equals("20013")) {
-				System.out.println("Jetzt");
-			} else if (customer.getCustomernumber().equals("20203")) {
-				System.out.println("Jetzt");
-			} else {
-				continue;
-			}
-			
 			/**
 			 * Bis hierhin bleibt alles gleich für alle
 			 */
