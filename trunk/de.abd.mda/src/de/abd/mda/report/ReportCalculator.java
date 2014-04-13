@@ -266,17 +266,27 @@ public class ReportCalculator implements Runnable {
 		Bill dbBill = bc.findBill(bill);
 		if (dbBill != null) {
 			System.out.println("found Bill");
+			File file = new File(pdfPath);
+			if (!file.exists()) {
+				System.out.println("Creating directory: " + file.getPath());
+				boolean result = file.mkdirs();
+				
+				if (result) {
+					System.out.println("DIR " + file.getPath() + " created!");
+				}
+			}
 
-			File myFile = new File(dbBill.getFilename());
+			file = new File(pdfPath + dbBill.getFilename());
+
 			try {
-				FileOutputStream fos2 = new FileOutputStream(myFile);
+				FileOutputStream fos2 = new FileOutputStream(file);
 				fos2.write(dbBill.getFile());
 				fos2.flush();
 				fos2.close();
 
 				Runtime.getRuntime().exec(
 						"rundll32 url.dll,FileProtocolHandler "
-								+ dbBill.getFilename());
+								+ pdfPath + dbBill.getFilename());
 				System.out.println("Done");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
