@@ -77,7 +77,7 @@ public class ReportCalculator implements Runnable {
 	private String pdfPath = "";
 	private List<Customer> customerList;
 		
-	public static final Resource ZIP_RESOURCE = new MyResource("Invoices/Siwaltec_Rechnungen.zip");
+	public static final Resource ZIP_RESOURCE = new MyResource("C:/temp/pdfInvoices/Siwaltec_Rechnungen.zip");
 //	public static final Resource ZIP_RESOURCE = new MyResource("C://temp//Invoices//Siwaltec_Rechnungen.zip");
 	
 	public ReportCalculator() {
@@ -749,8 +749,9 @@ public class ReportCalculator implements Runnable {
 	}
 	
 	public void startTask(ActionEvent event) {
-		path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
-
+//		path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
+//		path = "C://"
+		
 		thread = new Thread(this);
 		thread.start();
 		ProgressBarTaskManager threadBean = (ProgressBarTaskManager) FacesUtil
@@ -775,7 +776,7 @@ public class ReportCalculator implements Runnable {
 			File file = new File(pdfPath);
 			if (!file.exists()) {
 				System.out.println("Creating directory: " + file.getPath());
-				boolean result = file.mkdir();
+				boolean result = file.mkdirs();
 				
 				if (result) {
 					System.out.println("DIR created!");
@@ -808,10 +809,10 @@ public class ReportCalculator implements Runnable {
 //			String path = fc.getExternalContext().getRealPath("/Invoices/");
 //			String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
 //			String path = getServletContext().getRealPath("WEB-INF/../");
-			file = new File(path);
+			file = new File(pdfPath);
 			if (!file.exists()) {
 				System.out.println("Creating directory: " + file.getPath());
-				boolean result = file.mkdir();
+				boolean result = file.mkdirs();
 				
 				if (result) {
 					System.out.println("DIR created!");
@@ -826,7 +827,7 @@ public class ReportCalculator implements Runnable {
 			}
 			
 			System.out.println("Pfad: " + fullPathToYourWebappRoot);
-			File zipFile = new File(fullPathToYourWebappRoot,  "Siwaltec_Rechnungen.zip");
+			File zipFile = new File(pdfPath,  "Siwaltec_Rechnungen.zip");
 			
 			FileOutputStream zfos;
 			try {
