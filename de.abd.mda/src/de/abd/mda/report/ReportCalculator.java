@@ -245,7 +245,7 @@ public class ReportCalculator implements Runnable {
 			calcMonth.set(Calendar.MONTH, this.monthRunMonth);
 			calcMonth.set(Calendar.YEAR, this.monthRunYear);
 			downloadMonthBills(calcMonth);
-			outputLinkBinding.setResource(new MyResource("Invoices/Siwaltec_Rechnungen.zip"));
+			outputLinkBinding.setResource(new MyResource("Siwaltec_Rechnungen.zip"));
 		}
 		
 		System.out.println(reportCount + " Reports wurden erstellt!");
