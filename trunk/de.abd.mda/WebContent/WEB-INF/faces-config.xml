@@ -799,6 +799,12 @@
 		<display-name>Reporterstellung</display-name>
 		<from-view-id>/ReportProgressDialog.xhtml</from-view-id>
 		<navigation-case>
+			<from-outcome>value123</from-outcome>
+			<to-view-id>/CreateCardDialog.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>createCard</from-outcome>
 			<to-view-id>/CreateCardDialog.xhtml</to-view-id>
 		</navigation-case>

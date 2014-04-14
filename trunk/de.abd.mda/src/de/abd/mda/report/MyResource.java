@@ -27,34 +27,32 @@ public class MyResource implements Resource, Serializable {
 	private static final long serialVersionUID = 9078176615991635089L;
 	private String customName;
 	private String resourceName;
+	private String type;
 	private InputStream inputStream;
 	private final Date lastModified;
 
-	public MyResource(String resourceName) {
+	public MyResource(String resourceName, String type) {
 		this.customName = resourceName;
 		this.resourceName = resourceName;
 		this.lastModified = new Date();
+		this.type = type;
 	}
 	
-	public MyResource(String customName, String resourceName) {
-		this.customName = customName;
-		this.resourceName = resourceName;
-		this.lastModified = new Date();
-	}
 
 	@Override
 	public InputStream open() throws IOException {
 		if (inputStream == null) {
-//			FacesContext fc = FacesContext.getCurrentInstance();
-//			ExternalContext ec = fc.getExternalContext();
-//			InputStream stream = ec.getResourceAsStream(resourceName);
 			Model model = new Model();
 			model.createModel();
-			String zipPath = model.getZipPath();
-			File f = new File(zipPath + resourceName);
+			String path = "";
+			if (type.equals("zip")) {
+				path = model.getZipPath();
+			} else if (type.equals("pdf")) {
+				path = model.getPdfPath();
+			}
+			File f = new File(path + resourceName);
 			byte[] byteArray = org.apache.commons.io.FileUtils.readFileToByteArray(f);
 
-//			byte[] byteArray = toByteArray(stream);
 			inputStream = new ByteArrayInputStream(byteArray);
 		} else {
 			inputStream.reset();
@@ -62,14 +60,7 @@ public class MyResource implements Resource, Serializable {
 		return inputStream;
 	}
 
-//	private byte[] toByteArray(InputStream input) throws IOException {
-//		ByteArrayOutputStream output = new ByteArrayOutputStream();
-//		byte[] buf = new byte[4096];
-//		int len = 0;
-//		while ((len = input.read(buf)) > -1 ) output.write(buf, 0, len);
-//		return output.toByteArray();
-//	}
-	
+
 	@Override
 	public String calculateDigest() {
 		return customName;
@@ -83,6 +74,16 @@ public class MyResource implements Resource, Serializable {
 
 	@Override
 	public void withOptions(Options arg0) throws IOException {
+	}
+
+
+	public String getType() {
+		return type;
+	}
+
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

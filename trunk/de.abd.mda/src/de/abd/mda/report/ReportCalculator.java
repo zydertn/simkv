@@ -1,5 +1,8 @@
 package de.abd.mda.report;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,9 +38,11 @@ import com.icesoft.faces.component.ext.HtmlCommandLink;
 import com.icesoft.faces.component.outputresource.OutputResource;
 import com.icesoft.faces.component.outputresource.OutputResourceTag;
 import com.icesoft.faces.context.Resource;
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
+import de.abd.mda.controller.ActionController;
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.CardBean;
@@ -53,7 +58,7 @@ import de.abd.mda.util.CustomerNumberComparator;
 import de.abd.mda.util.DateUtils;
 import de.abd.mda.util.FacesUtil;
 
-public class ReportCalculator implements Runnable {
+public class ReportCalculator extends ActionController implements Runnable {
 	static final Logger logger = Logger.getLogger(ReportCalculator.class);
 	HttpSession facesSession;
 	private boolean taskRunning = true;
@@ -73,13 +78,18 @@ public class ReportCalculator implements Runnable {
 	private String path;
 	private boolean monthCalcStarted = false;
 	private OutputResource outputLinkBinding;
+	private OutputResource outputLinkPdfBinding;
 	private String customerNumber;
 	private String pdfPath = "";
 	private String zipPath = "";
 	private List<Customer> customerList;
 		
-	public static final Resource ZIP_RESOURCE = new MyResource("Siwaltec_Rechnungen.zip");
+	public static final Resource ZIP_RESOURCE = new MyResource("Siwaltec_Rechnungen.zip", "zip");
+	public static final Resource PDF_RESOURCE = new MyResource("", "pdf");
 //	public static final Resource ZIP_RESOURCE = new MyResource("C://temp//Invoices//Siwaltec_Rechnungen.zip");
+	
+	
+    private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	
 	public ReportCalculator() {
 		Model model = new Model();
@@ -139,24 +149,6 @@ public class ReportCalculator implements Runnable {
 		logger.info("Reporterstellungslauf gestartet, "
 				+ sdf.format(now.getTime()));
 
-		if (calculateCase == CALC_CASE_SINGLE) {
-			CustomerController cc = new CustomerController();
-			Customer customer = cc.findCustomer(customerNumber);
-
-			int reportCount = 0;
-			reportCount = monthCalculation(customer, reportCount, singleInvMonth, singleInvYear);
-
-			System.out.println(reportCount + " Reports wurden erstellt!");
-			if (facesSession != null)
-				facesSession.removeAttribute("reportProgress");
-
-			Calendar calcMonth = Calendar.getInstance();
-			calcMonth.set(Calendar.MONTH, singleInvMonth);
-			calcMonth.set(Calendar.YEAR, singleInvYear);
-			showFile(customer, calcMonth);
-			
-			return true;
-		}
 		
 		/***** 1. Alle Kunden ermitteln *****/
 		List<DaoObject> customers = searchCustomers();
@@ -245,7 +237,8 @@ public class ReportCalculator implements Runnable {
 			calcMonth.set(Calendar.MONTH, this.monthRunMonth);
 			calcMonth.set(Calendar.YEAR, this.monthRunYear);
 			downloadMonthBills(calcMonth);
-			outputLinkBinding.setResource(new MyResource("Siwaltec_Rechnungen.zip"));
+			outputLinkBinding.setResource(new MyResource("Siwaltec_Rechnungen.zip", "zip"));
+			outputLinkBinding.setFileName("Siwaltec_Rechnungen.zip");
 		}
 		
 		System.out.println(reportCount + " Reports wurden erstellt!");
@@ -255,7 +248,7 @@ public class ReportCalculator implements Runnable {
 		return true;
 	}
 
-	private void showFile(Customer customer, Calendar calcMonth) {
+	private boolean downloadPdfFile(Customer customer, Calendar calcMonth) {
 		Bill bill = new Bill();
 		bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
 		bill.setYear(calcMonth.get(Calendar.YEAR));
@@ -284,15 +277,18 @@ public class ReportCalculator implements Runnable {
 				fos2.flush();
 				fos2.close();
 
-				Runtime.getRuntime().exec(
-						"rundll32 url.dll,FileProtocolHandler "
-								+ pdfPath + dbBill.getFilename());
-				System.out.println("Done");
+								
+				outputLinkPdfBinding.setResource(new MyResource(dbBill.getFilename(), "pdf"));
+				outputLinkPdfBinding.setFileName(dbBill.getFilename());
+				outputLinkPdfBinding.setRendered(true);
+				
+				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		return true;
 	}
 
 	
@@ -744,9 +740,31 @@ public class ReportCalculator implements Runnable {
 		this.calculate();
 	}
 
-	public void startSingleInvTask(ActionEvent event) {
-		calculateCase = CALC_CASE_SINGLE;
-		startTask(event);
+	public String startSingleInvTask() {
+		CustomerController cc = new CustomerController();
+		Customer customer = cc.findCustomer(customerNumber);
+
+		int reportCount = 0;
+		reportCount = monthCalculation(customer, reportCount, singleInvMonth, singleInvYear);
+
+		String message = "";
+		if (reportCount == 1) {
+			message = reportCount + " Report wurde erstellt!";
+		}
+		
+		Calendar calcMonth = Calendar.getInstance();
+		calcMonth.set(Calendar.MONTH, singleInvMonth);
+		calcMonth.set(Calendar.YEAR, singleInvYear);
+		
+		if (downloadPdfFile(customer, calcMonth)) {
+			message += " File steht zum Download bereit!";
+		} else {
+			message += " Der Report konnte jedoch nicht lokal zum Download bereitgestellt werden!";
+		}
+		
+		getRequest().setAttribute("message", message);
+		
+		return "";
 	}
 	
 	
@@ -890,8 +908,13 @@ public class ReportCalculator implements Runnable {
 
 	}
 	
+	
 	public Resource getZipResource() {
 		return ZIP_RESOURCE;
+	}
+	
+	public Resource getPdfResource() {
+		return PDF_RESOURCE;
 	}
 	
 	public boolean getTaskRunning() {
@@ -1034,6 +1057,14 @@ public class ReportCalculator implements Runnable {
 
 	public void setCustomerList(List<Customer> customerList) {
 		this.customerList = customerList;
+	}
+
+	public OutputResource getOutputLinkPdfBinding() {
+		return outputLinkPdfBinding;
+	}
+
+	public void setOutputLinkPdfBinding(OutputResource outputLinkPdfBinding) {
+		this.outputLinkPdfBinding = outputLinkPdfBinding;
 	}
 
 }
