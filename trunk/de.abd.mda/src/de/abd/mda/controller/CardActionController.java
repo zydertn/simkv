@@ -104,7 +104,7 @@ public class CardActionController extends ActionController {
 				getRequest().setAttribute("message", message);
 			} else
 				getRequest().setAttribute("message", retMessage);
-
+			tx.commit();
 		ccCardBean = new CardBean();
 	}
 	
