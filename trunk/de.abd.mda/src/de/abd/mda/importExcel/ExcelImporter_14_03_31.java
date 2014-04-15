@@ -485,6 +485,9 @@ public class ExcelImporter_14_03_31 {
 		if (spalten.containsKey("Kst.")) {
 			card.setKostenstelle(split[spalten.get("Kst.")]);
 		}
+		if (spalten.containsKey("Kostenstelle")) {
+			card.setKostenstelle(split[spalten.get("Kostenstelle")]);
+		}
 		if (spalten.containsKey("WE. Nr")) {
 			card.setWe(split[spalten.get("WE. Nr")]);
 		}
