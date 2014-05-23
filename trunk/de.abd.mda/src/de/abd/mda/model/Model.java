@@ -14,8 +14,6 @@ import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.FacesUtil;
 
