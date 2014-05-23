@@ -27,7 +27,6 @@ import java.util.TimeZone;
 import javax.persistence.Column;
 
 import org.apache.log4j.Logger;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.hibernate.Session;
 
 import com.itextpdf.text.BaseColor;
@@ -48,7 +47,6 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Bill;

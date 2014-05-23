@@ -40,8 +40,6 @@ import com.icesoft.faces.component.outputresource.OutputResourceTag;
 import com.icesoft.faces.context.Resource;
 import com.icesoft.faces.context.effects.JavascriptContext;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-
 import de.abd.mda.controller.ActionController;
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Bill;
