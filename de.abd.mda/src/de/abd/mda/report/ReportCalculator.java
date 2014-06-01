@@ -343,14 +343,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 			HashMap<Integer, List<DaoObject>> separateBillingSortedCards = sortCards(
 					customer, customerCards);
 
-			int mapCountSize = separateBillingSortedCards.keySet().size();
+//			int mapCountSize = separateBillingSortedCards.keySet().size();
 			int mapCount = 1;
 			for (List<DaoObject> cusCards : separateBillingSortedCards.values()) {
 				Comparator<DaoObject> comparator = new CardComparator();
 				Collections.sort(cusCards, comparator);
 
 				long time1 = System.currentTimeMillis();
-				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, (mapCountSize > 1), mapCount);
+				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, customer.getInvoiceConfiguration().getSeparateBilling(), mapCount);
 				long time2 = System.currentTimeMillis();
 				long diff = time2-time1;
 				System.out.println("generateReport Dauer = " + diff);
@@ -627,7 +627,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
 						+ "' and ((YEAR(card.activationDate) = '" + maxActivationDate.get(Calendar.YEAR) + "' and MONTH(card.activationDate) = '" + maxActivationDate.get(Calendar.MONTH) + "')" 
 						+ "or (card.lastCalculationYear != null and card.lastCalculationYear < '"	+ calcMonth.get(Calendar.YEAR) + "' and card.lastCalculationYear > '1999"
-						+ "')) and NOT card.flatrateCard IS TRUE";
+						+ "'))";
 			}
 /*			if (flatrateCalc) {
 				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
