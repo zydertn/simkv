@@ -251,6 +251,12 @@ public class Model {
 		if (hostname.equals("STR00108")) {
 			pdfPath = "C:/temp/Invoices/pdf/";
 			zipPath = "C:/temp/Invoices/zip/";
+		} else if (hostname.equals("STKANR02")) {
+			pdfPath = "C:/Siwaltec/Invoices/pdf/";
+			zipPath = "C:/Siwaltec/Invoices/zip/";
+		} else if (hostname.equals("STKANR01")) {
+			pdfPath = "C:/Siwaltec/Invoices/pdf/";
+			zipPath = "C:/Siwaltec/Invoices/zip/";
 		} else if (hostname.equals("accounting")) {
 			pdfPath = "E:/tmp/Invoices/pdf/";
 			zipPath = "E:/tmp/Invoices/zip/";
