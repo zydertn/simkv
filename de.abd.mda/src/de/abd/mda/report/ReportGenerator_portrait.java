@@ -489,7 +489,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY)) {
 				int diff = calcMonth.get(Calendar.MONTH) % 6;
 				calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) - diff);
-				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 5);
+				calcTimeString += " - " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH) + 5 - diff);
 			}
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
 				calcTimeString = DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " - " + DateUtils.getMonthAsString(Calendar.DECEMBER);
