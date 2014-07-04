@@ -350,7 +350,11 @@ public class ReportCalculator extends ActionController implements Runnable {
 				Collections.sort(cusCards, comparator);
 
 				long time1 = System.currentTimeMillis();
-				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, customer.getInvoiceConfiguration().getSeparateBilling(), mapCount);
+				boolean separateBilling = false;
+				if (customer.getInvoiceConfiguration() != null && customer.getInvoiceConfiguration().getSeparateBilling() != null && customer.getInvoiceConfiguration().getSeparateBilling()) {
+					separateBilling = true;
+				}
+				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, separateBilling, mapCount);
 				long time2 = System.currentTimeMillis();
 				long diff = time2-time1;
 				System.out.println("generateReport Dauer = " + diff);
