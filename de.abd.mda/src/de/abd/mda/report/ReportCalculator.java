@@ -336,6 +336,10 @@ public class ReportCalculator extends ActionController implements Runnable {
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
 
+		if (customer.getCustomernumber().equals("20141")) {
+			System.out.println(DateUtils.getCalendarString(calcMonth));
+			System.out.println("Jetzt");
+		}
 		List<DaoObject> customerCards = searchCards(customer, calcMonth, tx, session, false, calcCase);
 
 		if (customerCards != null && customerCards.size() > 0) {
