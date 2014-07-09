@@ -364,8 +364,7 @@ public class CustomerActionController extends ActionController {
 						+ " equals my chosen customer!!!");
 				customer = customerFromList;
 				break;
-			} else
-				System.out.println("kein Match");
+			}
 		}
 
 		disableComponents(false);

@@ -235,7 +235,6 @@ public class CardActionController extends ActionController {
 			ccCardBean = new CardBean();
 			getRequest().removeAttribute("clearCard");
 		}
-		System.out.println("getCardBean");
 		if (getRequest().getAttribute("updateCard") != null) {
 			System.out.println("getCardBean updateCard im Request");
 			CardBean card = (CardBean) getRequest().getAttribute("updateCard");
