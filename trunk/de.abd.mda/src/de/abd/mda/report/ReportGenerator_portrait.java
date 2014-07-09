@@ -113,7 +113,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			dir.mkdirs();
 			long time3 = System.currentTimeMillis();
 //			File dir = new File("C:/Temp/report/");
-			File dir = new File("C:/Temp/report/" + year + "/" + month);
+			File dir = new File("C:/Siwaltec/Invoices/pdf/" + year + "/" + month);
 			dir.mkdirs();
 			
 			
