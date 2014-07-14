@@ -57,7 +57,9 @@ import de.abd.mda.util.DateUtils;
 import de.abd.mda.util.FacesUtil;
 
 public class ReportCalculator extends ActionController implements Runnable {
-	static final Logger logger = Logger.getLogger(ReportCalculator.class);
+
+	private final static Logger LOGGER = Logger.getLogger(ReportCalculator.class .getName()); 
+
 	HttpSession facesSession;
 	private boolean taskRunning = true;
 	Thread thread;
@@ -90,10 +92,12 @@ public class ReportCalculator extends ActionController implements Runnable {
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	
 	public ReportCalculator() {
+		LOGGER.info("Instantiate ReportCalculator");
 		Model model = new Model();
 		model.createModel();
 		pdfPath = model.getPdfPath();
 		zipPath = model.getZipPath();
+		LOGGER.info("pdfPath = " + pdfPath + ", zipPath = " + zipPath);
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -1);
 		monthRunMonth = cal.get(Calendar.MONTH);
@@ -109,7 +113,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	public boolean calculate() {
-	
+		LOGGER.info("Method: calculate");
 		if (facesSession != null
 				&& facesSession.getAttribute("reportProgress") != null) {
 			System.out.println("Reporterstellung läuft bereits!");
@@ -144,14 +148,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 		// berechnet wird):
 		now.set(Calendar.SECOND, 1);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-		logger.info("Reporterstellungslauf gestartet, "
+		LOGGER.info("Reporterstellungslauf gestartet, "
 				+ sdf.format(now.getTime()));
 
 		
 		/***** 1. Alle Kunden ermitteln *****/
 		List<DaoObject> customers = searchCustomers();
 		if (customers != null) {
-			logger.info("Anzahl gefundene Kunden = " + customers.size());
+			LOGGER.info("Anzahl gefundene Kunden = " + customers.size());
 		} else {
 			return false;
 		}
@@ -165,7 +169,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 			cusNum++;
 
 			Customer customer = (Customer) cusIt.next();
-			logger.info("Aktueller Kunde: " + customer.getListString()
+			LOGGER.info("Aktueller Kunde: " + customer.getListString()
 					+ ", Kundennummer: " + customer.getCustomernumber());
 
 			/**
@@ -175,7 +179,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 			switch (calculateCase) {
 			case 1:
 				/* MONTH CALCULATION */
-				System.out.println("MONTH CALCULATION");
+				LOGGER.info("MONTH CALCULATION");
 				monthCalcStarted = true;
 
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY)) {
@@ -184,6 +188,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 						 *  Quartalskunden dürfen nur dann beim Monatslauf berücksichtigt werden, 
 						 *  wenn mit diesem Monat das Quartal beginnt.
 						 */
+						LOGGER.info("Customer " + customer.getCustomernumber() + " is 1/4 year customer. Not calculated in this month.");
 						break;
 					}
 				}
@@ -194,6 +199,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 						 *  Halbjahreskunden dürfen nur dann beim Monatslauf berücksichtigt werden, 
 						 *  wenn mit diesem Monat das Halbjahr beginnt.
 						 */
+						LOGGER.info("Customer " + customer.getCustomernumber() + " is 1/2 year customer. Not calculated in this month.");
 						break;
 					}
 				}
@@ -202,7 +208,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 				break;
 			case 2:
 				/* FULL CALCULATION */
-				System.out.println("FULL CALCULATION");
+				LOGGER.info("FULL CALCULATION");
 				reportCount = fullCalculation(customer, now, reportCount);
 				break;
 			}
@@ -211,7 +217,8 @@ public class ReportCalculator extends ActionController implements Runnable {
 			int progress = prog.intValue();
 			if (facesSession != null)
 				facesSession.setAttribute("reportProgress", prog.intValue());
-
+			LOGGER.info("Report progess = " + prog.intValue() + "%");
+			
 			session = SessionFactoryUtil.getInstance().getCurrentSession();
 			tx = session.beginTransaction();
 
@@ -239,7 +246,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 			outputLinkBinding.setFileName("Siwaltec_Rechnungen.zip");
 		}
 		
-		System.out.println(reportCount + " Reports wurden erstellt!");
+		LOGGER.info(reportCount + " Reports wurden erstellt!");
 		if (facesSession != null)
 			facesSession.removeAttribute("reportProgress");
 
@@ -247,27 +254,28 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	private boolean downloadPdfFile(Customer customer, Calendar calcMonth) {
+		LOGGER.info("Method: downloadPdfFile; Customernumber = " + customer.getCustomernumber() + ", year = " + calcMonth.get(Calendar.YEAR) + ", month = " + calcMonth.get(Calendar.MONTH));
 		Bill bill = new Bill();
 		bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
 		bill.setYear(calcMonth.get(Calendar.YEAR));
 		bill.setMonth(calcMonth.get(Calendar.MONTH));
 		bill.setMapCount(1);
 		BillController bc = new BillController();
-		System.out.println("find Bill");
 		Bill dbBill = bc.findBill(bill);
 		if (dbBill != null) {
-			System.out.println("found Bill");
+			LOGGER.info("found Bill");
 			File file = new File(pdfPath);
 			if (!file.exists()) {
-				System.out.println("Creating directory: " + file.getPath());
+				LOGGER.info("Creating directory: " + file.getPath());
 				boolean result = file.mkdirs();
 				
 				if (result) {
-					System.out.println("DIR " + file.getPath() + " created!");
+					LOGGER.info("DIR " + file.getPath() + " created!");
 				}
 			}
-
+			
 			file = new File(pdfPath + dbBill.getFilename());
+			LOGGER.info("Download file: " + file.getPath());
 
 			try {
 				FileOutputStream fos2 = new FileOutputStream(file);
@@ -280,7 +288,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 				outputLinkPdfBinding.setFileName(dbBill.getFilename());
 				outputLinkPdfBinding.setRendered(true);
 				
-				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
+//				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -291,7 +299,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 	
 	private int monthCalculation(Customer customer, int reportCount, int month, int year) {
-		System.out.println("MONTH CALCULATION LÄUFT...");
+		LOGGER.info("MONTH CALCULATION for customer " + customer.getCustomernumber() + ", reportCount = " + reportCount + ", year = " + year + ", month = " + month);
 		
 		Calendar calcMonth = Calendar.getInstance();
 		calcMonth.set(Calendar.MILLISECOND, 0);
@@ -310,6 +318,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	private int fullCalculation(Customer customer, Calendar now, int reportCount) {
+		LOGGER.info("Method: fullCalculation for customer " + customer.getCustomernumber());
 		Calendar calcMonth = Calendar.getInstance();
 		calcMonth.set(2013, Calendar.JANUARY, 1, 0, 0, 0);
 		calcMonth.set(Calendar.MILLISECOND, 0);
@@ -318,32 +327,25 @@ public class ReportCalculator extends ActionController implements Runnable {
 				.getInvoiceConfiguration().getCreationFrequency(), now);
 
 		while (calcMonth.before(maxCalcDate)) {
-			reportCount = createReport(calcMonth, customer, reportCount, CALC_CASE_FULL);
-			calcMonth = raiseMonth(calcMonth, customer);
 			String dfs = "yyyy-MM-dd_HH-mm-ss";
 			SimpleDateFormat sd = new SimpleDateFormat(dfs);
-
-			System.out.println("CalcMonth: "
-					+ sd.format(calcMonth.getTime()));
-			System.out
-					.println("-------------------------------------------------");
+			LOGGER.info("CalcMonth: " + sd.format(calcMonth.getTime()));
+			reportCount = createReport(calcMonth, customer, reportCount, CALC_CASE_FULL);
+			calcMonth = raiseMonth(calcMonth, customer);
 		}
 		
 		return reportCount;		
 	}
 
 	private int createReport(Calendar calcMonth, Customer customer, int reportCount, int calcCase) {
+		LOGGER.info("Method: createReport for customer " + customer.getCustomernumber() + ", reportCount = " + reportCount);
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
 
-		if (customer.getCustomernumber().equals("20141")) {
-			System.out.println(DateUtils.getCalendarString(calcMonth));
-			System.out.println("Jetzt");
-		}
 		List<DaoObject> customerCards = searchCards(customer, calcMonth, tx, session, false, calcCase);
 
 		if (customerCards != null && customerCards.size() > 0) {
-
+			LOGGER.info(customerCards.size() + " Cards found");
 			HashMap<Integer, List<DaoObject>> separateBillingSortedCards = sortCards(
 					customer, customerCards);
 
@@ -361,22 +363,11 @@ public class ReportCalculator extends ActionController implements Runnable {
 				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, separateBilling, mapCount);
 				long time2 = System.currentTimeMillis();
 				long diff = time2-time1;
-				System.out.println("generateReport Dauer = " + diff);
-				logger.info("GenerateReport Dauer = " + diff);
+				LOGGER.info("GenerateReport Dauer = " + diff);
 				if (!generatedWithoutErrors)
 					break;
 				else
 					reportCount++;
-				
-//				if (customer.getCustomernumber().equals("20243")) {
-//					// Kunde OTIS - braucht auch eine Flatrate-Rechnung
-//					customerCards = searchCards(customer, calcMonth, tx, session, true, calcCase);
-//					generatedWithoutErrors = generateReport(customer, customerCards, calcMonth, true, false, 1);
-//					if (!generatedWithoutErrors)
-//						break;
-//					else
-//						reportCount++;
-//				}
 				
 				mapCount++;
 			}
@@ -393,6 +384,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	 */
 	private HashMap<Integer, List<DaoObject>> sortCards(Customer customer,
 			List<DaoObject> customerCards) {
+		LOGGER.info("Method: sortCards");
 		long time1 = System.currentTimeMillis();
 		HashMap<Integer, List<DaoObject>> cusCardsSeparateBilling = new HashMap<Integer, List<DaoObject>>();
 		if (customer.getInvoiceConfiguration().getSeparateBilling() != null && customer.getInvoiceConfiguration().getSeparateBilling()) {
@@ -428,13 +420,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 		long time2 = System.currentTimeMillis();
 		long diff = time2-time1;
-		System.out.println("Sort Dauer: " + diff + " Millisekunden");
+		LOGGER.info("Sort Dauer: " + diff + " Millisekunden");
 		return cusCardsSeparateBilling;
 	}
 
 	Calendar maxCalcDate = Calendar.getInstance();
 
 	private Calendar getMaxCalcDate(String creationFrequency, Calendar now) {
+		LOGGER.info("Method: getMaxCalcDate");
 		maxCalcDate.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), 1, 0,
 				0, 0);
 		maxCalcDate.set(Calendar.MILLISECOND, 0);
@@ -468,13 +461,15 @@ public class ReportCalculator extends ActionController implements Runnable {
 			 * monatlicher Rechnungsstellung. Es muss also nichts getan werden.
 			 */
 		}
-
+		
+		LOGGER.info("MaxCalcDate = " + DateUtils.getCalendarString(maxCalcDate)); 
 		return maxCalcDate;
 	}
 
 	private boolean generateReport(Customer customer,
 			List<DaoObject> customerCards, Calendar calcMonth,
 			boolean flatrateCalc, boolean severalBills, int mapCount) {
+		LOGGER.info("Method: generateReport for customer " + customer.getCustomernumber() + ", calcMonth = " + DateUtils.getCalendarString(calcMonth) + ", Cards = " + customerCards.size());
 		IReportGenerator rp = null;
 		rp = new ReportGenerator_portrait();
 
@@ -483,8 +478,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 				customer, calcMonth, flatrateCalc, severalBills, mapCount);
 		long time2 = System.currentTimeMillis();
 		long diff = time2 - time1;
-		System.out.println("Inner generateReport Dauer = "+ diff);
-		logger.info("Inner generateReport Dauer = "+ diff);
+		LOGGER.info("Inner generateReport Dauer = "+ diff);
 		if (generatedWithoutError) {
 			if (customer.getInvoiceConfiguration().getCreationFrequency()
 					.equals(Model.FREQUENCY_YEARLY)) {
@@ -522,14 +516,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 				dbCus.setLastCalculationDate(calcMonth.getTime());
 				long time4 = System.currentTimeMillis();
 				long diff2 = time4 - time3;
-				System.out.println("Inner generateReport Dauer = "+ diff2);
+				LOGGER.info("Inner generateReport Dauer = "+ diff2);
 
 			}
 		} else {
 			// Aus der Schleife für diesen Kunden aussteigen
 			// Folgemonate dürfen nicht mehr berechnet werden
 			// Mit nächstem Kunde weitermachen
-			logger.error("Fehler bei Report-Erstellung für Kunde: "
+			LOGGER.error("Fehler bei Report-Erstellung für Kunde: "
 					+ customer.getCustomernumber() + ", Monat: "
 					+ DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH))
 					+ " " + calcMonth.get(Calendar.YEAR));
@@ -572,7 +566,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 			}
 		} else {
 			// treat like monthly creation
-			logger.warn("No CreationFrequency set for customer "
+			LOGGER.warn("No CreationFrequency set for customer "
 					+ customer.getCustomernumber() + "; Creating monthly!");
 			calcMonth.add(Calendar.MONTH, 1);
 		}
@@ -581,15 +575,23 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	private List<DaoObject> searchCustomers() {
+		LOGGER.info("Method: searchCustomers");
 		String select = "select distinct customer from Customer customer where customer.customernumber != ''";
+		LOGGER.info("Select = " + select);
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
 		List<DaoObject> customerList = searchObjects(select, tx, session);
+		if (customerList != null) {
+			LOGGER.info(customerList.size() + " customers found");
+		} else {
+			LOGGER.warn("No customers found!");
+		}
 		tx.commit();
 		return customerList;
 	}
 
 	private List<DaoObject> searchCards(Customer customer, Calendar calcMonth, Transaction tx, Session session, boolean flatrateCalc, int calcCase) {
+		LOGGER.info("Method: searchCards");
 		Calendar maxActivationDate = Calendar.getInstance();
 		maxActivationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
 		maxActivationDate = addMonthsToMaxActivationDate(customer.getInvoiceConfiguration().getCreationFrequency(),	maxActivationDate);
@@ -616,46 +618,29 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	private List<DaoObject> searchMonth(Customer customer, Calendar calcMonth, Calendar maxActivationDate, boolean flatrateCalc, Transaction tx, Session session) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		LOGGER.info("Method: searchMonth");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
 					+ "' and card.status = 'aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime()) + "'";
-//					+ "' and NOT card.flatrateCard IS TRUE";
 			if (customer.getInvoiceConfiguration().getCreationFrequency()
 					.equals(Model.FREQUENCY_YEARLY)) {
-/*				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
-						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
-						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear != '" + calcMonth.get(Calendar.YEAR)
-						// TODO: lastCalculationMonth muss noch in DB gespeichert werden!!!
-						+ "' or (card.lastCalculationYear = '" + calcMonth.get(Calendar.YEAR) + "' and card.lastCalculationMonth = '" + calcMonth.get(Calendar.MONTH) + "')"
-//						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
-						+ ") and NOT card.flatrateCard IS TRUE";
-*/
+				LOGGER.info("YEARLY Calculation for customer " + customer.getCustomernumber());
 	
 				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
 						+ "' and ((YEAR(card.activationDate) = '" + maxActivationDate.get(Calendar.YEAR) + "' and MONTH(card.activationDate) = '" + maxActivationDate.get(Calendar.MONTH) + "')" 
 						+ "or (card.lastCalculationYear != null and card.lastCalculationYear < '"	+ calcMonth.get(Calendar.YEAR) + "' and card.lastCalculationYear > '1999"
 						+ "'))";
+			} else {
+				LOGGER.info("MONTHLY calculation for customer " + customer.getCustomernumber());
 			}
-/*			if (flatrateCalc) {
-				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
-						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
-						+ "' and card.flatrateCard IS TRUE";
-				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
-					select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
-							+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
-							+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear != '" + calcMonth.get(Calendar.YEAR)
-							// TODO: lastCalculationMonth muss noch in DB gespeichert werden!!!
-							+ "' or (card.lastCalculationYear = '" + calcMonth.get(Calendar.YEAR) + "' and card.lastCalculationMonth = '" + calcMonth.get(Calendar.MONTH) + "')"
-//							+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
-							+ ") and card.flatrateCard IS TRUE";
-				}
-			}
-*/
 			DateComparator dc = new DateComparator();
+			LOGGER.info("Select = " + select);
 			List<DaoObject> cardList = searchObjects(select, tx, session);
-			if (cardList != null && cardList.size() > 0) {
-				System.out.println("Size = " + cardList.size());
+			if (cardList != null) {
+				LOGGER.info(cardList.size() + " cards found");
+			} else {
+				LOGGER.warn("No cards found!");
 			}
 			Collections.sort(cardList, dc);
 			return cardList;
@@ -663,6 +648,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 	
 	private List<DaoObject> searchFull(Customer customer, Calendar customerLastCalcDate, Calendar maxLastCalculationDate, Calendar maxActivationDate, boolean flatrateCalc, Transaction tx, Session session) {
+		LOGGER.info("Method: searchFull");
 		if (customer.getLastCalculationDate() == null
 				|| customerLastCalcDate.before(maxLastCalculationDate)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -671,15 +657,17 @@ public class ReportCalculator extends ActionController implements Runnable {
 					+ "' and NOT card.flatrateCard IS TRUE";
 			if (customer.getInvoiceConfiguration().getCreationFrequency()
 					.equals(Model.FREQUENCY_YEARLY)) {
+				LOGGER.info("YEARLY calculation for customer " + customer.getCustomernumber());
 				select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime())
-//						+ "' and (card.lastCalculationYear IS NULL or card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
-//						+ "') and NOT card.flatrateCard IS TRUE";
 						+ "' and ((card.lastCalculationYear IS NULL and YEAR(card.activationDate) = '" + maxActivationDate.get(Calendar.YEAR) + "' and MONTH(card.activationDate) = '" + maxActivationDate.get(Calendar.MONTH) + "')" 
 						+ "or (card.lastCalculationYear < '"	+ maxLastCalculationDate.get(Calendar.YEAR)
 						+ "')) and NOT card.flatrateCard IS TRUE";
+			} else {
+				LOGGER.info("MONTHLY calculation for customer " + customer.getCustomernumber());
 			}
 			if (flatrateCalc) {
+				LOGGER.info("FLATRATE calculation");
 				select = "select distinct card from CardBean card where card.customer = '"
 						+ customer.getId()
 						+ "' and card.status = 'Aktiv' and card.activationDate < '"
@@ -698,9 +686,12 @@ public class ReportCalculator extends ActionController implements Runnable {
 			}
 
 			DateComparator dc = new DateComparator();
+			LOGGER.info("Select = " + select);
 			List<DaoObject> cardList = searchObjects(select, tx, session);
-			if (cardList != null && cardList.size() > 0) {
-				System.out.println("Size = " + cardList.size());
+			if (cardList != null) {
+				LOGGER.info(cardList.size() + " cards found");
+			} else {
+				LOGGER.warn("No cards found!");
 			}
 			Collections.sort(cardList, dc);
 			return cardList;
@@ -710,6 +701,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	
 	private Calendar addMonthsToMaxActivationDate(String creationFrequency,
 			Calendar maxActivationDate) {
+		LOGGER.info("Method: addMonthsToActivationDate");
 		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY))
 			maxActivationDate.add(Calendar.MONTH, 1);
 		else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY))
@@ -736,6 +728,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	@SuppressWarnings("unchecked")
 	private List<DaoObject> searchObjects(String select, Transaction tx,
 			Session session) {
+		LOGGER.info("Method: searchObjects");
 		List<DaoObject> objects = null;
 		objects = (List<DaoObject>) session.createQuery(select).list();
 		return objects;
@@ -743,10 +736,12 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 	@Override
 	public void run() {
+		LOGGER.info("Method: run");
 		this.calculate();
 	}
 
 	public String startSingleInvTask() {
+		LOGGER.info("startSingleInvTask for customer " + customerNumber);
 		CustomerController cc = new CustomerController();
 		Customer customer = cc.findCustomer(customerNumber);
 
@@ -764,8 +759,10 @@ public class ReportCalculator extends ActionController implements Runnable {
 		
 		if (downloadPdfFile(customer, calcMonth)) {
 			message += " File steht zum Download bereit!";
+			LOGGER.info(message);
 		} else {
 			message += " Der Report konnte jedoch nicht lokal zum Download bereitgestellt werden!";
+			LOGGER.warn(message);
 		}
 		
 		getRequest().setAttribute("message", message);
@@ -775,19 +772,19 @@ public class ReportCalculator extends ActionController implements Runnable {
 	
 	
 	public void startMonthRunTask(ActionEvent event) {
+		LOGGER.info("Method: startMonthRunTask");
 		calculateCase = CALC_CASE_MONTH;
 		startTask(event);
 	}
 
 	public void startFullRunTask(ActionEvent event) {
+		LOGGER.info("Method: startFullRunTask");
 		calculateCase = CALC_CASE_FULL;
 		startTask(event);
 	}
 	
 	public void startTask(ActionEvent event) {
-//		path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
-//		path = "C://"
-		
+		LOGGER.info("Method: startTask");
 		thread = new Thread(this);
 		thread.start();
 		ProgressBarTaskManager threadBean = (ProgressBarTaskManager) FacesUtil
@@ -796,59 +793,44 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	public void downloadMonthBills(Calendar calcMonth) {
-		System.out.println("Jetzt");
+		LOGGER.info("Method: downloadMonthBills for month " + DateUtils.getCalendarString(calcMonth));
 		BillController bc = new BillController();
 		List<Bill> bills = bc.findMonthBills(calcMonth.get(Calendar.YEAR), calcMonth.get(Calendar.MONTH));
 		
 		if (bills != null) {
 
-			System.out.println("Gefundene Rechnungen: " + bills.size());
-
-			String testFilename = null;
-			if (bills.size() > 3) {
-				testFilename = bills.get(3).getFilename(); 
-			}
+			LOGGER.info(bills.size() + " bills found");
 
 			File file = new File(pdfPath);
 			if (!file.exists()) {
-				System.out.println("Creating directory: " + file.getPath());
+				LOGGER.info("Creating directory: " + file.getPath());
 				boolean result = file.mkdirs();
 				
 				if (result) {
-					System.out.println("DIR " + file.getPath() + " created!");
+					LOGGER.info("DIR " + file.getPath() + " created!");
 				}
 			}
 
 			
 			for (Bill bill: bills) {
 				file = new File(pdfPath + bill.getFilename());
+				LOGGER.info("Writing pdf file " + file.getPath());
 				FileOutputStream fos;
 				try {
 					fos = new FileOutputStream(file);
-//					ZipOutputStream zos = new ZipOutputStream(fos);
-//					ZipEntry ze = new ZipEntry(bill.getFilename());
-//					ze.
-//					zos.putNextEntry(ze);
 					fos.write(bill.getFile());
 					fos.flush();
 					fos.close();
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error("FileNotFoundException: " + e);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error("IOException: " + e);
 				}
 			}
 
-//			FacesContext fc = this.getFc();
-//			String path = fc.getExternalContext().getRealPath("/Invoices/");
-//			String path = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Invoices/");
-//			String path = getServletContext().getRealPath("WEB-INF/../");
-
 			File zipFile = new File(zipPath);
 			if (!zipFile.exists()) {
-				System.out.println("Creating directory: " + zipFile.getPath());
+				LOGGER.info("Creating directory: " + zipFile.getPath());
 				boolean result = zipFile.mkdirs();
 				
 				if (result) {
@@ -856,6 +838,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 				}
 			}
 			zipFile = new File(zipPath,  "Siwaltec_Rechnungen.zip");
+			LOGGER.info("Writing ZIP file " + zipFile.getPath());
 			
 			FileOutputStream zfos;
 			try {
@@ -867,38 +850,21 @@ public class ReportCalculator extends ActionController implements Runnable {
 					zos.putNextEntry(ze);
 
 					File f = new File(pdfPath + bill.getFilename());
+					LOGGER.info("Adding file " + f.getPath() + " to ZIP file");
 					FileInputStream fis = new FileInputStream(f);
 					int length;
 					while ((length = fis.read(buffer)) > 0) {
 						zos.write(buffer, 0, length);
 					}
 					
-//						zos.write(bill.getFile());
 					zos.closeEntry();
 					fis.close();
 				}
 				zos.close();
-				
-//					ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-//					HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-//					ServletContext servletContext = (ServletContext) externalContext.getContext();
-//					response.reset();
-//					response.setContentType(servletContext.getMimeType(zipFile.getName()));
-//					response.setContentLength((int) zipFile.length());
-//					response.setHeader("Content-Disposition", "attachment"+ 
-//		                                     "filename=" + zipFile.getName());
-//		            FileInputStream stream = new FileInputStream(zipFile);
-//		            response.setContentLength(stream.available());
-//		            OutputStream os = response.getOutputStream();      
-//		            os.close();
-//		            response.flushBuffer();			
-
 			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				LOGGER.error("FileNotFoundException: " + e1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error("IOException: " + e);
 			}
 			
 			

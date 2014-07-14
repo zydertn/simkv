@@ -14,10 +14,15 @@ import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.log4j.Logger;
+
+import de.abd.mda.controller.SearchCardController;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.FacesUtil;
 
 public class Model {
+
+	private final static Logger LOGGER = Logger.getLogger(Model.class .getName()); 
 
 	// Domain model related variables
 	private List<Country> countries;
@@ -137,6 +142,7 @@ public class Model {
 	private String zipPath = "";
 	
 	public Model() {
+		LOGGER.info("Instantiate: Model");
 	}
 
 	public void createModel() {
@@ -241,12 +247,10 @@ public class Model {
 		String hostname = "";
 		try {
 			hostname = java.net.InetAddress.getLocalHost().getHostName();
+			LOGGER.info("Hostname = " + hostname);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("UnknownHostnameException: " + e);
 		}
-		System.out.println("Hostname" + hostname);
-		
 		
 		if (hostname.equals("accounting")) {
 			pdfPath = "E:/tmp/Invoices/pdf/";

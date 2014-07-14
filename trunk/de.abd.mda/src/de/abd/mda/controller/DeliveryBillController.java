@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -23,6 +24,8 @@ import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 
 public class DeliveryBillController extends ActionController {
 
+	private final static Logger LOGGER = Logger.getLogger(DeliveryBillController.class .getName()); 
+
 	private CardBean ccCardBean;
 	private List<DaoObject> customerList;
 	private List<HashMap<DaoObject, String>> customerMapList;
@@ -33,11 +36,9 @@ public class DeliveryBillController extends ActionController {
 	
 	@SuppressWarnings("unchecked")
 	public DeliveryBillController() {
+		LOGGER.info("Instantiate: DeliveryBillController");
 		if (getRequest().getAttribute("searchedCard") != null)
 			ccCardBean = (CardBean) getRequest().getAttribute("searchedCard");
-//		CustomerController customerController = new CustomerController();
-//		customerList = customerController.listObjects();
-		ArrayList<String> addressList = new ArrayList<String>();
 		customerList = (List<DaoObject>) getSession().getAttribute("customerList");
 		if (customerList != null && customerList.size() > 0) {
 			customerStringList = new ArrayList<String>();
@@ -48,12 +49,18 @@ public class DeliveryBillController extends ActionController {
 	}
 
 	public void addDeliveryBillData() {
+		LOGGER.info("Method: addDeliveryBillData");
 		CardBean updateCard = null;
 		if (getSession().getAttribute("cardToUpdate") != null) {
 			updateCard = (CardBean) getSession().getAttribute("cardToUpdate");
 			getSession().removeAttribute("cardToUpdate");
 		}
-
+		if (updateCard != null) {
+			LOGGER.info("Updating card: " + updateCard.getCardnumberString());
+		} else {
+			LOGGER.warn("No card for update found in session - adding deliveryBillData is not possible");
+		}
+		
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		CardBean card = null;
@@ -67,16 +74,18 @@ public class DeliveryBillController extends ActionController {
 			
 			if (list.size() > 0) {
 				card = (CardBean) list.get(0);
+				LOGGER.info("Card found in db: " + card.getCardnumberString());
 				card.setCustomerOrderNumber(ccCardBean.getCustomerOrderNumber());
 //				card.setOrderNumber(ccCardBean.getOrderNumber());
 				card.setDeliverySlipDate(ccCardBean.getDeliverySlipDate());
 				card.setDeliverySlipNumber(ccCardBean.getDeliverySlipNumber());
 
-				Iterator itrCust = customerList.iterator();
+				boolean match = false;
+				Iterator<DaoObject> itrCust = customerList.iterator();
 				while (itrCust.hasNext()) {
 					Customer customerFromList = (Customer) itrCust.next();
 					if (customerFromList.toString().equals(customer)) {
-						System.out.println("Customer " + customerFromList.getName()
+						LOGGER.info("Customer " + customerFromList.getName()
 								+ " equals my chosen customer!!!");
 
 						String whereClause = "";
@@ -84,21 +93,30 @@ public class DeliveryBillController extends ActionController {
 						
 						List<Customer> customerList = session.createQuery("from Customer as customer" + whereClause).list();
 						Customer dbCustomer = customerList.get(0);
+						if (dbCustomer != null) {
+							LOGGER.info("Found customer in database; Linking customer with card " + card.getCardnumberString());
+						} else {
+							LOGGER.warn("Customer " + customerFromList.getCustomernumber() + " not found in database!");
+						}
 						card.setCustomer(dbCustomer);
+						match = true;
 						break;
-					} else
-						System.out.println("kein Match");
+					}
+				}
+				if (!match) {
+					LOGGER.warn("Kein Match!");
 				}
 			} else
-				System.out.println("No card found");
+				LOGGER.warn("No card found in database with values: " + updateCard.getCardnumberString());
 			tx.commit();
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
 				}
 				// throw again the first exception
 				throw e;
@@ -111,12 +129,14 @@ public class DeliveryBillController extends ActionController {
 	}
 
 	public String addDeliveryDataNext() {
+		LOGGER.info("Method: addDeliveryBillDataNext");
 		addDeliveryBillData();
 		ccCardBean = new CardBean();
 		return "next";
 	}
 
 	public String addDeliveryDataFinish() {
+		LOGGER.info("Method: addDeliveryBillFinish");
 		addDeliveryBillData();
 		ccCardBean = new CardBean();
 		return "finish";

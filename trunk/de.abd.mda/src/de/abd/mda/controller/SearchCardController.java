@@ -3,6 +3,7 @@ package de.abd.mda.controller;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -12,6 +13,8 @@ import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 
 public class SearchCardController extends ActionController {
 
+	private final static Logger LOGGER = Logger.getLogger(SearchCardController.class .getName()); 
+
 	private String cardNumberFirst;
 	private String cardNumberSecond;
 	private String phoneNrFirst;
@@ -19,6 +22,7 @@ public class SearchCardController extends ActionController {
 	private CardBean card;
 
 	public SearchCardController() {
+		LOGGER.info("Instantiate: SearchCardController");
 	}
 
 	public CardBean getCard() {
@@ -30,65 +34,78 @@ public class SearchCardController extends ActionController {
 	}
 
 	public String searchCardClearing() {
+		LOGGER.info("Method: searchCardClearing");
 		try {
 			if (performSearch("clearing") != null)
 				return "clearing";
 		} catch (Exception e) {
+			LOGGER.error("Exception: " + e);
 			getRequest().setAttribute("message", "Es muss entweder die Kartennummer oder die Rufnummer eingegeben werden!");
 		}
 		return "noCardFound";
 	}
 
 	public String searchCardViewDetails() {
+		LOGGER.info("Method: searchCardClearing");
 		try {
 			if (performSearch("details") != null)
 				return "viewDetails";
 		} catch (Exception e) {
+			LOGGER.error("Exception: " + e);
 			getRequest().setAttribute("message", "Es muss entweder die Kartennummer oder die Rufnummer eingegeben werden!");
 		}
 		return "noCardFound";
 	}
 
 	public String updateCard() {
+		LOGGER.info("Method: updateCard");
 		getRequest().setAttribute("updateCard", card);
-		System.out.println("********* updateCard *********");
 		return "updateCardDirect";
 	}
 	
 	public String searchCard() {
+		LOGGER.info("Method: searchCard");
 		try {
 			if (performSearch("") != null)
 				return "success";
 		} catch (Exception e) {
+			LOGGER.error("Exception: " + e);
 			getRequest().setAttribute("message", "Es muss entweder die Kartennummer oder die Rufnummer eingegeben werden!");
 		}
 		return "noCardFound";
 	}
 	
 	public CardBean performSearch(String searchCase) throws Exception {
-		System.out.println("cardNumberFirst == " + cardNumberFirst);
-		System.out.println("cardNumberSecond == " + cardNumberSecond);
+		LOGGER.info("Method: performSearch; CardNumber Values: " + cardNumberFirst + "-" + cardNumberSecond);
 		
 		CardController cardController = new CardController();
 		card = cardController.searchCard(cardNumberFirst, cardNumberSecond, phoneNrFirst, phoneNrSecond, searchCase);
 		if (card != null) {
+			LOGGER.info("Card found; Adding to request and session");
 			getRequest().setAttribute("searchedCard", card);
 			getSession().setAttribute("cardToUpdate", card);
 			return card;
 		} else {
+			LOGGER.warn("No card found in database; Entries to be checked!!");
 			getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden! Prüfen Sie die Eingabe!");
 			return card;
 		}
 	}
 	
 	public List<CardBean> performSearch(Integer customerID) {
+		LOGGER.info("Method: performSearch; CustomerID = " + customerID);
 		CardController cardController = new CardController();
 		List<CardBean> cards = cardController.searchCustomerCards(customerID);
-		
+		if (cards != null) {
+			LOGGER.info(cards.size() + " cards found for customer + " + customerID);
+		} else {
+			LOGGER.warn("No cards found for customerID " + customerID);
+		}
 		return cards;
 	}
 	
 	public String saveComment() {
+		LOGGER.info("Method: saveComment; Card = " + card.getCardnumberString());
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		CardBean searchCard = null;
@@ -113,13 +130,17 @@ public class SearchCardController extends ActionController {
 		if (searchCard != null) {
 			searchCard.setComment(card.getComment());
 			tx.commit();
+			LOGGER.info("Comment saved on card " + card.getCardnumberString());
+			LOGGER.info("Comment: " + card.getComment());
 			getRequest().setAttribute("message", "Kommentar wurde gespeichert!");
 		} else {
 			tx.rollback();
 			getRequest().setAttribute("message", "Fehler!!! Kommentar wurde nicht gespeichert!");
+			LOGGER.warn("Comment was not saved on card " + card.getCardnumberString());
 		}
 		
 		} catch (Exception e) {
+			LOGGER.error("Exception " + e);
 			tx.rollback();
 			getRequest().setAttribute("message", "Fehler!!! Kommentar konnte nicht gespeichert werden!");
 			return "failure";

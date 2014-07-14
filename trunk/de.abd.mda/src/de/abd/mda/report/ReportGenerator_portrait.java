@@ -59,9 +59,11 @@ import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.DateUtils;
 
 public class ReportGenerator_portrait implements IReportGenerator {
+
+	private final static Logger LOGGER = Logger.getLogger(ReportGenerator_portrait.class .getName()); 
+	
 	BaseFont bf_broadway = null;
 	BaseFont bf_arial = null;
-	static final Logger logger = Logger.getLogger(ReportGenerator_portrait.class);
 //	private static int MAX_ROW_FIRST_PAGE = 25;
 	private static int MAX_ROW_FIRST_PAGE = 25;
 //	private static int FULL_PAGE_SIZE = 39;
@@ -73,15 +75,18 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	
 	public ReportGenerator_portrait() {
+		LOGGER.info("Instantiate: ReportGenerator_portrait");
 		loadBaseFonts();
 	}
 	
 	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
+		LOGGER.info("Method: generateReportDirect");
 		writeToDB = false;
 		return generateReport(customerCards, customer, calcMonth, flatrateCalc, severalBills, mapCount);
 	}
 
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
+		LOGGER.info("Method: generateReport");
 		try {
 			long time1 = System.currentTimeMillis();
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
@@ -104,7 +109,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + flatrateString + mapCountString + ".pdf";
 			long time2 = System.currentTimeMillis();
 			long diff1 = time2-time1;
-			System.out.println("genRep Teil 1 = " + diff1);
+			LOGGER.info("genRep Teil 1 = " + diff1);
 
 			
 			
@@ -113,16 +118,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //			dir.mkdirs();
 			long time3 = System.currentTimeMillis();
 //			File dir = new File("C:/Temp/report/");
-			File dir = new File("C:/Siwaltec/Invoices/pdf/" + year + "/" + month);
+			File dir = new File("C:/Temp/report/" + year + "/" + month);
 			dir.mkdirs();
 			
 			
 			FileOutputStream fos = new FileOutputStream(
 					dir + "/" + filename);
 			
+			LOGGER.info("Writing file: " + dir + "/" + filename);
 			
 			PdfWriter writer = PdfWriter.getInstance(document, fos);
-			logger.info("Berechne für Monat: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
+			LOGGER.info("Calculating month: " + DateUtils.getMonthAsString(calcMonth.get(Calendar.MONTH)) + " " + calcMonth.get(Calendar.YEAR));
 			Bill bill = new Bill();
 			bill.setCustomerNumber(new Integer(customer.getCustomernumber()));
 			bill.setFilename(filename);
@@ -135,21 +141,22 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Bill dbBill = bc.findBill(bill);
 			long timefb2 = System.currentTimeMillis();
 			long difffb = timefb2-timefb;
-			System.out.println("findBill = " + difffb);
+			LOGGER.info("findBill = " + difffb);
 			
 			long time4 = System.currentTimeMillis();
 			long diff2 = time4-time3;
-			System.out.println("genRep Teil 2 = " + diff2);
+			LOGGER.info("genRep Teil 2 = " + diff2);
 
 			long time5 = System.currentTimeMillis();
 			int invoiceNumber = -1;
 			boolean increaseBillNum = false;
 			if (dbBill != null) {
-				System.out.println("Rechnung bereits in DB enthalten... Hole Rechnungsnummer...");
 				invoiceNumber = dbBill.getBillNumber();
+				LOGGER.info("Bill already in DB... Getting bill number... " + invoiceNumber);
 			} else {
 				invoiceNumber = (bc.getMaxBillNumber())+1;
 				increaseBillNum = true;
+				LOGGER.info("New bill in DB... bill number: " + invoiceNumber);
 			}
 			
 			// headers and footers must be added before the document is opened
@@ -161,7 +168,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			}
 			long time6 = System.currentTimeMillis();
 			long diff3 = time6-time5;
-			System.out.println("genRep Teil 3 = " + diff3);
+			LOGGER.info("genRep Teil 3 = " + diff3);
 
 			long time7 = System.currentTimeMillis();
 			HeaderFooter footer = generateFooter(writer);
@@ -176,12 +183,15 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			document.open();
 			long time8 = System.currentTimeMillis();
 			long diff4 = time8-time7;
-			System.out.println("genRep Teil 4 = " + diff4);
+			LOGGER.info("genRep Teil 4 = " + diff4);
 
 			long time9 = System.currentTimeMillis();
 			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber);
 			if (generatedWithErrors) {
+				LOGGER.warn("Error in creation of bill body!");
 				return false;
+			} else {
+				LOGGER.info("Bill body generated without errors");
 			}
 			
 			document.close();
@@ -189,10 +199,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			fos.close();
 			long time10 = System.currentTimeMillis();
 			long diff5 = time10-time9;
-			System.out.println("genRep Teil 5 = " + diff5);
+			LOGGER.info("genRep Teil 5 = " + diff5);
 
 			
-			logger.info("File " + filename + " created successfully!");
+			LOGGER.info("File " + filename + " created successfully!");
 //			Runtime.getRuntime().exec(
 //					"rundll32 url.dll,FileProtocolHandler "
 //							+ "C:/Temp/report/" + customer.getCustomernumber());
@@ -206,12 +216,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			try {
 				ra.read(b);
 			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
+				LOGGER.error("Exception: " + e);
 			}
 			
 			if (b != null && b.length > 0) {
-				System.out.println("Byte[] Länge == " + b.length);
+				LOGGER.info("Byte[] Länge == " + b.length);
 				bill.setFile(b);
 				
 					
@@ -219,16 +228,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				boolean createdNew = bc.createOrUpdateObject(bill);
 				long time14 = System.currentTimeMillis();
 				long diff7 = time14-time13;
-				System.out.println("createOrUpdateObject = " + diff7);
+				LOGGER.info("createOrUpdateObject = " + diff7);
 				
 				if (createdNew)
-					System.out.println("Neue Rechnung in DB gespeichert");
+					LOGGER.info("Added new bill to database");
 				else
-					System.out.println("Rechnung in DB aktualisiert");
+					LOGGER.info("Bill updated in database");
 			}
 			long time12 = System.currentTimeMillis();
 			long diff6 = time12-time11;
-			System.out.println("genRep Teil 6 = " + diff6);
+			LOGGER.info("genRep Teil 6 = " + diff6);
 
 			
 			
@@ -245,7 +254,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			
 			return true;
 		} catch (Exception ex) {
-			logger.error(ex.getMessage());
+			LOGGER.error(ex);
 			return false;
 		}
 	}
@@ -253,23 +262,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	private HeaderFooter generateHeader(PdfWriter writer) {
 		HeaderFooter header = null;
 
+		LOGGER.info("Method: generateHeader");
 		try {
 
 			Image logo = Image.getInstance("images/SiwalTec_Logo.wmf");
-//			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 			
 			
 			Chunk logoChunk = new Chunk(logo, -25, -20);
 			Phrase phrase = new Phrase(logoChunk);
-//			Chunk senderChunk = new Chunk(sender, -307, -90);
-//			phrase.add(senderChunk);
 			
 			header = new HeaderFooter(phrase, false);
 			header.setAlignment(Element.ALIGN_RIGHT);
 			header.setBorder(Rectangle.NO_BORDER);
 			
 		} catch (Exception ex) {
-			logger.error(ex.getMessage());
+			LOGGER.error("Exception: " + ex);
 			return null;
 		}
 
@@ -277,6 +284,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private HeaderFooter generateFooter(PdfWriter writer) {
+		LOGGER.info("Method: generateFooter");
 		HeaderFooter footer = null;
 		try {
 			Font broadwayFont = new Font(bf_broadway);
@@ -300,7 +308,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			footer.setAlignment(Element.ALIGN_RIGHT);
 			footer.setBorder(Rectangle.NO_BORDER);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LOGGER.error("Exception: " + ex);
 			return null;
 		}
 
@@ -308,6 +316,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber) {
+		LOGGER.info("Method: generateBody");
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 
@@ -361,19 +370,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			// Firmenort
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
 					y, 0);
-//			cb.endText();
-
-//			// SiwalTec GmbH Absender
-//			x = 445;
-//			y = 480;
-//			cb.beginText();
-//			cb.setColorFill(Color.BLUE);
-//			cb.setFontAndSize(bf_broadway, 10);
-//
-//			// Siwalstrasse Absender
-//			y = y - 2;
-//			cb.setColorFill(Color.BLACK);
-//			cb.setFontAndSize(bf_arial, 10);
 
 			// Date
 //			y = y - 5 * d;
@@ -386,68 +382,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
 
 			// Rechnungsnummer
-			String invoiceText = "Rechnung - Nr.";
-			int invNum = 30001;
-			if (calcMonth.get(Calendar.MONTH) == Calendar.NOVEMBER) {
-				invNum = 30201;
-			} else if (calcMonth.get(Calendar.MONTH) == Calendar.DECEMBER) {
-				invNum = 30401;
-			} else if (calcMonth.get(Calendar.MONTH) == Calendar.JANUARY) {
-				invNum = 30601;
-			}
-/*			String invoiceNumber = "";
-			String[] invNums = new String[] {"20074", "20190", "20208", "20206", "20216", "20166", "20120", 
-					"20016", "20039", "20076", "20198", "20200", "20128", "20157", "20012", "20060", 
-					"20105", "20197", "20224", "20066", "20069", "20094", "20107", "20112", "20209", 
-					"20218", "20079", "20098", "20165", "20201", "20212", "20214", "20219", "20145",
-					"20149", "20188", "20215", "20018", "20043", "20078", "20080", "20174", "20180",
-					"20040", "20054", "20183", "20213", "20221", "20017", "20059", "20119", "20228",
-					"20002", "20014", "20015", "20048", "20070", "20073", "20075", "20102", "20164",
-					"20041", "20065", "20130", "20147", "20155", "20163", "20184", "20191", "20235",
-					"20237", "20238", "20239", "20240", "20087", "20182", "20194", "20156", "20234",
-					"20169", "20170", "20241", "20242", "20244", "20160", "20101", "20210", "20133",
-					"20203", "20134", "20092", "20205", "20135", "20132", "20100", "20136", "20175",
-					"20196", "20224", "20169", "20170", "20241", "20242", "20013", "20036", "20050",
-					"20055", "20063", "20093", "20110", "20111", "20121", "20126", "20177", "20193",
-					"20230", "20090", "20097", "20127", "20159", "20161", "20172", "20220", "20229",
-					"20251", "20252", "20253", "20254", "20255", "20256", "20243", "20243_flatrate",
-					"20245", "20217", "20038", "20257", "20258", "20003", "20259", "20006", "20260",
-					"20004", "20005", "20057", "20020", "20021", "20022", "20008", "20023", "20007",
-					"20010", "20009", "20263", "20123", "20058", "20045", "20047", "20052", "20091",
-					"20095", "20114", "20115", "20124", "20131", "20146", "20150", "20167", "20176",
-					"20181", "20185", "20199", "20233", "20072", "20011", "20051", "20067", "20109",
-					"20113", "20117", "20118", "20125", "20152", "20226", "20261", "20042", "20099",
-					"20103", "20108", "20122", "20158", "20222", "20232", "20056", "20137", "20026",
-					"20027", "20028", "20029", "20030", "20031", "20032", "20033", "20035", "20138",
-					"20139", "20140", "20141", "20142", "20143", "20144", "20034"};
-			HashMap<String, Integer> invNumMap = new HashMap<String, Integer>();
-			for (String s: invNums) {
-				invNumMap.put(s, invNum);
-				invNum++;
-			}
-*/		
-			// Rechnungsnummer
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Rechnung - Nr.", 425, 600, 0);
-/*			int invoiceNum = 0;
-			try {
-				invoiceNum = invNumMap.get(customer.getCustomernumber());
-			} catch (NullPointerException e) {
-				logger.error("Nullpointer bei " + customer.getCustomernumber());
-			}
-			// Sonderlocke
-			if (flatrateCalc)
-				invoiceNum = invNumMap.get("20243_flatrate");
-			if (customer.getInvoiceConfiguration().getSeparateBilling() != null && customer.getInvoiceConfiguration().getSeparateBilling()) {
-				invoiceNum = new Integer(this.sevBillInvNum);
-				this.sevBillInvNum++;
-			}
-*/			
-//			invoiceNum = 35593;
-			
-			
 			
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNumber, 510, 600, 0);
-//			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "07075", 516, 600, 0);
 			
 			// Kundennr.
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 425, 589, 0);
@@ -547,7 +484,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					if (simPrices.get(customer.getInvoiceConfiguration().getSimPrice()) != null) {
 						simPrice = new BigDecimal(""+simPrices.get(customer.getInvoiceConfiguration().getSimPrice()));
 					} else {
-						logger.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
+						LOGGER.warn("SimPrice Key == " + customer.getInvoiceConfiguration().getSimPrice() + ", ==> Key gibt es nicht in SimPrice-Konfigurations-Map!");
 					}
 				}
 				
@@ -564,7 +501,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				if (dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge()) != null) {
 					dataOptionPrice.add(new BigDecimal(""+dataOptionPrices.get(customer.getInvoiceConfiguration().getDataOptionSurcharge())));
 				} else {
-					logger.warn("DataOptionSurcharge Key == " + customer.getInvoiceConfiguration().getDataOptionSurcharge() + ", ==> Key gibt es nicht in DataOptionSurcharge-Konfigurations-Map!");
+					LOGGER.warn("DataOptionSurcharge Key == " + customer.getInvoiceConfiguration().getDataOptionSurcharge() + ", ==> Key gibt es nicht in DataOptionSurcharge-Konfigurations-Map!");
 				}
 
 				calcSum = calcSum.add(dataOptionPrice.multiply(new BigDecimal(monthAmount)));
@@ -729,7 +666,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			doc.add(sepa3Chunk);
 	
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LOGGER.error("Exception: "+ ex);
 			return true;
 		}
 		
@@ -740,6 +677,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			ArrayList<TableRow> tableRowList,
 			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum, Calendar calcMonth) {
 
+		LOGGER.info("Method: addCalculationRows");
 		DecimalFormat df = new DecimalFormat("#0.00");
 
 		BigDecimal mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
@@ -789,6 +727,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private String[] createCalcRow(int firstcols, String text, String value) {
+		LOGGER.info("Method: createCalcRow");
 		String[] row = new String[firstcols+3];
 		int i = 0;
 		while (i < firstcols+1) {
@@ -802,6 +741,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private ArrayList<PdfPTable> prepareTables(ArrayList<TableRow> tableRowList, Customer customer, Boolean flatrateCalc) throws Exception {
+		LOGGER.info("Method: prepareTables");
 		ArrayList<PdfPTable> tableList = new ArrayList<PdfPTable>();
 		
 		// check, ob alles inkl. Tabellenende auf 1 Seite passt
@@ -857,6 +797,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private PdfPTable createTable(ArrayList<TableRow> currentRowList, boolean lastPage, Customer customer, Boolean flatrateCalc) throws Exception {
+		LOGGER.info("createTable");
 		PdfPTable table = createTableHeader(customer, flatrateCalc);
 		if (table != null) {
 			if (lastPage) {
@@ -887,6 +828,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	
 	private PdfPTable createTableEnd(PdfPTable table,
 			ArrayList<TableRow> tableEndList) {
+		LOGGER.info("Method: createTableEnd");
 		Font tableFontBold = new Font(bf_arial, 9);
 		tableFontBold.setStyle(Font.BOLD);
 		Font tableFont = new Font(bf_arial, 9);
@@ -922,6 +864,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private PdfPTable createTableBody(PdfPTable table, ArrayList<TableRow> tableRowList, Boolean flatrateCalc) {
+		LOGGER.info("Method: createTableBody");
 		Iterator<TableRow> it = tableRowList.iterator();
 		Font tableFont = null;
 		if (tableRowList.size() > 5) {
@@ -963,6 +906,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private PdfPTable createTableHeader(Customer customer, Boolean flatrateCalc) throws Exception {
+		LOGGER.info("Method: createTableHeader");
 		List<String> columns = null;
 		ArrayList<String> cols = new ArrayList<String>();
 		if (customer != null) {
@@ -972,12 +916,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					cols.add(s);
 			}
 		} else {
-			logger.error("Customer is NULL!");
+			LOGGER.error("Customer is NULL!");
 			throw new Exception("Customer is NULL");
 		}
 
 		if (columns.size() < 1) {
-			logger.warn("Customer " + customer.getCustomernumber() + " hat keine Rechnungsspalten konfiguriert!");
+			LOGGER.warn("Customer " + customer.getCustomernumber() + " hat keine Rechnungsspalten konfiguriert!");
 			throw new Exception("Customer " + customer.getCustomernumber() + " hat keine Rechnungsspalten konfiguriert!");
 		}
 		
@@ -1121,11 +1065,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			cell.setPaddingBottom(5);
 			cell.setBorder(Rectangle.NO_BORDER);
 
-			return tableHeader;
-		} else {
-			logger.warn("Bei Kunde " + customer.getCustomernumber() + " sind keine Rechnungsspalten selektiert!");
-			throw new Exception("Bei Kunde " + customer.getCustomernumber() + " sind keine Rechnungsspalten selektiert!");
 		}
+		return tableHeader;
 	}
 	
 	private String addNewLines(int x) {
@@ -1137,19 +1078,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private void loadBaseFonts() {
+		LOGGER.info("Method: loadBaseFonts");
 		try {
 			bf_broadway = BaseFont.createFont("C:/Windows/Fonts/BROADW.TTF",
 					"Cp1252", false);
 			bf_arial = BaseFont.createFont("C:/Windows/Fonts/Arial.TTF",
 					"Cp1252", false);
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			LOGGER.error("DocumentException: " + e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("IOException: " + e);
 		}
 	}
 	
 	private Calendar getPeriodMaxCalcDate(String creationFrequency, Calendar calcMonth) {
+		LOGGER.info("Method: getPeriodMaxCalcDate");
 		Calendar periodMaxCalcDate = Calendar.getInstance();
 		periodMaxCalcDate.set(calcMonth.get(Calendar.YEAR), calcMonth.get(Calendar.MONTH), 1, 0, 0, 0);
 		periodMaxCalcDate.set(Calendar.MILLISECOND, 0);
@@ -1184,6 +1127,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	}
 
 	private int getMonthAmount(String creationFrequency, Date activationDate, Calendar periodMaxCalcDate) {
+		LOGGER.info("Method: getMonthAmount");
 		int monthAmount = 0;
 		Calendar activationCal = Calendar.getInstance();
 		activationCal.setTime(activationDate);
@@ -1227,6 +1171,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	 * Die Karten, die hier untersucht werden, sind alle in diesem Jahr oder davor aktiviert worden.
 	 */
 	private String getStartMonthFromCards(int year, List<DaoObject> customerCards) {
+		LOGGER.info("Method: getStartMonthFromCards");
 		String startMonth = null;
 		// Initialisierung mit spätestem Zeitpunkt im Berechnungsjahr
 		Calendar cal = Calendar.getInstance();

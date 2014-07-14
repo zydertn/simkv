@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -19,25 +20,30 @@ import de.abd.mda.util.DateUtils;
 
 public class ClearingController extends ActionController {
 
+	private final static Logger LOGGER = Logger.getLogger(ClearingController.class .getName());
+	
 	private CardBean card;
 
 	public ClearingController() {
+		LOGGER.info("Instantiate: ClearingController");
 		card = new CardBean();
 		card.setContactPerson(new Person());
 		card.setInstallAddress(new Address());
 	}
 
 	public String unclearCard() {
-		
+		LOGGER.info("Method: unclearCard; Card: " + card.getCardnumberString());
 		return changeActivationStatus(false);
 	}
 
 	
 	public String clearCard() {
+		LOGGER.info("Method: clearCard; Card: " + card.getCardnumberString());
 		return changeActivationStatus(true);
 	}
 	
 	public String changeActivationStatus(boolean activate) {
+		LOGGER.info("Method: changeActivationStatus - activate = " + activate);
 		CardBean screenCard = null;
 		if (getSession().getAttribute("cardToUpdate") != null) {
 			screenCard = (CardBean) getSession().getAttribute("cardToUpdate");
@@ -83,6 +89,7 @@ public class ClearingController extends ActionController {
 								dbCard = activateCard(dbCard);
 							} else {
 								message = "Aktivierung fehlgeschlagen! Aktivierungsdatum muss zeitlich nach Deaktivierungsdatum liegen!";
+								LOGGER.warn(message);
 								getRequest().setAttribute("message", message);
 								return "";
 							}
@@ -90,6 +97,7 @@ public class ClearingController extends ActionController {
 					}
 				} else {
 					message = "Kein Aktivierungsdatum angegeben! Bitte prüfen Sie Ihre Eingabe!";
+					LOGGER.warn(message);
 					getRequest().setAttribute("message", message);
 					return "";
 				}
@@ -102,6 +110,7 @@ public class ClearingController extends ActionController {
 							dbCard = deactivate(dbCard);
 						} else  {
 							message = "Aktivierung fehlgeschlagen! Deaktivierungsdatum muss zeitlich nach Aktivierungsdatum liegen!";
+							LOGGER.warn(message);
 							getRequest().setAttribute("message", message);
 							return "";
 						}
@@ -112,17 +121,20 @@ public class ClearingController extends ActionController {
 								dbCard = deactivate(dbCard);
 							} else {
 								message = "Aktivierung fehlgeschlagen! Deaktivierungsdatum muss zeitlich nach Aktivierungsdatum liegen!";
+								LOGGER.warn(message);
 								getRequest().setAttribute("message", message);
 								return "";
 							}							
 						} else {
 							message = "Karte ist Dummy! Keine Deaktivierung möglich!";
+							LOGGER.warn(message);
 							getRequest().setAttribute("message", message);
 							return "";
 						}
 					}
 				} else {
 					message = "Kein Aktivierungsdatum angegeben! Bitte prüfen Sie Ihre Eingabe!";
+					LOGGER.warn(message);
 					getRequest().setAttribute("message", message);
 					return "";
 				}
@@ -155,6 +167,7 @@ public class ClearingController extends ActionController {
 //			dbCard.setDeactivationDate(new Date());
 		} else {
 			message = "Karte für Aktivierung wurde nicht gefunden!";
+			LOGGER.warn(message);
 			getRequest().setAttribute("message", message);
 			return "";
 		}
@@ -165,6 +178,7 @@ public class ClearingController extends ActionController {
 //		getRequest().setAttribute("message", message);
 
 		} catch (Exception e) {
+			LOGGER.error("Exception: " + e);
 			e.printStackTrace();
 			return "";
 		}
@@ -174,6 +188,7 @@ public class ClearingController extends ActionController {
 
 	
 	private CardBean deactivate(CardBean dbCard) {
+		LOGGER.info("Method: deactivate; Card: " + dbCard.getCardnumberString());
 		dbCard.setStatus(Model.STATUS_INACTIVE);
 		dbCard.setDeactivationDate(card.getDeactivationDate());
 		String message = "Karte " + card.getCardnumberString() + " wurde deaktiviert!";
@@ -183,6 +198,7 @@ public class ClearingController extends ActionController {
 	}
 
 	private CardBean activateCard(CardBean dbCard) {
+		LOGGER.info("Method: activateCard; Card: " + dbCard.getCardnumberString());
 		dbCard.setStatus(Model.STATUS_ACTIVE);
 		dbCard.setActivationDate(card.getActivationDate());
 		String message = "Karte " + card.getCardnumberString() + " wurde aktiviert!";

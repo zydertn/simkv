@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -18,9 +19,16 @@ import de.abd.mda.util.CustomerComparator;
 
 public class CustomerController extends DaoController implements IDaoController {
 	
+	private final static Logger LOGGER = Logger.getLogger(CustomerController.class .getName()); 
+
+	public CustomerController() {
+		LOGGER.info("Instantiate CustomerController");
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<DaoObject> listObjects() {
+		LOGGER.info("Method listObjects");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
@@ -29,7 +37,13 @@ public class CustomerController extends DaoController implements IDaoController 
 			String select = "select distinct customer from Customer as customer where customer.name != ''";
 //			" inner join customer.address as address where customer.name != ''");
 
+			LOGGER.info("Select = " + select);
 			List<Customer> list = session.createQuery(select).list();
+			if (list != null) {
+				LOGGER.info(list.size() + " customers found");
+			} else {
+				LOGGER.warn("No customers found!");
+			}
 			customers = new ArrayList<DaoObject>();
 			for (Iterator it=list.iterator();it.hasNext();) {
 				Customer customer = (Customer) it.next();
@@ -42,12 +56,13 @@ public class CustomerController extends DaoController implements IDaoController 
 			Collections.sort(customers, comparator);
 			
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
 				}
 				// throw again the first exception
 				throw e;
@@ -60,6 +75,7 @@ public class CustomerController extends DaoController implements IDaoController 
 	
 	@SuppressWarnings("unchecked")
 	public List<DaoObject> searchCustomer(String customerNumber, String customerName) {
+		LOGGER.info("Method listObjects; CustomerNumber = " + customerNumber + ", customerName = " + customerName);
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
@@ -71,16 +87,23 @@ public class CustomerController extends DaoController implements IDaoController 
 			} else if (customerName != null && customerName.length() > 0) {
 				whereClause += " where customer.name LIKE '" + customerName + "%'";
 			}
-			
+
+			LOGGER.info("Select = from Customer as customer" + whereClause);
 			customers = session.createQuery("from Customer as customer" + whereClause).list();
+			if (customers != null) {
+				LOGGER.info(customers.size() + " customers found");
+			} else {
+				LOGGER.warn("No customer found!");
+			}
 			tx.commit();
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
 				}
 				// throw again the first exception
 				throw e;
@@ -91,6 +114,7 @@ public class CustomerController extends DaoController implements IDaoController 
 	}
 
 	public Customer findCustomer(String customerNumber) {
+		LOGGER.info("Method findCustomer; CustomerNumber = " + customerNumber);
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> customers = null;
 		Transaction tx = null;
@@ -106,28 +130,42 @@ public class CustomerController extends DaoController implements IDaoController 
 			if (customerNumber != null && customerNumber.length() > 0) {
 				whereClause = " where customer.customernumber = '" + customerNumber + "'";
 			}
-			
+
+			LOGGER.info("Select = from Customer as customer" + whereClause);
 			customers = session.createQuery("from Customer as customer" + whereClause).list();
+			if (customers != null) {
+				LOGGER.info(customers.size() + " customers found");
+			} else {
+				LOGGER.warn("No customer found!");
+			}
 			if (transactionStarted)
 				tx.commit();
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
 				}
 				// throw again the first exception
 				throw e;
 			}
 
 		}
-		return (Customer) customers.get(0);
+		Customer customer = (Customer) customers.get(0); 
+		if (customer != null) {
+			LOGGER.info("Customer found: ID = " + customer.getId() + ", number = " + customer.getCustomernumber());
+		} else {
+			LOGGER.warn("No customer found!");
+		}
+		return customer;
 	}
 
 	
 	public List<DaoObject> searchCustomerCards(Customer cus) {
+		LOGGER.info("Method searchCustomerCards");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		List<DaoObject> cards = null;
@@ -137,16 +175,23 @@ public class CustomerController extends DaoController implements IDaoController 
 			if (cus != null) {
 				whereClause = " where card.customer = '" + cus.getId() + "'";
 			}
-			
+
+			LOGGER.info("Select = select distinct card from CardBean card" + whereClause);
 			cards = session.createQuery("select distinct card from CardBean card" + whereClause).list();
+			if (cards != null) {
+				LOGGER.info(cards.size() + " cards found");
+			} else {
+				LOGGER.warn("No cards found!");
+			}
 			tx.commit();
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
 				}
 				// throw again the first exception
 				throw e;
