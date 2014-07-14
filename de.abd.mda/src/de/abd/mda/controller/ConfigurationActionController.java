@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
+import org.apache.log4j.Logger;
 import org.icefaces.ace.component.column.Column;
 import org.icefaces.ace.component.datatable.DataTable;
 
@@ -14,6 +15,8 @@ import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.persistence.dao.controller.DaoController;
 
 public class ConfigurationActionController extends DaoController {
+
+	private final static Logger LOGGER = Logger.getLogger(ConfigurationActionController.class .getName());
 
 	private String simPriceKey;
 	private String dataOptionKey;
@@ -23,6 +26,7 @@ public class ConfigurationActionController extends DaoController {
 	private Map<Integer, Double> dataOptionMap;
 	
 	public ConfigurationActionController() {
+		LOGGER.info("Instantiate: ConfigurationActionController");
 		ConfigurationController cc = new ConfigurationController();
 		simPriceMap = cc.getSimPricesFromDB();
 		if (simPriceMap != null && simPriceMap.containsKey(1)) {
@@ -37,12 +41,14 @@ public class ConfigurationActionController extends DaoController {
 	}
 	
 	public void changeSimKeyValue(ValueChangeEvent evt) {
+		LOGGER.info("Method: changeSimKeyValue: " + evt.getNewValue());
 		int key = new Integer("" + evt.getNewValue());
 		setSimPrice(simPriceMap.get(key));
 		getRequest().setAttribute("simPrice", simPriceMap.get(key));
 	}
 
 	public void changeDataOptionKeyValue(ValueChangeEvent evt) {
+		LOGGER.info("Method: changeDataOptionKeyValue: " + evt.getNewValue());
 		int key = new Integer("" + evt.getNewValue());
 		setDataOptionPrice(dataOptionMap.get(key));
 		getRequest().setAttribute("dataOptionPrice", dataOptionMap.get(key));
@@ -50,6 +56,7 @@ public class ConfigurationActionController extends DaoController {
 
 	
 	public String updateConfiguration() {
+		LOGGER.info("Method: updateConfiguration");
 		ConfigurationController cc = new ConfigurationController();
 		simPriceMap = cc.getSimPricesFromDB();
 		if (simPriceKey != null && simPriceKey.length() > 0) {
@@ -68,6 +75,7 @@ public class ConfigurationActionController extends DaoController {
 	}
 	
 	public String addSimPriceProfile() {
+		LOGGER.info("Method: addSimPriceProfile");
 		ConfigurationController cc = new ConfigurationController();
 		Map<Integer, Double> simPriceMap = cc.getSimPricesFromDB();
 		simPriceMap.put(simPriceMap.size()+1, 0.0);
@@ -77,6 +85,7 @@ public class ConfigurationActionController extends DaoController {
 	}
 
 	public String addDataOptionProfile() {
+		LOGGER.info("Method: addDataOptionProfile");
 		ConfigurationController cc = new ConfigurationController();
 		Map<Integer, Double> dataOptionMap = cc.getDataOptionPricesFromDB();
 		dataOptionMap.put(dataOptionMap.size()+1, 0.0);

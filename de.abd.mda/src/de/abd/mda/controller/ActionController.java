@@ -24,6 +24,8 @@ import de.abd.mda.report.ReportRunnable;
 
 public class ActionController implements ActionListener {
 
+	private final static Logger LOGGER = Logger.getLogger(ActionController.class .getName());
+	
 	// Model related variables
 	private Model model;
 	protected CardBean cardBean;
@@ -78,11 +80,6 @@ public class ActionController implements ActionListener {
 	}
 
 	public String generateReport() {
-//		ReportCalculator rc = new ReportCalculator();
-//		rc.calculate();
-		
-//		(new Thread(new ReportCalculator())).start();
-		
 		return "Report";
 	}
 
@@ -104,8 +101,7 @@ public class ActionController implements ActionListener {
 
 	public String cancel() {
 		uiMessage.setRendered(true);
-		uiMessage
-				.setValue("Aktion abgebrochen! Neue Karte wurde NICHT angelegt!");
+		uiMessage.setValue("Aktion abgebrochen! Neue Karte wurde NICHT angelegt!");
 		return "failure";
 	}
 
@@ -118,7 +114,7 @@ public class ActionController implements ActionListener {
 			throws AbortProcessingException {
 		// TODO Auto-generated method stub
 		getRequest().setAttribute("clearCard", true);
-		System.out.println("ID = " + event.getComponent().getId());
+		LOGGER.info("ID = " + event.getComponent().getId());
 		if (uiMessage != null)
 			uiMessage.setRendered(false);
 	}

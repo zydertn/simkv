@@ -33,16 +33,13 @@ public class CardActionController extends ActionController {
 	private HtmlInputHidden cardTypeDeHidden;	
 	private HtmlInputHidden cardActivatedAsHidden;
 	private boolean selected = true;
+
+	public CardActionController() {
+		LOGGER.info("Instatiate: CardActionController");
+	}
 	
-	public CardBean getCcCardBean() {
-		return ccCardBean;
-	}
-
-	public void setCcCardBean(CardBean ccCardBean) {
-		this.ccCardBean = ccCardBean;
-	}
-
 	public void createCard() {
+		LOGGER.info("Method: createCard");
 		CardController cardController = new CardController();
 
 		String message = "";
@@ -56,16 +53,18 @@ public class CardActionController extends ActionController {
 					&& ccCardBean.getCardNumberSecond().length() > 0) {
 			} else {
 				message = "Beide Kartennummern-Teile müssen befüllt werden! Karte wurde nicht in DB angelegt!";
+				LOGGER.warn(message);
 				getRequest().setAttribute("message", message);
 				return;
 			}
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; "+ e);
 				}
 				// throw again the first exception
 				throw e;
@@ -102,14 +101,17 @@ public class CardActionController extends ActionController {
 						+ ccCardBean.getPhoneString();
 
 				getRequest().setAttribute("message", message);
-			} else
+				LOGGER.info(message);
+			} else {
 				getRequest().setAttribute("message", retMessage);
+				LOGGER.warn(retMessage);
+			}
 			tx.commit();
-		ccCardBean = new CardBean();
+			ccCardBean = new CardBean();
 	}
 	
 	public String updateCard() {
-		LOGGER.debug("Meine erste Log-Ausgabe! Juhu!");
+		LOGGER.info("Method: updateCard");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		CardBean card = null;
@@ -153,28 +155,32 @@ public class CardActionController extends ActionController {
 				card.setCardAutType(ccCardBean.getCardAutType());
 				card.setCardDeType(ccCardBean.getCardDeType());
 				card.setBaNummer(ccCardBean.getBaNummer());
-			} else
-				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
+				LOGGER.info("Karte aktualisiert: " + card.getCardnumberString());
+				getRequest().setAttribute("message", "Änderung gespeichert!");
+			} else {
+				String message = "Keine Karte in der Datenbank gefunden!";
+				getRequest().setAttribute("message", message + " " + ccCardBean.getCardnumberString());
+				LOGGER.warn(message);
+			}
 			tx.commit();
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
 				}
 				// throw again the first exception
 				throw e;
 			}
-
 		}
-		getRequest().setAttribute("message", "Änderung gespeichert!");
-		
 		return "";
 	}
 
 	private void updateTypeInfo() {
+		LOGGER.info("Method: updateTypeInfo; Karte: " + ccCardBean.getCardnumberString());
 		String supp = ccCardBean.getSupplier();
 		if (supp != null && supp.equals(Model.SUPPLIER_TELEKOM)) {
 			ccCardBean.setCardAutType("");
@@ -190,6 +196,7 @@ public class CardActionController extends ActionController {
 	}
 
 	public String deleteCard() {
+		LOGGER.info("Method: deleteCard; Karte: " + ccCardBean.getCardnumberString());
 		CardController controller = new CardController();
 		controller.deleteObject(ccCardBean);
 		getRequest().setAttribute("message", "Karte wurde erfolgreich gelöscht!");
@@ -197,6 +204,7 @@ public class CardActionController extends ActionController {
 	}
 	
 	public String createCardSearch() {
+		LOGGER.info("Method: createCardSearch; Karte: " + ccCardBean.getCardnumberString() + "; " + ccCardBean.getPhoneString());
 		SearchCardController scc = new SearchCardController();
 		scc.setCardNumberFirst(ccCardBean.getCardNumberFirst());
 		scc.setCardNumberSecond(ccCardBean.getCardNumberSecond());
@@ -205,7 +213,9 @@ public class CardActionController extends ActionController {
 		try {
 			ccCardBean = scc.performSearch("createCard");
 		} catch (Exception e) {
-			getRequest().setAttribute("message", "Eine vollständige Kartennummer muss für die Suche eingegeben werden!");
+			String message = "Eine vollständige Kartennummer muss für die Suche eingegeben werden!";
+			getRequest().setAttribute("message", message);
+			LOGGER.warn("Exception: " + message + "; " + e);
 			return "noCardFound";
 		}
 		if (ccCardBean != null) {
@@ -219,12 +229,14 @@ public class CardActionController extends ActionController {
 	}
 
 	public String createCardNext() {
+		LOGGER.info("Method: createCardNext");
 		createCard();
 		ccCardBean = new CardBean();
 		return null;
 	}
 
 	public String createCardFinish() {
+		LOGGER.info("Method: createCardFinish");
 		createCard();
 		ccCardBean = new CardBean();
 		return "finish";
@@ -313,5 +325,13 @@ public class CardActionController extends ActionController {
 
 	public void setCardTypeDeHidden(HtmlInputHidden cardTypeDeHidden) {
 		this.cardTypeDeHidden = cardTypeDeHidden;
+	}
+	
+	public CardBean getCcCardBean() {
+		return ccCardBean;
+	}
+
+	public void setCcCardBean(CardBean ccCardBean) {
+		this.ccCardBean = ccCardBean;
 	}
 }

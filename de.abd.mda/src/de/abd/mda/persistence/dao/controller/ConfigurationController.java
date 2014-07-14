@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -13,12 +14,19 @@ import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 
 public class ConfigurationController extends DaoController {
 
+	private final static Logger LOGGER = Logger.getLogger(ConfigurationController.class .getName()); 
+
 	private String simPriceKey;
 	private String dataOptionKey;
 	private Double simPrice;
 	private Double dataOptionPrice;
+
+	public ConfigurationController() {
+		LOGGER.info("Instantiate ConfigurationController");
+	}
 	
 	public void updateConfiguration(Map<Integer, Double> simPriceMap, Map<Integer, Double> dataOptionMap) {
+		LOGGER.info("updateConfiguration");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		tx = session.beginTransaction();
@@ -47,6 +55,7 @@ public class ConfigurationController extends DaoController {
 	}
 	
 	public Map<Integer, Double> getSimPricesFromDB() {
+		LOGGER.info("Method getSimPricesFromDB");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		tx = session.beginTransaction();
@@ -61,6 +70,7 @@ public class ConfigurationController extends DaoController {
 	}
 
 	public Map<Integer, Double> getDataOptionPricesFromDB() {
+		LOGGER.info("Method getDataOptionPricesFromDB");
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		tx = session.beginTransaction();

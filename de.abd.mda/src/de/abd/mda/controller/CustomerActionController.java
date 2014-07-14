@@ -16,6 +16,7 @@ import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -35,6 +36,8 @@ import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.FacesUtil;
 
 public class CustomerActionController extends ActionController {
+
+	private final static Logger LOGGER = Logger.getLogger(CustomerActionController.class .getName()); 
 
 	private Customer customer;
 	private boolean opened = false;
@@ -79,6 +82,7 @@ public class CustomerActionController extends ActionController {
 //	private HtmlSelectManyCheckbox invoiceconfigColumnsBinding;
 	
 	public CustomerActionController() {
+		LOGGER.info("Instantiate: CustomerActionController");
 		customer = new Customer();
 		customer.setAddress(new Address());
 		customer.setContactPerson(new Person());
@@ -90,21 +94,26 @@ public class CustomerActionController extends ActionController {
 	}
 	
 	public void createCustomer() {
+		LOGGER.info("Method: createCustomer");
+		
 		CustomerController customerController = new CustomerController();
-
 		
 		String retMessage = customerController.createObject(customer);
 
-		if (retMessage != null && retMessage.length() > 0) {
-			getRequest().setAttribute("message", retMessage);
+		if (!(retMessage != null && retMessage.length() > 0)) {
+			LOGGER.warn(retMessage);
 		} else {
-			getRequest().setAttribute("message", "Neuer Kunde wurde erfolgreich angelegt!" + customer.getCustomernumber());
+			retMessage = "Neuer Kunde wurde erfolgreich angelegt!" + customer.getCustomernumber();
+			LOGGER.info(retMessage);
 		}
+		
+		getRequest().setAttribute("message", retMessage);
 		getSession().setAttribute("mycustomer", customer);
 		getSession().setAttribute("refreshCustomerList", true);
 	}
 
 	private void createCustomerSubObjects(Customer cus) {
+		LOGGER.info("Method: createCustomerSubObjects; Kunde = " + cus.getCustomernumber());
 		CustomerController customerController = new CustomerController();
 		if (customer.getAddress() != null && customer.getAddress().getCity() != null && customer.getAddress().getCity().length() > 0) {
 			Address a = (Address) customerController.createMyObject(customer.getAddress());
@@ -121,11 +130,6 @@ public class CustomerActionController extends ActionController {
 			cus.getContactPerson().setAddress(cpa);
 		}
 		
-//		if (customer.getContactPerson() != null && customer.getContactPerson().getName() != null && customer.getContactPerson().getName().length() > 0) {
-//			Person p = (Person) customerController.createMyObject(customer.getContactPerson());
-//			cus.setContactPerson(p);
-//		}
-
 		if (customer.getInvoiceConfiguration() != null) {
 			InvoiceConfiguration ic = (InvoiceConfiguration) customerController.createMyObject(customer.getInvoiceConfiguration());
 			cus.setInvoiceConfiguration(ic);
@@ -133,12 +137,13 @@ public class CustomerActionController extends ActionController {
 	}
 	
 	public void searchCustomer() {
+		LOGGER.info("Method: searchCustomer");
 		CustomerController cc = new CustomerController();
 		List<DaoObject> customers =	cc.searchCustomer(customer.getCustomernumber(), customer.getName());
 		customerList = new ArrayList<Customer>();
 		
 		if (customers != null && customers.size() > 0) {
-			System.out.println(customers.size() + " Kunden gefunden");
+			LOGGER.info(customers.size() + " Kunden gefunden");
 			
 			if (customers.size() > 1) {
 				Iterator it = customers.iterator();
@@ -152,11 +157,12 @@ public class CustomerActionController extends ActionController {
 			}
 			disableComponents(false);
 		} else {
-			System.out.println("Kein Customer gefunden");
+			LOGGER.warn("Kein Customer gefunden; " + customer.getCustomernumber() + "; " + customer.getName());
 		}
 	}
 	
 	private void disableComponents(boolean b) {
+		LOGGER.info("Method: disableComponents");
 		branchBinding.setDisabled(b);
 		faoBinding.setDisabled(b);
 		supplierNumberBinding.setDisabled(b);
@@ -187,6 +193,7 @@ public class CustomerActionController extends ActionController {
 	}
 
 	public void searchCustomerCards() {
+		LOGGER.info("Method: searchCustomerCards; " + customer.getCustomernumber() + "; " + customer.getName());
 		CustomerController cc = new CustomerController();
 		List<DaoObject> customers =	cc.searchCustomer(customer.getCustomernumber(), customer.getName());
 		Customer cus = null;
@@ -197,6 +204,7 @@ public class CustomerActionController extends ActionController {
 		cardList = new ArrayList<CardBean>();
 		if (cus != null) {
 			List<DaoObject> cardsDao = cc.searchCustomerCards(cus);
+			LOGGER.info(cardsDao.size() + " Cards found;");
 			for (DaoObject dao : cardsDao) {
 				cardList.add((CardBean) dao);
 			}
@@ -204,14 +212,16 @@ public class CustomerActionController extends ActionController {
 	}
 	
 	public void updateCustomerAction() {
+		LOGGER.info("Method: updateCustomerAction;");
 		updateCustomer();
 	}
 	
 	public String updateCustomer() {
+		LOGGER.info("Method: updateCustomer; Customer: " + customer.getCustomernumber());
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		List<DaoObject> customers = null;
-		CustomerController customerController = new CustomerController();
+//		List<DaoObject> customers = null;
+//		CustomerController customerController = new CustomerController();
 
 //		Person cp = null;
 //		Person cpp = customer.getContactPerson();
@@ -295,13 +305,16 @@ public class CustomerActionController extends ActionController {
 			}
 			
 			tx.commit();
+			LOGGER.info("Customer " + customer.getCustomernumber() + " aktualisiert;");
 		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
 			if (tx != null && tx.isActive()) {
 				try {
 					// Second try catch as the rollback could fail as well
 					tx.rollback();
 				} catch (HibernateException e1) {
-					System.out.println("Error rolling back transaction");
+					LOGGER.error("Error rolling back transaction");
+					LOGGER.error("HibernateException: " + e1);
 				}
 				// throw again the first exception
 				throw e;
@@ -319,18 +332,21 @@ public class CustomerActionController extends ActionController {
 	}
 	
 	public String createCustomerNext() {
+		LOGGER.info("Method: createCustomerNext;");
 		createCustomer();
 		customer = new Customer();
 		return null;
 	}
 
 	public String createCustomerFinish() {
+		LOGGER.info("Method: updateCustomerFinish;");
 		createCustomer();
 		customer = new Customer();
 		return "finish";
 	}
 
 	public String deleteVoucher(Voucher voucher) {
+		LOGGER.info("Method: deleteVoucher; Customer = " + customer.getCustomernumber() + ", VoucherID = " + voucher.getVoucherId());
 		customer.getVouchers().remove(voucher);
 		
 		Transaction tx = null;
@@ -349,29 +365,36 @@ public class CustomerActionController extends ActionController {
 			
 			dbCustomer.setVouchers(customer.getVouchers());
 		} catch (Exception e) {
-			// TODO: handle exception
+			LOGGER.error("Exception: " + e);
 		}
-		
+
+		LOGGER.info("Voucher deleted successfully");
 		return "openUpdateCustomerDialog";
 	}
 	
 	public void selectCustomer() {
-		Iterator itrCust = customerList.iterator();
+		Iterator<Customer> itrCust = customerList.iterator();
+		boolean match = false;
 		while (itrCust.hasNext()) {
-			Customer customerFromList = (Customer) itrCust.next();
+			Customer customerFromList = itrCust.next();
 			if (customerFromList.toString().equals(selectedCustomer)) {
-				System.out.println("Customer " + customerFromList.getName()
-						+ " equals my chosen customer!!!");
+				LOGGER.info("Customer " + customerFromList.getName() + " equals my chosen customer!!!");
 				customer = customerFromList;
+				match = true;
 				break;
 			}
 		}
 
+		if (!match) {
+			LOGGER.warn("No customer found!");
+		}
+		
 		disableComponents(false);
 		opened = !opened;
 	}
 	
 	public String deleteCustomer() {
+		LOGGER.info("Method: deleteCustomer; Customer = " + customer.getCustomernumber());
 		CustomerController customerController = new CustomerController();
 		
 		Transaction tx = null;
