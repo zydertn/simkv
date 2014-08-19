@@ -18,10 +18,10 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import de.abd.mda.controller.CardActionController;
-import de.abd.mda.model.Country;
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.CardBean;
+import de.abd.mda.persistence.dao.Country;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.Person;
