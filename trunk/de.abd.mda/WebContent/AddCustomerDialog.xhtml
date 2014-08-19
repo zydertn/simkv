@@ -52,9 +52,8 @@
 					<h:outputText value="Kundennummer:"/>
 					<h:inputText size="12" maxlength="15" style="margin-right: 34px;"
 						value="#{customerController.customer.customernumber}" />
-					<h:outputText value="Niederlassung:" />
-					<h:inputText size="15"
-						value="#{customerController.customer.branch}" />
+					<h:outputText/>
+					<h:outputText/>
 
 					<h:outputText value="z.Hd.:" />
 					<h:inputText size="15"
@@ -77,8 +76,24 @@
 					<h:outputText value="Ort:" />
 					<h:inputText size="15"
 						value="#{customerController.customer.address.city}"/>
+					<h:outputText value="Land:"/>
+					<h:selectOneMenu
+						value="#{customerController.countryName}">
+						<f:selectItems
+							value="#{actionController.model.countries}" var="country" itemLabel="#{country.name}" itemValue="#{country.name}" />
+					</h:selectOneMenu>
+					
+					<h:outputText value="Niederlassung:" />
+					<h:inputText size="15"
+						value="#{customerController.customer.branch}" />
+					<h:outputText value="VAT-Nummer:"/>
+					<h:inputText size="15"
+						value="#{customerController.customer.vatNumber}"/>
 					<h:outputText/>
 					<h:outputText/>
+					<h:outputText/>
+					<h:outputText/>
+
 					
 				</h:panelGrid>
 			</h:panelGrid>
@@ -179,14 +194,18 @@
 							<f:selectItems value="#{actionController.model.invoiceColumns}"/>
 						</ice:selectManyCheckbox>
 					</ice:panelGroup>
+
+					<h:outputText value="Zahlungsziel:"/>
+					<h:inputText value="#{customerController.customer.invoiceConfiguration.paymentTarget}" maxlength="2" size="2"/>
+					<h:outputText value="Einzugsermächtigung:"/>
+					<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.debtOrder}"></h:selectBooleanCheckbox>
+
+
 				</h:panelGrid>
 
-				<h:panelGrid columns="4">
+				<h:panelGrid columns="2">
 					<h:outputText value="Kommentar:" />
-					<h:inputText size="62" maxlength="100" style="margin-right: 22px;" 
-						value="#{customerController.customer.comment}" />
-					<h:outputText value="Einzugsermächtigung:" style="margin-right: 28px;"/>
-					<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.debtOrder}"></h:selectBooleanCheckbox>
+					<h:inputText style="margin-left:19px" size="138" maxlength="100" value="#{customerController.customer.comment}" />
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>

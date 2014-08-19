@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 04.06.2011 16:26:21 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="de.abd.mda.persistence.dao.Country" table="COUNTRY">
+		<id name="id" type="int" column="COUNTRY_ID">
+			<generator class="native" />
+		</id>
+
+		<property name="name" type="string" column="COUNTRY_NAME" length="30" />
+	 	<property name="reportLocaleName" type="string" column="COUNTRY_RLNAME" length="30" />
+	 	<property name="shortName" column="COUNTRY_SHORTNAME" type="string" length="2" />
+	 	<property name="internationalAreaCode" column="COUNTRY_IACODE" type="string" length="4" />
+	 </class>
+ </hibernate-mapping>

@@ -25,12 +25,14 @@ import org.hibernate.Transaction;
 
 import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.CardBean;
+import de.abd.mda.persistence.dao.Country;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.InvoiceConfiguration;
 import de.abd.mda.persistence.dao.Person;
 import de.abd.mda.persistence.dao.Voucher;
 import de.abd.mda.persistence.dao.controller.CardController;
+import de.abd.mda.persistence.dao.controller.CountryController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.FacesUtil;
@@ -75,7 +77,11 @@ public class CustomerActionController extends ActionController {
 	private HtmlSelectOneMenu voucherYearBinding;
 	private HtmlInputText cardAmountBinding;
 	private HtmlInputText cardVoucherBinding;
-
+	private HtmlInputText vatNumberBinding;
+	private HtmlSelectOneMenu selectCountryBinding;
+	private String countryName;
+	private HtmlInputText paymentTargetBinding;
+	
 	
 	private String relation;
 	private List<CardBean> cardList;
@@ -97,14 +103,17 @@ public class CustomerActionController extends ActionController {
 		LOGGER.info("Method: createCustomer");
 		
 		CustomerController customerController = new CustomerController();
+		CountryController countryController = new CountryController();
+		Country country = countryController.findCountry(countryName);
+		customer.setCountry(country);
 		
 		String retMessage = customerController.createObject(customer);
 
 		if (!(retMessage != null && retMessage.length() > 0)) {
-			LOGGER.warn(retMessage);
-		} else {
 			retMessage = "Neuer Kunde wurde erfolgreich angelegt!" + customer.getCustomernumber();
 			LOGGER.info(retMessage);
+		} else {
+			LOGGER.warn(retMessage);
 		}
 		
 		getRequest().setAttribute("message", retMessage);
@@ -154,10 +163,12 @@ public class CustomerActionController extends ActionController {
 				opened = !opened;
 			} else {
 				customer = (Customer) customers.get(0);
+				countryName = customer.getCountry().getName();
 			}
 			disableComponents(false);
 		} else {
 			LOGGER.warn("Kein Customer gefunden; " + customer.getCustomernumber() + "; " + customer.getName());
+			getRequest().setAttribute("message", "Kein Customer gefunden; " + customer.getCustomernumber() + "; " + customer.getName());
 		}
 	}
 	
@@ -189,6 +200,9 @@ public class CustomerActionController extends ActionController {
 		voucherYearBinding.setDisabled(b);
 		cardAmountBinding.setDisabled(b);
 		cardVoucherBinding.setDisabled(b);
+		vatNumberBinding.setDisabled(b);
+		selectCountryBinding.setDisabled(b);
+		paymentTargetBinding.setDisabled(b);
 		getRequest().setAttribute("componentDisabled", b);
 	}
 
@@ -245,6 +259,11 @@ public class CustomerActionController extends ActionController {
 			dbCustomer.setName(customer.getName());
 			dbCustomer.setSupplierNumber(customer.getSupplierNumber());
 			dbCustomer.setComment(customer.getComment());
+			dbCustomer.setVatNumber(customer.getVatNumber());
+			
+			CountryController countryController = new CountryController();
+			Country country = countryController.findCountry(countryName);
+			dbCustomer.setCountry(country);
 			
 			Address ad = dbCustomer.getAddress();
 			Address cad = customer.getAddress();
@@ -289,7 +308,7 @@ public class CustomerActionController extends ActionController {
 			ic.setSeparateBilling(cic.getSeparateBilling());
 			ic.setSeparateBillingCriteria(cic.getSeparateBillingCriteria());
 			ic.setDebtOrder(cic.getDebtOrder());
-			
+			ic.setPaymentTarget(cic.getPaymentTarget());
 			
 			if (voucher.getCardAmount() > 0 && voucher.getCardVoucher() > 0) {
 				Set<Voucher> vouchers = dbCustomer.getVouchers();
@@ -780,6 +799,38 @@ public class CustomerActionController extends ActionController {
 
 	public void setCardVoucherBinding(HtmlInputText cardVoucherBinding) {
 		this.cardVoucherBinding = cardVoucherBinding;
+	}
+
+	public HtmlInputText getVatNumberBinding() {
+		return vatNumberBinding;
+	}
+
+	public void setVatNumberBinding(HtmlInputText vatNumberBinding) {
+		this.vatNumberBinding = vatNumberBinding;
+	}
+
+	public HtmlSelectOneMenu getSelectCountryBinding() {
+		return selectCountryBinding;
+	}
+
+	public void setSelectCountryBinding(HtmlSelectOneMenu selectCountryBinding) {
+		this.selectCountryBinding = selectCountryBinding;
+	}
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
+	public HtmlInputText getPaymentTargetBinding() {
+		return paymentTargetBinding;
+	}
+
+	public void setPaymentTargetBinding(HtmlInputText paymentTargetBinding) {
+		this.paymentTargetBinding = paymentTargetBinding;
 	}
 
 

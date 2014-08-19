@@ -114,6 +114,7 @@ public class ActionController implements ActionListener {
 			throws AbortProcessingException {
 		// TODO Auto-generated method stub
 		getRequest().setAttribute("clearCard", true);
+		getRequest().setAttribute("newCustomer", true);
 		LOGGER.info("ID = " + event.getComponent().getId());
 		if (uiMessage != null)
 			uiMessage.setRendered(false);
