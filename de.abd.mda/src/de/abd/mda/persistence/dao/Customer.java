@@ -38,6 +38,8 @@ public class Customer extends DaoObject {
 	private Date lastCalculationDate;
 	private Set<Voucher> vouchers;
 	private Map<String, Bill> bills;
+	private String vatNumber;
+	private Country country;
 	
 	private InvoiceConfiguration invoiceConfiguration;
 
@@ -52,7 +54,8 @@ public class Customer extends DaoObject {
 		this.customernumber = "";
 		this.comment = "";
 		this.invoiceConfiguration = new InvoiceConfiguration();
-		paymentMethod = "";
+		this.paymentMethod = "";
+		this.vatNumber = "";
 	}
 	
 	public String getListString() {
@@ -194,6 +197,22 @@ public class Customer extends DaoObject {
 
 	public void setBills(Map<String, Bill> bills) {
 		this.bills = bills;
+	}
+
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 	
 }

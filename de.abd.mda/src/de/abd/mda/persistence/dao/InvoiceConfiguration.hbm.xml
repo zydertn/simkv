@@ -24,5 +24,6 @@
 			<element column="IC_BILLING_CRITERIA" type="java.lang.String" />
 		</array>
 		<property name="debtOrder" type="boolean" column="CARD_DEBT_ORDER" />
+		<property name="paymentTarget" type="int" column="CARD_PAYMENT_TARGET" length="2" />
 	</class>
 </hibernate-mapping>

@@ -17,7 +17,7 @@ public class InvoiceConfiguration extends DaoObject {
 	private Boolean separateBilling;
 	private String[] separateBillingCriteria;
 	private Boolean debtOrder;
-	
+	private int paymentTarget;
 	
 	public InvoiceConfiguration() {
 		this.format = "Hochformat";
@@ -25,6 +25,8 @@ public class InvoiceConfiguration extends DaoObject {
 //		columns[0] = "1";
 //		columns[1] = "3";
 		this.creationFrequency = "monatlich";
+		// Default Value = 10 Tage
+		this.paymentTarget = 10;
 	}
 
 	public int getSimPrice() {
@@ -108,6 +110,14 @@ public class InvoiceConfiguration extends DaoObject {
 
 	public void setDebtOrder(Boolean debtOrder) {
 		this.debtOrder = debtOrder;
+	}
+
+	public int getPaymentTarget() {
+		return paymentTarget;
+	}
+
+	public void setPaymentTarget(int paymentTarget) {
+		this.paymentTarget = paymentTarget;
 	}
 	
 }

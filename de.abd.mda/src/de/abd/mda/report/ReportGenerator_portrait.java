@@ -20,7 +20,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
@@ -72,6 +74,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	private static int sevBillInvNum = 35000;
 	private boolean billContainsVoucher = false;
 	private boolean writeToDB = true;
+	private ResourceBundle bundle = null;
 
 	
 	public ReportGenerator_portrait() {
@@ -87,6 +90,16 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
 		LOGGER.info("Method: generateReport");
+		String baseName = "de.abd.mda.locale.report";
+		String reportLocale = customer.getCountry().getReportLocaleName();
+		if (reportLocale.toLowerCase().equals("de") || reportLocale.equals("at")) {
+			Locale.setDefault(new Locale(reportLocale.toLowerCase()));
+		} else {
+			Locale.setDefault(new Locale("en"));
+		}
+
+		bundle = ResourceBundle.getBundle(baseName);
+
 		try {
 			long time1 = System.currentTimeMillis();
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
@@ -333,14 +346,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			cb.beginText();
 			cb.setColorFill(Color.BLACK);
 			cb.setFontAndSize(bf_arial, 11);
-			String companyString = "Firma";
-			if (customer.getContactPerson().getGender() != null) {
-				companyString = customer.getContactPerson().getGender();
-			}
-			y = y - 20;
+			String companyString = "";
+			y = y - 9;
 			int d = 11;
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, companyString, x, y,
-					0);
+			if (customer.getContactPerson().getGender() != null) {
+				companyString = bundle.getString("Report." + customer.getContactPerson().getGender());;
+				if (companyString != null && companyString.length() > 0) {
+					y = y - d;
+					cb.showTextAligned(PdfContentByte.ALIGN_LEFT, companyString, x, y,
+							0);
+				}
+			}
 
 			y = y - d;
 			// Firmenname
@@ -363,44 +379,57 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
 						x, y, 0);
 			} else if (customer.getInvoiceAddress().getPostbox() != null && customer.getInvoiceAddress().getPostbox().length() > 0) {
-				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Postfach "+ customer.getInvoiceAddress().getPostbox(), x, y, 0);
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.postbox") + " "+ customer.getInvoiceAddress().getPostbox(), x, y, 0);
 			}
 
 			y = y - d;
 			// Firmenort
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.postCodeCountryPrefix") + customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
 					y, 0);
-
+			
+			int dateY = 0;
+			
+			// Ländername, wenn nicht Deutschland und wenn kein Country Prefix in locale properties angegeben ist.
+			if (!customer.getCountry().getShortName().equals("DE") && bundle.getString("Report.postCodeCountryPrefix").length() == 0) {
+				y = y - d;
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getCountry().getReportLocaleName(), x, y, 0);
+				dateY = 15;
+			}
+			
 			// Date
 //			y = y - 5 * d;
 			Date date = new Date();
 			// Temporär auf 14. Januar gesetzt
 //			date.setDate(13);
 //			date.setMonth(2);
-			SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+			SimpleDateFormat df = new SimpleDateFormat(bundle.getString("Report.dateformat"));
 			df.setTimeZone(TimeZone.getDefault());
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630-dateY, 0);
 
 			// Rechnungsnummer
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Rechnung - Nr.", 425, 600, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.invoicenumber"), 425, 600-dateY, 0);
 			
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "0" + invoiceNumber, 510, 600, 0);
+			String invoiceNumStr = "";
+			if (invoiceNumber > 9999) {
+				invoiceNumStr = "0";
+			}
+			invoiceNumStr += invoiceNumber;
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, invoiceNumStr, 510, 600-dateY, 0);
 			
 			// Kundennr.
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Kunden - Nr.     ", 425, 589, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 516, 589, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.customernumber"), 425, 589-dateY, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 516, 589-dateY, 0);
 
 			int abzSuppNum = 0;
 			if (customer.getSupplierNumber() != null && customer.getSupplierNumber().length() > 0) {
 				// Lieferantennr.
-				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Lieferanten - Nr.     ", 425, 578, 0);
-				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getSupplierNumber(), 510, 578, 0);
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.suppliernumber"), 425, 578-dateY, 0);
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getSupplierNumber(), 510, 578-dateY, 0);
 				abzSuppNum = 11;
 			}
 			
 			cb.setFontAndSize(bf_arial, 8);
-			String info = "(Bitte bei Bezahlung immer angeben)";
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, info, 425, 578-abzSuppNum, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.info"), 425, 578-abzSuppNum-dateY, 0);
 
 			cb.endText();
 
@@ -408,14 +437,15 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			y = 715;
 
 			Font invoiceFont = new Font(bf_arial, 12, Font.BOLD);
-			String invoiceS = "Rechnung";
+			String invoiceS = bundle.getString("Report.invoice");
 			if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY))
-				invoiceS = "Quartalsrechnung";
+				invoiceS = bundle.getString("Report.invoice_quarterly");
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY))
-				invoiceS = "Halbjahresrechnung";
+				invoiceS = bundle.getString("Report.invoice_halfyear");
 			else if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY))
-				invoiceS = "Jahresrechnung";
+				invoiceS = bundle.getString("Report.invoice_year");
 			Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
+
 			Font timeframeFont = new Font(bf_arial, 11);
 			Font timeframeFontBold = new Font(bf_arial, 11, Font.BOLD);
 
@@ -435,7 +465,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			calcTimeString += " " + calcMonth.get(Calendar.YEAR);
 			Chunk timeframe = new Chunk(
 					addNewLines(2)
-							+ "Berechnungszeitraum für die Servicegebühr: " + calcTimeString, timeframeFont);
+							+ bundle.getString("Report.timeframe") + calcTimeString, timeframeFont);
 			String commentSevBills = "";
 			if (severalBills) {
 				for (DaoObject dao : customerCards) {
@@ -455,6 +485,15 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 			Phrase phrase = new Phrase();
 			phrase.add(invoice);
+
+			/*
+			 * VAT-Nummer - nur bei Auslandskunden benötigt
+			 */
+			if (customer.getVatNumber() != null && customer.getVatNumber().length() > 0) {
+				Chunk vatChunk = new Chunk(addNewLines(2) + bundle.getString("Report.vatString") + customer.getVatNumber(), invoiceFont);
+				phrase.add(vatChunk);
+			}
+
 			phrase.add(timeframe);
 			phrase.add(commentCk);
 			
@@ -530,7 +569,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				}
 				if (columns.contains(Model.COLUMN_PLANT_NUMBER)) {
 					if (card.getFlatrateCard()) {
-						invoiceRowList.add("GSM Datenflat für Leitstand Otisstraße Berlin");
+						invoiceRowList.add(bundle.getString("Report.flatratestring"));
 					} else {
 						invoiceRowList.add(card.getFactoryNumber());
 					}
@@ -599,21 +638,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			}
 			
 			if (customer.getInvoiceConfiguration() != null && customer.getInvoiceConfiguration().getDebtOrder() != null && customer.getInvoiceConfiguration().getDebtOrder()) {
-				Chunk debtOrder = new Chunk(addNewLines(2) + "Zahlung erfolgt per Lastschrift." + addNewLines(2), timeframeFont);
+				Chunk debtOrder = new Chunk(addNewLines(2) + bundle.getString("Report.debitpayment") + addNewLines(2), timeframeFont);
 				Phrase debtOrderPhrase = new Phrase(debtOrder);
 				doc.add(debtOrderPhrase);
 			} else {
-				Chunk paymentDueDate = new Chunk(addNewLines(2) + "Bitte überweisen Sie den Rechnungsbetrag rein netto innerhalb von 10 Tagen ab Rechnungsdatum ", timeframeFont);
-				Chunk paymentDueDateEnd = new Chunk("unter Angabe der Rechnungsnummer." + addNewLines(2), timeframeFontBold);
+				Chunk paymentDueDate = new Chunk(addNewLines(2) + bundle.getString("Report.paymenttime") + customer.getInvoiceConfiguration().getPaymentTarget() + " " + bundle.getString("Report.paymenttime2"), timeframeFont);
+				Chunk paymentDueDateEnd = new Chunk(bundle.getString("Report.paymentinvoicenum") + addNewLines(2), timeframeFontBold);
 				Phrase payPhrase = new Phrase(paymentDueDate);
 				payPhrase.add(paymentDueDateEnd);
 				doc.add(new Phrase(payPhrase));
 
-				Chunk verzugsChunk = new Chunk("Wir weisen Sie darauf hin, dass Sie sich nach diesem Zeitraum bereits in Verzug befinden." + addNewLines(2), timeframeFont);
+				Chunk verzugsChunk = new Chunk(bundle.getString("Report.arrearsinfo") + addNewLines(2), timeframeFont);
 				doc.add(new Phrase(verzugsChunk));
 			}
 
-			Chunk rückfragenChunk = new Chunk("Bei Rückfragen können Sie sich gerne an folgende Kontaktdaten wenden:" + addNewLines(2), timeframeFont);
+			Chunk rückfragenChunk = new Chunk(bundle.getString("Report.inquiry") + addNewLines(2), timeframeFont);
 			doc.add(new Phrase(rückfragenChunk));
 
 			Font mailFont = new Font(bf_arial, 12);
@@ -621,58 +660,70 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			mailFont.setStyle(Font.UNDERLINE);
 			
 //			Chunk mailChunk = new Chunk("E-Mail: " + mailAnchor + "<" + mailToAnchor + ">" + addNewLines(1));
-			doc.add(new Phrase(new Chunk("E-Mail: ")));
-			doc.add(new Phrase(new Chunk("Controlling@siwaltec.de", mailFont).setAnchor("mailto:Controlling@siwaltec.de")));
+			doc.add(new Phrase(new Chunk(bundle.getString("Report.email"))));
+			doc.add(new Phrase(new Chunk(bundle.getString("Report.mailaddress"), mailFont).setAnchor("mailto:"+ bundle.getString("Report.mailaddress"))));
 			
-			Chunk phoneChunk = new Chunk(addNewLines(1) + "Tel.Nr.: 07031-9858-444");
+			Chunk phoneChunk = new Chunk(addNewLines(1) + bundle.getString("Report.telnum"));
 			doc.add(new Phrase(phoneChunk));
 
-			Chunk correctionChunk = new Chunk(addNewLines(3) + "Bitte prüfen Sie diese Rechnung. Ihnen ist eine Unstimmigkeit aufgefallen? Dann können Sie sich mit Ihrem Widerspruch sehr gerne innerhalb von 6 Wochen an unsere Service Abteilung wenden:" + addNewLines(1));
+			Chunk correctionChunk = new Chunk(addNewLines(3) + bundle.getString("Report.check_for_dissonance") + addNewLines(1));
 			doc.add(new Phrase(correctionChunk));
 			
-			Chunk mailChunk = new Chunk(addNewLines(1) + "            per Mail:           ", timeframeFontBold);
-			Chunk mailAddChunk = new Chunk("kontakt@siwaltec.de", mailFont).setAnchor("mailto:kontakt@siwaltec.de");
+			Chunk mailChunk = new Chunk(addNewLines(1) + "            " + bundle.getString("Report.per_mail"), timeframeFontBold);
+			Chunk mailAddChunk = new Chunk(bundle.getString("Report.contactmailaddress"), mailFont).setAnchor("mailto:" + bundle.getString("Report.contactmailaddress"));
 			doc.add(mailChunk);
 			doc.add(mailAddChunk);
 
-			Chunk faxChunk = new Chunk(addNewLines(1) + "            per Fax:", timeframeFontBold);
-			Chunk numberChunk = new Chunk("            07031 98 58 317", timeframeFont);
+			Chunk faxChunk = new Chunk(addNewLines(1) + "            " + bundle.getString("Report.per_fax"), timeframeFontBold);
+			Chunk numberChunk = new Chunk("            " + bundle.getString("Report.faxNum"), timeframeFont);
 			doc.add(faxChunk);
 			doc.add(numberChunk);
 			
 
-			Chunk postChunk = new Chunk(addNewLines(1) + "            per Post:", timeframeFontBold);
-			Chunk siwalChunk = new Chunk("           SiwalTec GmbH", timeframeFont);
+			Chunk postChunk = new Chunk(addNewLines(1) + "            " + bundle.getString("Report.per_post"), timeframeFontBold);
+			Chunk siwalChunk = new Chunk("           " + bundle.getString("Report.postString"), timeframeFont);
 			doc.add(postChunk);
 			doc.add(siwalChunk);
 			
-			Chunk rechnungsprüfungChunk = new Chunk(addNewLines(1) + "                                    -Rechnungsprüfung-", timeframeFont);
+			Chunk rechnungsprüfungChunk = new Chunk(addNewLines(1) + addSpaces(new Integer(bundle.getString("Report.invoice_address_spaces"))) + bundle.getString("Report.invoice_verification"), timeframeFont);
 			doc.add(rechnungsprüfungChunk);
 
-			Chunk streetChunk = new Chunk(addNewLines(1) + "                                     Max-Eyth-Straße 35", timeframeFont);
+			Chunk streetChunk = new Chunk(addNewLines(1) + addSpaces(new Integer(bundle.getString("Report.invoice_address_spaces"))) + bundle.getString("Report.postStreet"), timeframeFont);
 			doc.add(streetChunk);
 
-			Chunk addressChunk = new Chunk(addNewLines(1) + "                                     71088 Holzgerlingen", timeframeFont);
+			Chunk addressChunk = new Chunk(addNewLines(1) + addSpaces(new Integer(bundle.getString("Report.invoice_address_spaces"))) + bundle.getString("Report.postCity"), timeframeFont);
 			doc.add(addressChunk);
 
-			Chunk appendixChunk = new Chunk(addNewLines(2) + "Nach diesem Zeitraum gilt die Rechnung als geprüft und von Ihnen anerkannt. Durch die Freischaltung der SiwalTec SimKarte erkennen Sie unsere AGBs an.");
+			Chunk appendixChunk = new Chunk(addNewLines(2) + bundle.getString("Report.invoiceApproval"));
 			doc.add(appendixChunk);
 
-			Chunk sepa1Chunk = new Chunk(addNewLines(6) + "SEPA Kontodaten SiwalTec GmbH:");
-			Chunk sepa2Chunk = new Chunk(addNewLines(1) + "          IBAN:   DE72 6039 0000 0406 1280 06");
-			Chunk sepa3Chunk = new Chunk(addNewLines(1) + "          BIC:     GENODES1BBV");
+			Chunk sepa1Chunk = new Chunk(addNewLines(6) + bundle.getString("Report.sepaString"));
+			Chunk sepa2Chunk = new Chunk(addNewLines(1) + "          " + bundle.getString("Report.iban"));
+			Chunk sepa3Chunk = new Chunk(addNewLines(1) + "          " + bundle.getString("Report.bic"));
 			doc.add(sepa1Chunk);
 			doc.add(sepa2Chunk);
 			doc.add(sepa3Chunk);
 	
 		} catch (Exception ex) {
 			LOGGER.error("Exception: "+ ex);
+			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 			return true;
 		}
 		
 		return false;
 	}
 	
+	private String addSpaces(int i) {
+		String s = "";
+		if (i > 0) {
+			for (int j = 0; j < i; j++) {
+				s += " ";
+			}
+		}
+		return s;
+	}
+
 	private ArrayList<TableRow> addCalculationRows(
 			ArrayList<TableRow> tableRowList,
 			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum, Calendar calcMonth) {
@@ -680,12 +731,12 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		LOGGER.info("Method: addCalculationRows");
 		DecimalFormat df = new DecimalFormat("#0.00");
 
-		BigDecimal mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
+		BigDecimal mwst = nettoSum.multiply(new BigDecimal(bundle.getString("Report.value_added_tax"))).setScale(2, RoundingMode.HALF_UP);;
 		
 		int firstcols = customer.getInvoiceConfiguration().getColumns().length;
 	
 		
-		String[] cr1 = createCalcRow(firstcols, "Netto Summe", df.format(nettoSum).replace(".", ",") + " €");;
+		String[] cr1 = createCalcRow(firstcols, bundle.getString("Report.net_sum"), df.format(nettoSum).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));;
 		tableRowList.add(new TableRow(1, cr1));
 
 		if (customer.getVouchers() != null && customer.getVouchers().size() > 0) {
@@ -705,18 +756,18 @@ public class ReportGenerator_portrait implements IReportGenerator {
 					String vs = ("-" + v.getTotalVoucher()).replace(".", ",");
 					if (vs.indexOf(",") == (vs.length() - 2))
 						vs += "0";
-					cr1_1[cr1.length - 1] = vs + " €";
+					cr1_1[cr1.length - 1] = vs + " " + bundle.getString("Report.euro_sign");
 					nettoSum = nettoSum.subtract(new BigDecimal(v.getTotalVoucher()));
-					String[] cr1_2 = createCalcRow(firstcols, "", "" + df.format(nettoSum).replace(".", ",") + " €");
-					mwst = nettoSum.multiply(new BigDecimal("0.19")).setScale(2, RoundingMode.HALF_UP);;
+					String[] cr1_2 = createCalcRow(firstcols, "", "" + df.format(nettoSum).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));
+					mwst = nettoSum.multiply(new BigDecimal(bundle.getString("Report.value_added_tax"))).setScale(2, RoundingMode.HALF_UP);;
 					tableRowList.add(new TableRow(1, cr1_1));
 					tableRowList.add(new TableRow(1, cr1_2));
 				}
 			}
 		}
-		String[] cr2 = createCalcRow(firstcols, "19% MWST.", "" + df.format(mwst).replace(".", ",") + " €");
+		String[] cr2 = createCalcRow(firstcols, bundle.getString("Report.vat"), "" + df.format(mwst).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));
 		String[] cr3 = createCalcRow(firstcols, "", "");
-		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(nettoSum)).replace(".", ",") + " €");
+		String[] cr4 = createCalcRow(firstcols, bundle.getString("Report.final_amount"), df.format(mwst.add(nettoSum)).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));
 //		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(netSumAfterVoucher)).replace(".", ",") + " €");
 
 		tableRowList.add(new TableRow(1, cr2));
@@ -964,7 +1015,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				tableFont = new Font(bf_arial, 8);
 			else 
 				tableFont = new Font(bf_arial, 9);
-			PdfPCell cell = new PdfPCell(new Phrase("Pos.", tableFont));
+			PdfPCell cell = new PdfPCell(new Phrase(bundle.getString("Report.pos"), tableFont));
 			cell.setPaddingTop(10);
 			cell.setPaddingBottom(10);
 			cell.setBorderWidthTop(0.5f);
@@ -973,86 +1024,86 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			tableHeader.addCell(cell);
 //			if (columns.contains(Model.COLUMN_AMOUNT)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_AMOUNT, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_months"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				tableHeader.addCell(cell);
 //			}
 			if (cols.contains(Model.COLUMN_DESCRIPTION)) {
-				cell.setPhrase(new Phrase("Bezeichnung", tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_description"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_CARD_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_CARD_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_card_num"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_TEL_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_TEL_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_tel_num"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_INST_PLZ)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_INST_PLZ, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_inst_plz"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_EINSATZORT)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_EINSATZORT, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_inst_city"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_INST_STREET)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_INST_STREET, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_inst_street"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_PLANT_NUMBER)) {
 				if (flatrateCalc && customer.getCustomernumber().equals("20243")) {
-					cell.setPhrase(new Phrase("Beschreibung", tableFont));
+					cell.setPhrase(new Phrase(bundle.getString("Report.column_beschr"), tableFont));
 				} else {
-					cell.setPhrase(new Phrase(Model.COLUMN_PLANT_NUMBER, tableFont));
+					cell.setPhrase(new Phrase(bundle.getString("Report.column_plant_number"), tableFont));
 				}
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_EQUIP_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_EQUIP_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_equip_number"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_AUFTRAGS_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_AUFTRAGS_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_auftrags_num"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_BESTELL_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_BESTELL_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_bestell_nummer"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_VERTRAG_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_VERTRAG_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_vertrag_nr"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_BA_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_BA_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_ba_num"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_WE_NR)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_WE_NR, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_we_num"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 			if (cols.contains(Model.COLUMN_COST_CENTER)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_COST_CENTER, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_cost_center"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				tableHeader.addCell(cell);
 			}
 //			if (cols.contains(Model.COLUMN_TOTAL_PRICE)) {
-				cell.setPhrase(new Phrase(Model.COLUMN_TOTAL_PRICE, tableFont));
+				cell.setPhrase(new Phrase(bundle.getString("Report.column_total_price"), tableFont));
 				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 				tableHeader.addCell(cell);
 //			}

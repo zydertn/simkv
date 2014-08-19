@@ -17,7 +17,9 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 
 import de.abd.mda.controller.SearchCardController;
+import de.abd.mda.persistence.dao.Country;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
+import de.abd.mda.persistence.dao.controller.CountryController;
 import de.abd.mda.util.FacesUtil;
 
 public class Model {
@@ -146,9 +148,20 @@ public class Model {
 	}
 
 	public void createModel() {
-		countries = new ArrayList<Country>();
-		countries.add(new Country("Deutschland", "DE", "+49"));
-		countries.add(new Country("÷sterreich", "AT", "+43"));
+		if (countries == null) {
+			CountryController cc = new CountryController();
+			countries = cc.listCountries();
+		}
+//		countries = new ArrayList<Country>();
+//		countries.add(new Country("Deutschland", "DE", "+49"));
+//		countries.add(new Country("D‰nemark", "DK", "+45"));
+//		countries.add(new Country("Irland", "IE", "+353"));
+//		countries.add(new Country("Groﬂbritannien", "GB", "+44"));
+//		countries.add(new Country("÷sterreich", "AT", "+43"));
+//		countries.add(new Country("Polen", "PL", "+48"));
+//		countries.add(new Country("Rum‰nien", "RO", "+40"));
+//		countries.add(new Country("Tschechien", "CZ", "+420"));
+		
 		
 		statusList = new ArrayList<String>();
 		statusList.add(Model.STATUS_ACTIVE);

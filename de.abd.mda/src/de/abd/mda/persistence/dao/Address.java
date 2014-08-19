@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import de.abd.mda.model.Country;
 import de.abd.mda.model.Model;
 
 public class Address extends DaoObject implements Serializable {

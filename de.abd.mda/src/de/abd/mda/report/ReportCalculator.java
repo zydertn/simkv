@@ -297,6 +297,9 @@ public class ReportCalculator extends ActionController implements Runnable {
 		return true;
 	}
 
+	public int monthCalc(Customer customer, int reportCount, int month, int year) {
+		return monthCalculation(customer, reportCount, month, year);
+	}
 	
 	private int monthCalculation(Customer customer, int reportCount, int month, int year) {
 		LOGGER.info("MONTH CALCULATION for customer " + customer.getCustomernumber() + ", reportCount = " + reportCount + ", year = " + year + ", month = " + month);
@@ -373,7 +376,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 			}
 		}
 
-		tx.commit();
+//		tx.commit();
 		
 		return reportCount;
 	}

@@ -91,6 +91,20 @@ public class BillController extends DaoController {
 		return bills;
 	}
 
+	public List<Bill> findCustomerMonthBills(int customerNumber, int month, int year) {
+		LOGGER.info("Method: findCustomerBills");
+		String select = "select distinct bill from Bill bill";
+		select += " where bill.customerNumber = '" + customerNumber + "'";
+		select += " and bill.year = '" + year + "'";
+		select += " and bill.month = '" + month + "'";
+		List<Bill> bills = createListQuery(select);
+		if (bills != null) {
+			LOGGER.info(bills.size() + " bills found");
+		}
+		return bills;
+	}
+
+	
 	public List<Bill> findMonthBills(int year, int month) {
 		LOGGER.info("Method: findMonthBills");
 		String select = "select distinct bill from Bill bill";
