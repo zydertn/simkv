@@ -73,7 +73,7 @@
 						value="#{customerController.customer.address.postbox}"
 						disabled="#{customerController.componentDisabled}" />
 					<h:outputText value="PLZ:" />
-					<h:inputText size="4" maxlength="5"
+					<h:inputText size="6" maxlength="6"
 						binding="#{customerController.postcodeBinding}"
 						value="#{customerController.customer.address.postcode}"
 						disabled="#{customerController.componentDisabled}" />
@@ -180,7 +180,7 @@
 					
 
 					<h:outputText value="PLZ:" />
-					<h:inputText size="4" maxlength="5"
+					<h:inputText size="6" maxlength="6"
 						binding="#{customerController.invoicePostcodeBinding}"
 						value="#{customerController.customer.invoiceAddress.postcode}"
 						disabled="#{customerController.componentDisabled}" />
