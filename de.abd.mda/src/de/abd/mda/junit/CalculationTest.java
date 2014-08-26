@@ -31,7 +31,7 @@ public class CalculationTest {
 		ReportCalculator rp = new ReportCalculator();
 		int month = 6;
 		int year = 2014;
-		int customerNumber = 20243;
+		int customerNumber = 20246;
 //		rp.calculate();
 		CustomerController cc = new CustomerController();
 		Customer customer = cc.findCustomer("" + customerNumber);
