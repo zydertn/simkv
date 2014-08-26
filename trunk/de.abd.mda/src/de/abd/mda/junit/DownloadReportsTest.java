@@ -38,8 +38,8 @@ public class DownloadReportsTest {
 		// TODO Auto-generated method stub
 
 		DownloadReportsTest rg = new DownloadReportsTest();
-//		rg.testCustomerQuery(20074);
-		rg.testMonthQuery(2014, 1);
+		rg.testCustomerQuery(20243);
+//		rg.testMonthQuery(2014, 1);
 		
 	}
 
@@ -150,7 +150,38 @@ public class DownloadReportsTest {
 					e.printStackTrace();
 				}
 			}
-			
+
+			File zipFile = new File("C:/Temp/report/Test.zip");
+			FileOutputStream zfos;
+			try {
+				zfos = new FileOutputStream(zipFile);
+				ZipOutputStream zos = new ZipOutputStream(zfos);
+				byte[] buffer = new byte[1024];
+				for (Bill bill: bills) {
+					ZipEntry ze = new ZipEntry(bill.getFilename());
+					zos.putNextEntry(ze);
+
+					File f = new File(bill.getFilename());
+					FileInputStream fis = new FileInputStream(f);
+					int length;
+					while ((length = fis.read(buffer)) > 0) {
+						zos.write(buffer, 0, length);
+					}
+					
+//					zos.write(bill.getFile());
+					zos.closeEntry();
+					fis.close();
+				}
+				zos.close();
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		
 //			try {
 //				Runtime.getRuntime().exec(
 //				"rundll32 url.dll,FileProtocolHandler " + testFilename);

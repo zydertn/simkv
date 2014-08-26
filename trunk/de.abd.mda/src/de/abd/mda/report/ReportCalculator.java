@@ -99,7 +99,8 @@ public class ReportCalculator extends ActionController implements Runnable {
 		zipPath = model.getZipPath();
 		LOGGER.info("pdfPath = " + pdfPath + ", zipPath = " + zipPath);
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MONTH, -1);
+//		cal.add(Calendar.MONTH, -1);
+		
 		monthRunMonth = cal.get(Calendar.MONTH);
 		monthRunYear = cal.get(Calendar.YEAR);
 		CustomerController cc = new CustomerController();

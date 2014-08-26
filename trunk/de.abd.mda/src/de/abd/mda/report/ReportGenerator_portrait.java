@@ -67,9 +67,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	BaseFont bf_broadway = null;
 	BaseFont bf_arial = null;
 //	private static int MAX_ROW_FIRST_PAGE = 25;
-	private static int MAX_ROW_FIRST_PAGE = 25;
+	private int MAX_ROW_FIRST_PAGE = 25;
 //	private static int FULL_PAGE_SIZE = 39;
-	private static int FULL_PAGE_SIZE = 40;
+	private int FULL_PAGE_SIZE = 40;
 	private int pos = 0;
 	private static int sevBillInvNum = 35000;
 	private boolean billContainsVoucher = false;
@@ -91,8 +91,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
 		LOGGER.info("Method: generateReport");
 		String baseName = "de.abd.mda.locale.report";
-		String reportLocale = customer.getCountry().getReportLocaleName();
-		if (reportLocale.toLowerCase().equals("de") || reportLocale.equals("at")) {
+		String reportLocale = customer.getCountry().getShortName();
+		if (reportLocale.toLowerCase().equals("de") || reportLocale.toLowerCase().equals("at")) {
 			Locale.setDefault(new Locale(reportLocale.toLowerCase()));
 		} else {
 			Locale.setDefault(new Locale("en"));
@@ -100,6 +100,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 		bundle = ResourceBundle.getBundle(baseName);
 
+		MAX_ROW_FIRST_PAGE = new Integer(bundle.getString("Report.maxRowFirstPage"));
+		
 		try {
 			long time1 = System.currentTimeMillis();
 			Document document = new Document(PageSize.A4, 60, 25, 40, 40);
@@ -376,16 +378,26 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			y = y - d;
 			// Firmenstrasse
 			if (customer.getInvoiceAddress().getStreet() != null && customer.getInvoiceAddress().getStreet().length() > 0) {
-				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
-						x, y, 0);
+				if (customer.getCountry().getShortName().equals("GB")) {
+					cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getHousenumber() + " " + customer.getInvoiceAddress().getStreet(),
+							x, y, 0);
+				} else {
+					cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getStreet() + " " + customer.getInvoiceAddress().getHousenumber(),
+							x, y, 0);
+				}
 			} else if (customer.getInvoiceAddress().getPostbox() != null && customer.getInvoiceAddress().getPostbox().length() > 0) {
 				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.postbox") + " "+ customer.getInvoiceAddress().getPostbox(), x, y, 0);
 			}
 
 			y = y - d;
 			// Firmenort
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.postCodeCountryPrefix") + customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
-					y, 0);
+			if (customer.getCountry().getShortName().equals("GB")) {
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, customer.getInvoiceAddress().getCity() + " " + customer.getInvoiceAddress().getPostcode(), x,
+						y, 0);
+			} else {
+				cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.postCodeCountryPrefix") + customer.getInvoiceAddress().getPostcode() + " " + customer.getInvoiceAddress().getCity(), x,
+						y, 0);
+			}
 			
 			int dateY = 0;
 			
@@ -414,11 +426,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				invoiceNumStr = "0";
 			}
 			invoiceNumStr += invoiceNumber;
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, invoiceNumStr, 510, 600-dateY, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, invoiceNumStr, new Integer(bundle.getString("Report.invoicenumberpos")), 600-dateY, 0);
 			
 			// Kundennr.
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.customernumber"), 425, 589-dateY, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), 516, 589-dateY, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "" + customer.getCustomernumber(), new Integer(bundle.getString("Report.customernumberpos")), 589-dateY, 0);
 
 			int abzSuppNum = 0;
 			if (customer.getSupplierNumber() != null && customer.getSupplierNumber().length() > 0) {
@@ -643,13 +655,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				doc.add(debtOrderPhrase);
 			} else {
 				Chunk paymentDueDate = new Chunk(addNewLines(2) + bundle.getString("Report.paymenttime") + customer.getInvoiceConfiguration().getPaymentTarget() + " " + bundle.getString("Report.paymenttime2"), timeframeFont);
-				Chunk paymentDueDateEnd = new Chunk(bundle.getString("Report.paymentinvoicenum") + addNewLines(2), timeframeFontBold);
+				Chunk paymentDueDateEnd = new Chunk(bundle.getString("Report.paymentinvoicenum"), timeframeFontBold);
+				Chunk nlChunk = new Chunk(addNewLines(2));
+				Chunk verzugsChunk = new Chunk(bundle.getString("Report.arrearsinfo") + addNewLines(2), timeframeFont);
 				Phrase payPhrase = new Phrase(paymentDueDate);
 				payPhrase.add(paymentDueDateEnd);
-				doc.add(new Phrase(payPhrase));
+				String sn = customer.getCountry().getShortName().toLowerCase(); 
+				if (!sn.equals("de") && !sn.equals("at")) {
+					payPhrase.add(verzugsChunk);
+					doc.add(payPhrase);
+				} else {
+					doc.add(payPhrase);
+					doc.add(new Phrase(nlChunk));
+					doc.add(new Phrase(verzugsChunk));
+				}
 
-				Chunk verzugsChunk = new Chunk(bundle.getString("Report.arrearsinfo") + addNewLines(2), timeframeFont);
-				doc.add(new Phrase(verzugsChunk));
 			}
 
 			Chunk rückfragenChunk = new Chunk(bundle.getString("Report.inquiry") + addNewLines(2), timeframeFont);
@@ -659,15 +679,21 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			mailFont.setColor(Color.BLUE);
 			mailFont.setStyle(Font.UNDERLINE);
 			
+			if (bundle.getString("Report.email").length() > 0) {
+				doc.add(new Phrase(new Chunk(bundle.getString("Report.email"))));
+				doc.add(new Phrase(new Chunk(bundle.getString("Report.mailaddress"), mailFont).setAnchor("mailto:"+ bundle.getString("Report.mailaddress"))));
+			}
 //			Chunk mailChunk = new Chunk("E-Mail: " + mailAnchor + "<" + mailToAnchor + ">" + addNewLines(1));
-			doc.add(new Phrase(new Chunk(bundle.getString("Report.email"))));
-			doc.add(new Phrase(new Chunk(bundle.getString("Report.mailaddress"), mailFont).setAnchor("mailto:"+ bundle.getString("Report.mailaddress"))));
 			
-			Chunk phoneChunk = new Chunk(addNewLines(1) + bundle.getString("Report.telnum"));
-			doc.add(new Phrase(phoneChunk));
+			if (bundle.getString("Report.telnum").length() > 0) {
+				Chunk phoneChunk = new Chunk(addNewLines(1) + bundle.getString("Report.telnum"));
+				doc.add(new Phrase(phoneChunk));
+			}
 
-			Chunk correctionChunk = new Chunk(addNewLines(3) + bundle.getString("Report.check_for_dissonance") + addNewLines(1));
-			doc.add(new Phrase(correctionChunk));
+			if (bundle.getString("Report.check_for_dissonance").length() > 0) {
+				Chunk correctionChunk = new Chunk(addNewLines(3) + bundle.getString("Report.check_for_dissonance") + addNewLines(1));
+				doc.add(new Phrase(correctionChunk));
+			}
 			
 			Chunk mailChunk = new Chunk(addNewLines(1) + "            " + bundle.getString("Report.per_mail"), timeframeFontBold);
 			Chunk mailAddChunk = new Chunk(bundle.getString("Report.contactmailaddress"), mailFont).setAnchor("mailto:" + bundle.getString("Report.contactmailaddress"));
@@ -697,7 +723,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Chunk appendixChunk = new Chunk(addNewLines(2) + bundle.getString("Report.invoiceApproval"));
 			doc.add(appendixChunk);
 
-			Chunk sepa1Chunk = new Chunk(addNewLines(6) + bundle.getString("Report.sepaString"));
+			String reverseCharge = bundle.getString("Report.reverseCharge");
+			if (reverseCharge.length() > 0) {
+				Chunk reverseChargeChunk = new Chunk(addNewLines(2) + bundle.getString("Report.reverseCharge"));
+				doc.add(reverseChargeChunk);
+			}
+			
+			Chunk sepa1Chunk = new Chunk(addNewLines(4) + bundle.getString("Report.sepaString"));
 			Chunk sepa2Chunk = new Chunk(addNewLines(1) + "          " + bundle.getString("Report.iban"));
 			Chunk sepa3Chunk = new Chunk(addNewLines(1) + "          " + bundle.getString("Report.bic"));
 			doc.add(sepa1Chunk);
