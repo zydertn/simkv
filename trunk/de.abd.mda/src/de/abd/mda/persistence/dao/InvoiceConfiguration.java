@@ -10,6 +10,7 @@ public class InvoiceConfiguration extends DaoObject {
 	private static final long serialVersionUID = 46437276670900355L;
 	private int id;
 	private int simPrice;
+	private int sortingOption;
 	private int dataOptionSurcharge;
 	private String format;
 	private String[] columns;
@@ -118,6 +119,14 @@ public class InvoiceConfiguration extends DaoObject {
 
 	public void setPaymentTarget(int paymentTarget) {
 		this.paymentTarget = paymentTarget;
+	}
+
+	public int getSortingOption() {
+		return sortingOption;
+	}
+
+	public void setSortingOption(int sortingOption) {
+		this.sortingOption = sortingOption;
 	}
 	
 }

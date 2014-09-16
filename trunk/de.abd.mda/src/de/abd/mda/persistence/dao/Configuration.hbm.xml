@@ -18,6 +18,11 @@
 			<map-key column="dataOption_id" type="int" />
 			<element column="dataOption_price" type="double" />
 		</map>
+		<map name="sortingOptions" table="sortingOptions">
+			<key column="C_ID" not-null="true" />
+			<map-key column="sortingOption_id" type="int" />
+			<element column="sorting_option" type="string" />
+		</map>
 		<property name="reportProgress" type="int" column="REPORT_PROGRESS" length="3" not-null="false" />
 		<property name="customer" type="int" column="REPORT_CUSTOMER" length="5" not-null="false"  />
 		<property name="lastReportUpdate" type="long" column="REPORT_LAST_UPDATE" />

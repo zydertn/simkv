@@ -79,6 +79,7 @@ public class CustomerActionController extends ActionController {
 	private HtmlInputText cardVoucherBinding;
 	private HtmlInputText vatNumberBinding;
 	private HtmlSelectOneMenu selectCountryBinding;
+	private HtmlSelectOneMenu invoiceconfigSortingBinding;
 	private String countryName;
 	private HtmlInputText paymentTargetBinding;
 	
@@ -202,6 +203,7 @@ public class CustomerActionController extends ActionController {
 		cardVoucherBinding.setDisabled(b);
 		vatNumberBinding.setDisabled(b);
 		selectCountryBinding.setDisabled(b);
+		invoiceconfigSortingBinding.setDisabled(b);
 		paymentTargetBinding.setDisabled(b);
 		getRequest().setAttribute("componentDisabled", b);
 	}
@@ -303,6 +305,7 @@ public class CustomerActionController extends ActionController {
 			ic.setColumns(cic.getColumns());
 			ic.setCreationFrequency(cic.getCreationFrequency());
 			ic.setDataOptionSurcharge(cic.getDataOptionSurcharge());
+			ic.setSortingOption(cic.getSortingOption());
 			ic.setFormat(cic.getFormat());
 			ic.setSimPrice(cic.getSimPrice());
 			ic.setSeparateBilling(cic.getSeparateBilling());
@@ -831,6 +834,15 @@ public class CustomerActionController extends ActionController {
 
 	public void setPaymentTargetBinding(HtmlInputText paymentTargetBinding) {
 		this.paymentTargetBinding = paymentTargetBinding;
+	}
+
+	public HtmlSelectOneMenu getInvoiceconfigSortingBinding() {
+		return invoiceconfigSortingBinding;
+	}
+
+	public void setInvoiceconfigSortingBinding(
+			HtmlSelectOneMenu invoiceconfigSortingBinding) {
+		this.invoiceconfigSortingBinding = invoiceconfigSortingBinding;
 	}
 
 

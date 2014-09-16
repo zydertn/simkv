@@ -10,6 +10,7 @@
 		</id>
 		<property type="int" name="simPrice" column="IC_SIM_PRICE" length="2" />
 		<property type="int" name="dataOptionSurcharge" column="IC_DATA_OPTION_SURCHARGE" length="2" />
+		<property type="int" name="sortingOption" column="IC_SORTING_OPTION" length="2" />
 		<property type="string" name="format" column="IC_FORMAT" length="11"></property>
 		<array name="columns">
 			<key column="id" />

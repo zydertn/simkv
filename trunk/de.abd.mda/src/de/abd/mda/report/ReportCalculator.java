@@ -99,7 +99,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		zipPath = model.getZipPath();
 		LOGGER.info("pdfPath = " + pdfPath + ", zipPath = " + zipPath);
 		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.MONTH, -1);
+		cal.add(Calendar.MONTH, -1);
 		
 		monthRunMonth = cal.get(Calendar.MONTH);
 		monthRunYear = cal.get(Calendar.YEAR);
@@ -356,8 +356,20 @@ public class ReportCalculator extends ActionController implements Runnable {
 //			int mapCountSize = separateBillingSortedCards.keySet().size();
 			int mapCount = 1;
 			for (List<DaoObject> cusCards : separateBillingSortedCards.values()) {
-				Comparator<DaoObject> comparator = new CardComparator();
-				Collections.sort(cusCards, comparator);
+				// SORTING
+				if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ACTIVATION_DATE) {
+					LOGGER.info("Card sorting: By activation date");
+					DateComparator dc = new DateComparator();
+					Collections.sort(cusCards, dc);
+				} else if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ALPHABETICAL) {
+					LOGGER.info("Card sorting: Alphabetical (by install address)");
+					AlphabeticalComparator ac = new AlphabeticalComparator();
+					Collections.sort(cusCards, ac);
+				} else {
+					LOGGER.warn("Customer has no sorting option configured. Cards will be sorted by activation date!");
+					DateComparator dc = new DateComparator();
+					Collections.sort(cusCards, dc);
+				}
 
 				long time1 = System.currentTimeMillis();
 				boolean separateBilling = false;
@@ -638,7 +650,6 @@ public class ReportCalculator extends ActionController implements Runnable {
 			} else {
 				LOGGER.info("MONTHLY calculation for customer " + customer.getCustomernumber());
 			}
-			DateComparator dc = new DateComparator();
 			LOGGER.info("Select = " + select);
 			List<DaoObject> cardList = searchObjects(select, tx, session);
 			if (cardList != null) {
@@ -646,7 +657,21 @@ public class ReportCalculator extends ActionController implements Runnable {
 			} else {
 				LOGGER.warn("No cards found!");
 			}
-			Collections.sort(cardList, dc);
+
+			// SORTING
+			if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ACTIVATION_DATE) {
+				LOGGER.info("Card sorting: By activation date");
+				DateComparator dc = new DateComparator();
+				Collections.sort(cardList, dc);
+			} else if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ALPHABETICAL) {
+				LOGGER.info("Card sorting: Alphabetical (by install address)");
+				AlphabeticalComparator ac = new AlphabeticalComparator();
+				Collections.sort(cardList, ac);
+			} else {
+				LOGGER.warn("Customer has no sorting option configured. Cards will be sorted by activation date!");
+				DateComparator dc = new DateComparator();
+				Collections.sort(cardList, dc);
+			}
 			return cardList;
 	}
 
@@ -689,7 +714,6 @@ public class ReportCalculator extends ActionController implements Runnable {
 				}
 			}
 
-			DateComparator dc = new DateComparator();
 			LOGGER.info("Select = " + select);
 			List<DaoObject> cardList = searchObjects(select, tx, session);
 			if (cardList != null) {
@@ -697,7 +721,22 @@ public class ReportCalculator extends ActionController implements Runnable {
 			} else {
 				LOGGER.warn("No cards found!");
 			}
-			Collections.sort(cardList, dc);
+
+			// SORTING
+			if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ACTIVATION_DATE) {
+				LOGGER.info("Card sorting: By activation date");
+				DateComparator dc = new DateComparator();
+				Collections.sort(cardList, dc);
+			} else if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ALPHABETICAL) {
+				LOGGER.info("Card sorting: Alphabetical (by install address)");
+				AlphabeticalComparator ac = new AlphabeticalComparator();
+				Collections.sort(cardList, ac);
+			} else {
+				LOGGER.warn("Customer has no sorting option configured. Cards will be sorted by activation date!");
+				DateComparator dc = new DateComparator();
+				Collections.sort(cardList, dc);
+			}
+
 			return cardList;
 		}
 		return null;
@@ -919,6 +958,15 @@ public class ReportCalculator extends ActionController implements Runnable {
 		}
 	}
 
+	public class AlphabeticalComparator implements java.util.Comparator<DaoObject> {
+		public int compare(DaoObject dao1, DaoObject dao2) {
+			CardBean card1 = (CardBean) dao1;
+			CardBean card2 = (CardBean) dao2;
+			return card1.getInstallAddress().getAddressString().compareTo(card2.getInstallAddress().getAddressString());
+		}
+	}
+
+	
 	public int getCalculateCase() {
 		return calculateCase;
 	}
