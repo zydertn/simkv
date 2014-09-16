@@ -69,6 +69,22 @@ public class ConfigurationController extends DaoController {
 		}
 	}
 
+	public Map<Integer, String> getSortingOptionsFromDB() {
+		LOGGER.info("Method getSortingOptionsFromDB");
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		tx = session.beginTransaction();
+
+		List<Configuration> configs = session.createQuery("from Configuration as configuration").list();
+		if (configs != null && configs.size() > 0) {
+			Configuration con = configs.get(0);
+			return con.getSortingOptions();
+		} else {
+			return new HashMap<Integer, String>();
+		}
+	}
+
+	
 	public Map<Integer, Double> getDataOptionPricesFromDB() {
 		LOGGER.info("Method getDataOptionPricesFromDB");
 		Transaction tx = null;

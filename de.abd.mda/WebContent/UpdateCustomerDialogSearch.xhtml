@@ -259,6 +259,13 @@
 						binding="#{customerController.paymentTargetBinding}"/>
 					<h:outputText value="Einzugsermächtigung:"/>
 					<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.debtOrder}"></h:selectBooleanCheckbox>
+					<h:outputText value="Sortierung: " />
+					<h:selectOneMenu
+						binding="#{customerController.invoiceconfigSortingBinding}"
+						value="#{customerController.customer.invoiceConfiguration.sortingOption}" style="margin-right: 81px;"
+						disabled="#{customerController.componentDisabled}">
+						<f:selectItems value="#{actionController.model.sortingOptions.entrySet()}" var="sortOptVar" itemLabel="#{sortOptVar.value}" itemValue="#{sortOptVar.key}" />
+					</h:selectOneMenu>
 					
 				</h:panelGrid>
 

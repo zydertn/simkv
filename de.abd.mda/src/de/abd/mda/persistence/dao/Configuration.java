@@ -14,6 +14,7 @@ public class Configuration extends DaoObject {
 	private static final long serialVersionUID = 3429161913114726492L;
 	private Map<Integer, Double> simPrices = new HashMap<Integer, Double>();
 	private Map<Integer, Double> dataOptionPrices = new HashMap<Integer, Double>();
+	private Map<Integer, String> sortingOptions = new HashMap<Integer, String>();
 	private int id;
 	private int reportProgress;
 	private int customer;
@@ -68,6 +69,14 @@ public class Configuration extends DaoObject {
 
 	public void setLastReportUpdate(long lastReportUpdate) {
 		this.lastReportUpdate = lastReportUpdate;
+	}
+
+	public Map<Integer, String> getSortingOptions() {
+		return sortingOptions;
+	}
+
+	public void setSortingOptions(Map<Integer, String> sortingOptions) {
+		this.sortingOptions = sortingOptions;
 	}
 
 }

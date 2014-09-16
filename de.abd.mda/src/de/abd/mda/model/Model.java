@@ -129,6 +129,7 @@ public class Model {
 	
 	public Map<Integer, Double> simPrices;
 	public Map<Integer, Double> dataOptionSurcharges;
+	public Map<Integer, String> sortingOptions;
 	
 	private HashMap<String, Float> columnSize;
 	private List<String> invoiceFormats;
@@ -142,6 +143,9 @@ public class Model {
 	
 	private String pdfPath = "";
 	private String zipPath = "";
+	
+	public static int SORTING_ACTIVATION_DATE = 1;
+	public static int SORTING_ALPHABETICAL = 2; 
 	
 	public Model() {
 		LOGGER.info("Instantiate: Model");
@@ -371,6 +375,14 @@ public class Model {
 			dataOptionSurcharges = c.getDataOptionPricesFromDB();
 		}
 		return dataOptionSurcharges;
+	}
+
+	public Map<Integer, String> getSortingOptions() {
+		if (sortingOptions == null || (sortingOptions != null && sortingOptions.size() == 0)) {
+			ConfigurationController c = new ConfigurationController();
+			sortingOptions = c.getSortingOptionsFromDB();
+		}
+		return sortingOptions;
 	}
 
 	public List<String> getInvoiceColumns() {
