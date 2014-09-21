@@ -111,7 +111,7 @@ public class ReportGenTest {
 
 //			IReportGenerator repGen = new ReportGenerator_landscape();
 			ReportGenerator_portrait repGen = new ReportGenerator_portrait();
-			boolean generatedWithoutError = repGen.generateReportDirect(cards, customer, calcMonth, false, false, 1);
+			boolean generatedWithoutError = repGen.generateReportDirect(cards, customer, calcMonth, false, false, 1, null);
 			if (generatedWithoutError) {
 				System.out.println("Generated without error");
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_YEARLY)) {
