@@ -45,13 +45,22 @@
 		</h:panelGrid>
 
 		<h:panelGrid width="1000" style="text-align: center;" columns="2">
-			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px; margin-right: 20px">
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:250px; width: 490px; margin-right: 20px">
 				<div align="center" style="color:#848484">
 					<h1>Monatslauf</h1>
 				</div>
 				<hr/>
 				<h:panelGrid>
 					<h:outputText value="Rechnungslauf für Monat: #{reportCalculator.monthRunMonthString} #{reportCalculator.monthRunYear}"></h:outputText>
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<h:outputText value="Rechnungsdatum: "/>
+					<ice:selectInputDate
+						value="#{reportCalculator.reportDateMonthRun}"
+						renderAsPopup="true" highlightClass="newyear"
+						highlightUnit="DAY_OF_YEAR" highlightValue="1">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</ice:selectInputDate>
 				</h:panelGrid>
 				<h:panelGrid columns="3">
 					<h:commandButton id="monthRun" actionListener="#{reportCalculator.startMonthRunTask}" rendered="true" value="STARTEN"></h:commandButton>
@@ -65,7 +74,7 @@
             					type="text"/>
 				</h:panelGrid>
 			</h:panelGrid>
-			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px;">
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:250px; width: 490px;">
 				<div align="center" style="color:#848484">
 					<h1>Einzelrechnung</h1>
 				</div>
@@ -89,6 +98,15 @@
 						<f:selectItems
 							value="#{actionController.model.years}" />
 					</h:selectOneMenu>
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<h:outputText value="Rechnungsdatum: "/>
+					<ice:selectInputDate
+						value="#{reportCalculator.reportDateSingleInv}"
+						renderAsPopup="true" highlightClass="newyear"
+						highlightUnit="DAY_OF_YEAR" highlightValue="1">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</ice:selectInputDate>
 				</h:panelGrid>
 				<h:panelGrid columns="3">
 					<h:commandButton id="singleInvRun" action="#{reportCalculator.startSingleInvTask}" rendered="true" value="STARTEN"></h:commandButton>

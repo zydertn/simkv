@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -83,6 +84,8 @@ public class ReportCalculator extends ActionController implements Runnable {
 	private String pdfPath = "";
 	private String zipPath = "";
 	private List<Customer> customerList;
+	private Date reportDateMonthRun;
+	private Date reportDateSingleInv;
 		
 	public static final Resource ZIP_RESOURCE = new MyResource("Siwaltec_Rechnungen.zip", "zip");
 	public static final Resource PDF_RESOURCE = new MyResource("", "pdf");
@@ -205,12 +208,12 @@ public class ReportCalculator extends ActionController implements Runnable {
 					}
 				}
 				
-				reportCount = monthCalculation(customer, reportCount, this.monthRunMonth, this.monthRunYear);
+				reportCount = monthCalculation(customer, reportCount, this.monthRunMonth, this.monthRunYear, this.reportDateMonthRun);
 				break;
 			case 2:
 				/* FULL CALCULATION */
 				LOGGER.info("FULL CALCULATION");
-				reportCount = fullCalculation(customer, now, reportCount);
+				reportCount = fullCalculation(customer, now, reportCount, this.reportDateMonthRun);
 				break;
 			}
 
@@ -299,10 +302,10 @@ public class ReportCalculator extends ActionController implements Runnable {
 	}
 
 	public int monthCalc(Customer customer, int reportCount, int month, int year) {
-		return monthCalculation(customer, reportCount, month, year);
+		return monthCalculation(customer, reportCount, month, year, null);
 	}
 	
-	private int monthCalculation(Customer customer, int reportCount, int month, int year) {
+	private int monthCalculation(Customer customer, int reportCount, int month, int year, Date calcDate) {
 		LOGGER.info("MONTH CALCULATION for customer " + customer.getCustomernumber() + ", reportCount = " + reportCount + ", year = " + year + ", month = " + month);
 		
 		Calendar calcMonth = Calendar.getInstance();
@@ -316,12 +319,12 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 		System.out.println("CalcMonth = " + DateUtils.getCalendarString(calcMonth));
 		
-		reportCount = createReport(calcMonth, customer, reportCount, CALC_CASE_MONTH);
+		reportCount = createReport(calcMonth, customer, reportCount, CALC_CASE_MONTH, calcDate);
 		
 		return reportCount;
 	}
 
-	private int fullCalculation(Customer customer, Calendar now, int reportCount) {
+	private int fullCalculation(Customer customer, Calendar now, int reportCount, Date calcDate) {
 		LOGGER.info("Method: fullCalculation for customer " + customer.getCustomernumber());
 		Calendar calcMonth = Calendar.getInstance();
 		calcMonth.set(2013, Calendar.JANUARY, 1, 0, 0, 0);
@@ -334,14 +337,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 			String dfs = "yyyy-MM-dd_HH-mm-ss";
 			SimpleDateFormat sd = new SimpleDateFormat(dfs);
 			LOGGER.info("CalcMonth: " + sd.format(calcMonth.getTime()));
-			reportCount = createReport(calcMonth, customer, reportCount, CALC_CASE_FULL);
+			reportCount = createReport(calcMonth, customer, reportCount, CALC_CASE_FULL, calcDate);
 			calcMonth = raiseMonth(calcMonth, customer);
 		}
 		
 		return reportCount;		
 	}
 
-	private int createReport(Calendar calcMonth, Customer customer, int reportCount, int calcCase) {
+	private int createReport(Calendar calcMonth, Customer customer, int reportCount, int calcCase, Date calcDate) {
 		LOGGER.info("Method: createReport for customer " + customer.getCustomernumber() + ", reportCount = " + reportCount);
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
@@ -376,7 +379,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 				if (customer.getInvoiceConfiguration() != null && customer.getInvoiceConfiguration().getSeparateBilling() != null && customer.getInvoiceConfiguration().getSeparateBilling()) {
 					separateBilling = true;
 				}
-				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, separateBilling, mapCount);
+				boolean generatedWithoutErrors = generateReport(customer, cusCards, calcMonth, false, separateBilling, mapCount, calcDate);
 				long time2 = System.currentTimeMillis();
 				long diff = time2-time1;
 				LOGGER.info("GenerateReport Dauer = " + diff);
@@ -484,14 +487,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 	private boolean generateReport(Customer customer,
 			List<DaoObject> customerCards, Calendar calcMonth,
-			boolean flatrateCalc, boolean severalBills, int mapCount) {
+			boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
 		LOGGER.info("Method: generateReport for customer " + customer.getCustomernumber() + ", calcMonth = " + DateUtils.getCalendarString(calcMonth) + ", Cards = " + customerCards.size());
 		IReportGenerator rp = null;
 		rp = new ReportGenerator_portrait();
 
 		long time1 = System.currentTimeMillis();
 		boolean generatedWithoutError = rp.generateReport(customerCards,
-				customer, calcMonth, flatrateCalc, severalBills, mapCount);
+				customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate);
 		long time2 = System.currentTimeMillis();
 		long diff = time2 - time1;
 		LOGGER.info("Inner generateReport Dauer = "+ diff);
@@ -789,7 +792,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		Customer customer = cc.findCustomer(customerNumber);
 
 		int reportCount = 0;
-		reportCount = monthCalculation(customer, reportCount, singleInvMonth, singleInvYear);
+		reportCount = monthCalculation(customer, reportCount, singleInvMonth, singleInvYear, reportDateSingleInv);
 
 		String message = "";
 		if (reportCount == 1) {
@@ -1089,6 +1092,22 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 	public void setOutputLinkPdfBinding(OutputResource outputLinkPdfBinding) {
 		this.outputLinkPdfBinding = outputLinkPdfBinding;
+	}
+
+	public Date getReportDateMonthRun() {
+		return reportDateMonthRun;
+	}
+
+	public void setReportDateMonthRun(Date reportDate) {
+		this.reportDateMonthRun = reportDate;
+	}
+
+	public Date getReportDateSingleInv() {
+		return reportDateSingleInv;
+	}
+
+	public void setReportDateSingleInv(Date reportDateSingleInv) {
+		this.reportDateSingleInv = reportDateSingleInv;
 	}
 
 }

@@ -82,13 +82,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		loadBaseFonts();
 	}
 	
-	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
+	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
 		LOGGER.info("Method: generateReportDirect");
 		writeToDB = false;
-		return generateReport(customerCards, customer, calcMonth, flatrateCalc, severalBills, mapCount);
+		return generateReport(customerCards, customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate);
 	}
 
-	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount) {
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
 		LOGGER.info("Method: generateReport");
 		String baseName = "de.abd.mda.locale.report";
 		String reportLocale = customer.getCountry().getShortName();
@@ -201,7 +201,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			LOGGER.info("genRep Teil 4 = " + diff4);
 
 			long time9 = System.currentTimeMillis();
-			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber);
+			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber, calcDate);
 			if (generatedWithErrors) {
 				LOGGER.warn("Error in creation of bill body!");
 				return false;
@@ -330,7 +330,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return footer;
 	}
 
-	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber) {
+	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber, Date calcDate) {
 		LOGGER.info("Method: generateBody");
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
@@ -410,13 +410,17 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			
 			// Date
 //			y = y - 5 * d;
-			Date date = new Date();
+			
+			if (calcDate == null) {
+				calcDate = new Date();
+			}
+			
 			// Temporär auf 14. Januar gesetzt
 //			date.setDate(13);
 //			date.setMonth(2);
 			SimpleDateFormat df = new SimpleDateFormat(bundle.getString("Report.dateformat"));
 			df.setTimeZone(TimeZone.getDefault());
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(date), 425, 630-dateY, 0);
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(calcDate), 425, 630-dateY, 0);
 
 			// Rechnungsnummer
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.invoicenumber"), 425, 600-dateY, 0);
