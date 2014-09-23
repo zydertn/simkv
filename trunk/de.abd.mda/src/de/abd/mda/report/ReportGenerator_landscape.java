@@ -61,7 +61,7 @@ public class ReportGenerator_landscape implements IReportGenerator {
 		loadBaseFonts();
 	}
 
-	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate, String reportNumber) {
 		try {
 			Document document = new Document(PageSize.A4.rotate(), 60, 25, 40, 40);
 			String month = "";

@@ -99,7 +99,7 @@
 							value="#{actionController.model.years}" />
 					</h:selectOneMenu>
 				</h:panelGrid>
-				<h:panelGrid columns="2">
+				<h:panelGrid columns="4">
 					<h:outputText value="Rechnungsdatum: "/>
 					<ice:selectInputDate
 						value="#{reportCalculator.reportDateSingleInv}"
@@ -107,6 +107,8 @@
 						highlightUnit="DAY_OF_YEAR" highlightValue="1">
 						<f:convertDateTime pattern="dd.MM.yyyy" />
 					</ice:selectInputDate>
+					<h:outputText value="R.-Nummer: "/>
+					<h:inputText value="#{reportCalculator.reportNumber}" size="9"/>
 				</h:panelGrid>
 				<h:panelGrid columns="3">
 					<h:commandButton id="singleInvRun" action="#{reportCalculator.startSingleInvTask}" rendered="true" value="STARTEN"></h:commandButton>

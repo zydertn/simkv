@@ -82,13 +82,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		loadBaseFonts();
 	}
 	
-	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
+	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate, String reportNumber) {
 		LOGGER.info("Method: generateReportDirect");
 		writeToDB = false;
-		return generateReport(customerCards, customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate);
+		return generateReport(customerCards, customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate, reportNumber);
 	}
 
-	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
+	public boolean generateReport(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate, String reportNumber) {
 		LOGGER.info("Method: generateReport");
 		String baseName = "de.abd.mda.locale.report";
 		String reportLocale = customer.getCountry().getShortName();
@@ -165,13 +165,22 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			long time5 = System.currentTimeMillis();
 			int invoiceNumber = -1;
 			boolean increaseBillNum = false;
-			if (dbBill != null) {
-				invoiceNumber = dbBill.getBillNumber();
-				LOGGER.info("Bill already in DB... Getting bill number... " + invoiceNumber);
+			if (reportNumber == null) {
+				if (dbBill != null) {
+					invoiceNumber = dbBill.getBillNumber();
+					LOGGER.info("Bill already in DB... Getting bill number... " + invoiceNumber);
+				} else {
+					invoiceNumber = (bc.getMaxBillNumber())+1;
+					increaseBillNum = true;
+					LOGGER.info("New bill in DB... bill number: " + invoiceNumber);
+				}
 			} else {
-				invoiceNumber = (bc.getMaxBillNumber())+1;
-				increaseBillNum = true;
-				LOGGER.info("New bill in DB... bill number: " + invoiceNumber);
+				LOGGER.warn("Report number specified for bill. Creating no new bill number!!");
+				try {
+					invoiceNumber = Integer.parseInt(reportNumber);
+				} catch (NumberFormatException e) {
+					LOGGER.error("NumberFormatException: " + e);
+				}
 			}
 			
 			// headers and footers must be added before the document is opened
