@@ -86,6 +86,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	private List<Customer> customerList;
 	private Date reportDateMonthRun;
 	private Date reportDateSingleInv;
+	private String reportNumber;
 		
 	public static final Resource ZIP_RESOURCE = new MyResource("Siwaltec_Rechnungen.zip", "zip");
 	public static final Resource PDF_RESOURCE = new MyResource("", "pdf");
@@ -494,7 +495,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 		long time1 = System.currentTimeMillis();
 		boolean generatedWithoutError = rp.generateReport(customerCards,
-				customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate);
+				customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate, reportNumber);
 		long time2 = System.currentTimeMillis();
 		long diff = time2 - time1;
 		LOGGER.info("Inner generateReport Dauer = "+ diff);
@@ -1108,6 +1109,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 	public void setReportDateSingleInv(Date reportDateSingleInv) {
 		this.reportDateSingleInv = reportDateSingleInv;
+	}
+
+	public String getReportNumber() {
+		return reportNumber;
+	}
+
+	public void setReportNumber(String reportNumber) {
+		this.reportNumber = reportNumber;
 	}
 
 }
