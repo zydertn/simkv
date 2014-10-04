@@ -165,7 +165,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			long time5 = System.currentTimeMillis();
 			int invoiceNumber = -1;
 			boolean increaseBillNum = false;
-			if (reportNumber == null) {
+			if (reportNumber == null || reportNumber.length() == 0) {
 				if (dbBill != null) {
 					invoiceNumber = dbBill.getBillNumber();
 					LOGGER.info("Bill already in DB... Getting bill number... " + invoiceNumber);
