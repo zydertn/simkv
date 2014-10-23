@@ -257,54 +257,54 @@ public class ExcelImporter_14_08_21 {
 			}
 			extractTelNums(card, split[spalten.get("Rufnummer")]);
 		}
-		if (spalten.containsKey("Telefon Nr.")) {
-			extractTelNums(card, split[spalten.get("Telefon Nr.")]);
-		}
-		if (spalten.containsKey("NR.Telefon")) {
-			extractTelNums(card, split[spalten.get("NR.Telefon")]);
-		}
-		if (spalten.containsKey("Tel. Nummer")) {
-			extractTelNums(card, split[spalten.get("Tel. Nummer")]);
-		}
-		if (spalten.containsKey("PLZ")) {
-			Address instAdd = getCardAddress(card);
-			instAdd.setPostcode(""+split[spalten.get("PLZ")]);
-			card.setInstallAddress(instAdd);
-		}
-		if (spalten.containsKey("Einsatzort")) {
-			Address instAdd = getCardAddress(card);
-			instAdd.setCity(""+split[spalten.get("Einsatzort")]);
-			card.setInstallAddress(instAdd);
-		}
-		if (spalten.containsKey("Ort")) {
-			Address instAdd = getCardAddress(card);
-			instAdd.setCity(""+split[spalten.get("Ort")]);
-			card.setInstallAddress(instAdd);
-		}
-		if (spalten.containsKey("Straße")) {
-			Address instAdd = getCardAddress(card);
-			instAdd.setStreet(""+split[spalten.get("Straße")]);
-			card.setInstallAddress(instAdd);
-		}
-		if (spalten.containsKey("Strasse")) {
-			Address instAdd = getCardAddress(card);
-			instAdd.setStreet(""+split[spalten.get("Strasse")]);
-			card.setInstallAddress(instAdd);
-		}
-		if (spalten.containsKey("Anschrift")) {
-			Address instAdd = getCardAddress(card);
-			instAdd.setStreet(""+split[spalten.get("Anschrift")]);
-			card.setInstallAddress(instAdd);
-		}
-		if (spalten.containsKey("Aufzug Nr.")) {
-			card.setFactoryNumber(""+split[spalten.get("Aufzug Nr.")]);
-		}
-		if (spalten.containsKey("Anlagen Nr.")) {
-			card.setFactoryNumber(split[spalten.get("Anlagen Nr.")]);
-		}
-		if (spalten.containsKey("Aufzug-Nr.")) {
-			card.setFactoryNumber(""+split[spalten.get("Aufzug-Nr.")]);
-		}
+//		if (spalten.containsKey("Telefon Nr.")) {
+//			extractTelNums(card, split[spalten.get("Telefon Nr.")]);
+//		}
+//		if (spalten.containsKey("NR.Telefon")) {
+//			extractTelNums(card, split[spalten.get("NR.Telefon")]);
+//		}
+//		if (spalten.containsKey("Tel. Nummer")) {
+//			extractTelNums(card, split[spalten.get("Tel. Nummer")]);
+//		}
+//		if (spalten.containsKey("PLZ")) {
+//			Address instAdd = getCardAddress(card);
+//			instAdd.setPostcode(""+split[spalten.get("PLZ")]);
+//			card.setInstallAddress(instAdd);
+//		}
+//		if (spalten.containsKey("Einsatzort")) {
+//			Address instAdd = getCardAddress(card);
+//			instAdd.setCity(""+split[spalten.get("Einsatzort")]);
+//			card.setInstallAddress(instAdd);
+//		}
+//		if (spalten.containsKey("Ort")) {
+//			Address instAdd = getCardAddress(card);
+//			instAdd.setCity(""+split[spalten.get("Ort")]);
+//			card.setInstallAddress(instAdd);
+//		}
+//		if (spalten.containsKey("Straße")) {
+//			Address instAdd = getCardAddress(card);
+//			instAdd.setStreet(""+split[spalten.get("Straße")]);
+//			card.setInstallAddress(instAdd);
+//		}
+//		if (spalten.containsKey("Strasse")) {
+//			Address instAdd = getCardAddress(card);
+//			instAdd.setStreet(""+split[spalten.get("Strasse")]);
+//			card.setInstallAddress(instAdd);
+//		}
+//		if (spalten.containsKey("Anschrift")) {
+//			Address instAdd = getCardAddress(card);
+//			instAdd.setStreet(""+split[spalten.get("Anschrift")]);
+//			card.setInstallAddress(instAdd);
+//		}
+//		if (spalten.containsKey("Aufzug Nr.")) {
+//			card.setFactoryNumber(""+split[spalten.get("Aufzug Nr.")]);
+//		}
+//		if (spalten.containsKey("Anlagen Nr.")) {
+//			card.setFactoryNumber(split[spalten.get("Anlagen Nr.")]);
+//		}
+//		if (spalten.containsKey("Aufzug-Nr.")) {
+//			card.setFactoryNumber(""+split[spalten.get("Aufzug-Nr.")]);
+//		}
 		if (spalten.containsKey("Fab. Nr.")) {
 			card.setFactoryNumber(""+split[spalten.get("Fab. Nr.")]);
 		}
@@ -323,181 +323,181 @@ public class ExcelImporter_14_08_21 {
 		if (spalten.containsKey("Fabrik Nummer")) {
 			card.setFactoryNumber(""+split[spalten.get("Fabrik Nummer")]);
 		}
-		if (spalten.containsKey("Leitstand")) {
-			card.setLeitstand(""+split[spalten.get("Leitstand")]);
-		}
-		if (spalten.containsKey("Leitst. Nr.")) {
-			card.setLeitstand(""+split[spalten.get("Leitst. Nr.")]);
-		}
-		if (spalten.containsKey("zugel. Notruf Nr.")) {
-			card.setLeitstand(""+split[spalten.get("zugel. Notruf Nr.")]);
-		}
-		if (spalten.containsKey("Lokation")) {
-			card.setLokation(""+split[spalten.get("Lokation")]);
-		}
-		if (spalten.containsKey("Meinsatzort")) {
-			card.setEinsatzort(""+split[spalten.get("Meinsatzort")]);
-		}
-		if (spalten.containsKey("Status")) {
-			card.setStatus(""+split[spalten.get("Status")]);
-		}
-		if (spalten.containsKey("BA Nr.")) {
-			card.setBaNummer(""+split[spalten.get("BA Nr.")]);
-		}
-		if (spalten.containsKey("BA - Nr.")) {
-			card.setBaNummer(""+split[spalten.get("BA - Nr.")]);
-		}
-
-		String date = null;
-
-		if (spalten.containsKey("Datum")) {
-			date = split[spalten.get("Datum")];
-		} else if (spalten.containsKey("Aktiv. Datum")) {
-			date = split[spalten.get("Aktiv. Datum")];
-		} else if (spalten.containsKey("aktiviert")) {
-			date = split[spalten.get("aktiviert")];
-		}
-		
-		if (date != null && date.length() > 1) {
-			System.out.println(date);
-			Calendar c = new GregorianCalendar();
-			try{
-				c.set(new Integer(date.substring(6, 10)), new Integer(date.substring(3, 5)) - 1, new Integer(date.substring(0, 2)));
-			} catch (Exception e) {
-				System.out.println(e);
-			}
-			if (card.getStatus().equalsIgnoreCase(Model.STATUS_ACTIVE)) {
-				card.setActivationDate(c.getTime());
-			} else if (card.getStatus().equalsIgnoreCase(Model.STATUS_INACTIVE) || card.getStatus().equals(Model.STATUS_DUMMY)) {
-				card.setDeactivationDate(c.getTime());
-			}
-		}
-
-		
-		if (spalten.containsKey("Auftrag Nr.")) {
-			card.setAuftragsNr(""+split[spalten.get("Auftrag Nr.")]);
-		}
-		if (spalten.containsKey("Auftragsnummer")) {
-			if (split[spalten.get("Auftragsnummer")] != null)
-				card.setAuftragsNr(""+split[spalten.get("Auftragsnummer")]);
-		}
-		if (spalten.containsKey("Auftragsnr.")) {
-			if (split[spalten.get("Auftragsnr.")] != null)
-				card.setAuftragsNr(""+split[spalten.get("Auftragsnr.")]);
-		}
-		if (spalten.containsKey("SO-Nr.(Auftr.Nr.)")) {
-			if (split[spalten.get("SO-Nr.(Auftr.Nr.)")] != null)
-				card.setAuftragsNr(""+split[spalten.get("SO-Nr.(Auftr.Nr.)")]);
-		}
-		if (spalten.containsKey("Vertragsnummer")) {
-			card.setVertrag(""+split[spalten.get("Vertragsnummer")]);
-		}
-		if (spalten.containsKey("Vertrag. Nr.")) {
-			card.setVertrag(""+split[spalten.get("Vertrag. Nr.")]);
-		}
-		if (spalten.containsKey("Vertrag Nr.")) {
-			card.setVertrag(""+split[spalten.get("Vertrag Nr.")]);
-		}
-		if (spalten.containsKey("Vertr. Nr.")) {
-			card.setVertrag(""+split[spalten.get("Vertr. Nr.")]);
-		}
-		if (spalten.containsKey("Vertrags Nr.")) {
-			card.setVertrag(""+split[spalten.get("Vertrags Nr.")]);
-		}
-		if (spalten.containsKey("Vertrag")) {
-			card.setVertrag(""+split[spalten.get("Vertrag")]);
-		}
-		if (spalten.containsKey("Bemerkung")) {
-			card.setComment(split[spalten.get("Bemerkung")]);
-		}
-		if (spalten.containsKey("Bemerkungen")) {
-			if (split2.length > spalten.get("Bemerkungen")) {
-				String comment = "" + split[spalten.get("Bemerkungen")]; 
-				card.setComment(comment);
-			}
-		}
-		if (spalten.containsKey("Memo")) {
-			card.setComment(split[spalten.get("Memo")]);
-		}
-		if (spalten.containsKey("Endkunde")) {
-			card.setComment(split[spalten.get("Endkunde")]);
-		}
-		// prüfen, ob BestellNummer korrekt ist, oder BestellNummer (auf Karte)
-		if (spalten.containsKey("Bestellnr.")) {
-			card.setBestellNummer(split[spalten.get("Bestellnr.")]);
-		}
-		if (spalten.containsKey("Bestellnummer")) {
-			card.setBestellNummer(split[spalten.get("Bestellnummer")]);
-		}
-		if (spalten.containsKey("Bestell Nr.")) {
-			card.setBestellNummer(split[spalten.get("Bestell Nr.")]);
-		}
-		if (spalten.containsKey("Best. Nummer")) {
-			card.setBestellNummer(split[spalten.get("Best. Nummer")]);
-		}
-		if (spalten.containsKey("Order Nr.")) {
-			card.setBestellNummer(split[spalten.get("Order Nr.")]);
-		}
-		if (spalten.containsKey("Order ID")) {
-			card.setBestellNummer(split[spalten.get("Order ID")]);
-		}
-		if (spalten.containsKey("Kartenpreis")) {
-			if (split.length > spalten.get("Kartenpreis") && split[spalten.get("Kartenpreis")] != null) {
-				String preis = split[spalten.get("Kartenpreis")];
-				int simPrice = Integer.parseInt(preis);
-				card.setStandardPrice(false);
-				card.setSimPrice(simPrice);
-			}
-		}
-
-		if (spalten.containsKey("PIN-Code")) {
-			String pinCode = split[spalten.get("PIN-Code")];
-			if (pinCode != "" && !pinCode.equalsIgnoreCase("Frei") && pinCode.length() > 1) {
-				card.setPin(split[spalten.get("PIN-Code")]);
-			}
-		}
-		
-		if (spalten.containsKey("Land")) {
-			String land = split[spalten.get("Land")];
-			if (land != null && land.equals("A")) {
-				card.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
-			} else {
-				card.setSupplier(Model.SUPPLIER_TELEKOM);
-			}
-		}
-		
-		if (spalten.containsKey("Eqiupment Nr.")) {
-			card.setEquipmentNr(split[spalten.get("Eqiupment Nr.")]);
-		}
-		if (spalten.containsKey("Equipment Nr.")) {
-			card.setEquipmentNr(split[spalten.get("Equipment Nr.")]);
-		}
-		if (spalten.containsKey("Eqiupment ID")) {
-			card.setEquipmentNr(split[spalten.get("Eqiupment ID")]);
-		}
-		if (spalten.containsKey("Equipment ID")) {
-			card.setEquipmentNr(split[spalten.get("Equipment ID")]);
-		}
-		if (spalten.containsKey("Equipment Aufteilung")) {
-			card.setEquipmentNr(split[spalten.get("Equipment Aufteilung")]);
-		}
-		if (spalten.containsKey("SIE IAO Equipment")) {
-			card.setEquipmentNr(split[spalten.get("SIE IAO Equipment")]);
-		}
-		if (spalten.containsKey("Kst.")) {
-			card.setKostenstelle(split[spalten.get("Kst.")]);
-		}
-		if (spalten.containsKey("Kostenstelle")) {
-			card.setKostenstelle(split[spalten.get("Kostenstelle")]);
-		}
-		if (spalten.containsKey("WE. Nr")) {
-			card.setWe(split[spalten.get("WE. Nr")]);
-		}
-		if (spalten.containsKey("WE Nr.")) {
-			card.setWe(split[spalten.get("WE Nr.")]);
-		}
-		
-		card.setCustomer(customer);
+//		if (spalten.containsKey("Leitstand")) {
+//			card.setLeitstand(""+split[spalten.get("Leitstand")]);
+//		}
+//		if (spalten.containsKey("Leitst. Nr.")) {
+//			card.setLeitstand(""+split[spalten.get("Leitst. Nr.")]);
+//		}
+//		if (spalten.containsKey("zugel. Notruf Nr.")) {
+//			card.setLeitstand(""+split[spalten.get("zugel. Notruf Nr.")]);
+//		}
+//		if (spalten.containsKey("Lokation")) {
+//			card.setLokation(""+split[spalten.get("Lokation")]);
+//		}
+//		if (spalten.containsKey("Meinsatzort")) {
+//			card.setEinsatzort(""+split[spalten.get("Meinsatzort")]);
+//		}
+//		if (spalten.containsKey("Status")) {
+//			card.setStatus(""+split[spalten.get("Status")]);
+//		}
+//		if (spalten.containsKey("BA Nr.")) {
+//			card.setBaNummer(""+split[spalten.get("BA Nr.")]);
+//		}
+//		if (spalten.containsKey("BA - Nr.")) {
+//			card.setBaNummer(""+split[spalten.get("BA - Nr.")]);
+//		}
+//
+//		String date = null;
+//
+//		if (spalten.containsKey("Datum")) {
+//			date = split[spalten.get("Datum")];
+//		} else if (spalten.containsKey("Aktiv. Datum")) {
+//			date = split[spalten.get("Aktiv. Datum")];
+//		} else if (spalten.containsKey("aktiviert")) {
+//			date = split[spalten.get("aktiviert")];
+//		}
+//		
+//		if (date != null && date.length() > 1) {
+//			System.out.println(date);
+//			Calendar c = new GregorianCalendar();
+//			try{
+//				c.set(new Integer(date.substring(6, 10)), new Integer(date.substring(3, 5)) - 1, new Integer(date.substring(0, 2)));
+//			} catch (Exception e) {
+//				System.out.println(e);
+//			}
+//			if (card.getStatus().equalsIgnoreCase(Model.STATUS_ACTIVE)) {
+//				card.setActivationDate(c.getTime());
+//			} else if (card.getStatus().equalsIgnoreCase(Model.STATUS_INACTIVE) || card.getStatus().equals(Model.STATUS_DUMMY)) {
+//				card.setDeactivationDate(c.getTime());
+//			}
+//		}
+//
+//		
+//		if (spalten.containsKey("Auftrag Nr.")) {
+//			card.setAuftragsNr(""+split[spalten.get("Auftrag Nr.")]);
+//		}
+//		if (spalten.containsKey("Auftragsnummer")) {
+//			if (split[spalten.get("Auftragsnummer")] != null)
+//				card.setAuftragsNr(""+split[spalten.get("Auftragsnummer")]);
+//		}
+//		if (spalten.containsKey("Auftragsnr.")) {
+//			if (split[spalten.get("Auftragsnr.")] != null)
+//				card.setAuftragsNr(""+split[spalten.get("Auftragsnr.")]);
+//		}
+//		if (spalten.containsKey("SO-Nr.(Auftr.Nr.)")) {
+//			if (split[spalten.get("SO-Nr.(Auftr.Nr.)")] != null)
+//				card.setAuftragsNr(""+split[spalten.get("SO-Nr.(Auftr.Nr.)")]);
+//		}
+//		if (spalten.containsKey("Vertragsnummer")) {
+//			card.setVertrag(""+split[spalten.get("Vertragsnummer")]);
+//		}
+//		if (spalten.containsKey("Vertrag. Nr.")) {
+//			card.setVertrag(""+split[spalten.get("Vertrag. Nr.")]);
+//		}
+//		if (spalten.containsKey("Vertrag Nr.")) {
+//			card.setVertrag(""+split[spalten.get("Vertrag Nr.")]);
+//		}
+//		if (spalten.containsKey("Vertr. Nr.")) {
+//			card.setVertrag(""+split[spalten.get("Vertr. Nr.")]);
+//		}
+//		if (spalten.containsKey("Vertrags Nr.")) {
+//			card.setVertrag(""+split[spalten.get("Vertrags Nr.")]);
+//		}
+//		if (spalten.containsKey("Vertrag")) {
+//			card.setVertrag(""+split[spalten.get("Vertrag")]);
+//		}
+//		if (spalten.containsKey("Bemerkung")) {
+//			card.setComment(split[spalten.get("Bemerkung")]);
+//		}
+//		if (spalten.containsKey("Bemerkungen")) {
+//			if (split2.length > spalten.get("Bemerkungen")) {
+//				String comment = "" + split[spalten.get("Bemerkungen")]; 
+//				card.setComment(comment);
+//			}
+//		}
+//		if (spalten.containsKey("Memo")) {
+//			card.setComment(split[spalten.get("Memo")]);
+//		}
+//		if (spalten.containsKey("Endkunde")) {
+//			card.setComment(split[spalten.get("Endkunde")]);
+//		}
+//		// prüfen, ob BestellNummer korrekt ist, oder BestellNummer (auf Karte)
+//		if (spalten.containsKey("Bestellnr.")) {
+//			card.setBestellNummer(split[spalten.get("Bestellnr.")]);
+//		}
+//		if (spalten.containsKey("Bestellnummer")) {
+//			card.setBestellNummer(split[spalten.get("Bestellnummer")]);
+//		}
+//		if (spalten.containsKey("Bestell Nr.")) {
+//			card.setBestellNummer(split[spalten.get("Bestell Nr.")]);
+//		}
+//		if (spalten.containsKey("Best. Nummer")) {
+//			card.setBestellNummer(split[spalten.get("Best. Nummer")]);
+//		}
+//		if (spalten.containsKey("Order Nr.")) {
+//			card.setBestellNummer(split[spalten.get("Order Nr.")]);
+//		}
+//		if (spalten.containsKey("Order ID")) {
+//			card.setBestellNummer(split[spalten.get("Order ID")]);
+//		}
+//		if (spalten.containsKey("Kartenpreis")) {
+//			if (split.length > spalten.get("Kartenpreis") && split[spalten.get("Kartenpreis")] != null) {
+//				String preis = split[spalten.get("Kartenpreis")];
+//				int simPrice = Integer.parseInt(preis);
+//				card.setStandardPrice(false);
+//				card.setSimPrice(simPrice);
+//			}
+//		}
+//
+//		if (spalten.containsKey("PIN-Code")) {
+//			String pinCode = split[spalten.get("PIN-Code")];
+//			if (pinCode != "" && !pinCode.equalsIgnoreCase("Frei") && pinCode.length() > 1) {
+//				card.setPin(split[spalten.get("PIN-Code")]);
+//			}
+//		}
+//		
+//		if (spalten.containsKey("Land")) {
+//			String land = split[spalten.get("Land")];
+//			if (land != null && land.equals("A")) {
+//				card.setSupplier(Model.SUPPLIER_TELEKOM_AUSTRIA);
+//			} else {
+//				card.setSupplier(Model.SUPPLIER_TELEKOM);
+//			}
+//		}
+//		
+//		if (spalten.containsKey("Eqiupment Nr.")) {
+//			card.setEquipmentNr(split[spalten.get("Eqiupment Nr.")]);
+//		}
+//		if (spalten.containsKey("Equipment Nr.")) {
+//			card.setEquipmentNr(split[spalten.get("Equipment Nr.")]);
+//		}
+//		if (spalten.containsKey("Eqiupment ID")) {
+//			card.setEquipmentNr(split[spalten.get("Eqiupment ID")]);
+//		}
+//		if (spalten.containsKey("Equipment ID")) {
+//			card.setEquipmentNr(split[spalten.get("Equipment ID")]);
+//		}
+//		if (spalten.containsKey("Equipment Aufteilung")) {
+//			card.setEquipmentNr(split[spalten.get("Equipment Aufteilung")]);
+//		}
+//		if (spalten.containsKey("SIE IAO Equipment")) {
+//			card.setEquipmentNr(split[spalten.get("SIE IAO Equipment")]);
+//		}
+//		if (spalten.containsKey("Kst.")) {
+//			card.setKostenstelle(split[spalten.get("Kst.")]);
+//		}
+//		if (spalten.containsKey("Kostenstelle")) {
+//			card.setKostenstelle(split[spalten.get("Kostenstelle")]);
+//		}
+//		if (spalten.containsKey("WE. Nr")) {
+//			card.setWe(split[spalten.get("WE. Nr")]);
+//		}
+//		if (spalten.containsKey("WE Nr.")) {
+//			card.setWe(split[spalten.get("WE Nr.")]);
+//		}
+//		
+//		card.setCustomer(customer);
 //		if (spalten.containsKey("Aufzug Nr.")) {
 //			card.setAuf)(split[spalten.get("Aufzug Nr.")]);
 //		}
