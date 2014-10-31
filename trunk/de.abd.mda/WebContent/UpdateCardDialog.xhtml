@@ -158,26 +158,17 @@
 							<f:selectItem itemLabel="" itemValue="">
 								<h:inputHidden id="comment0" value="#{actionController.model.cardDeEmptyCmt}"/>
 							</f:selectItem>
-							<f:selectItem itemLabel="#{actionController.model.cardDeAv}" itemValue="#{actionController.model.cardDeAv}">
-								<h:inputHidden id="comment1" value="#{actionController.model.cardDeAvCmt}"/>
-							</f:selectItem>
-							<f:selectItem itemLabel="#{actionController.model.cardDeAvIp}" itemValue="#{actionController.model.cardDeAvIp}">
-								<h:inputHidden id="comment2" value="#{actionController.model.cardDeAvIpCmt}"/>
-							</f:selectItem>
 							<f:selectItem itemLabel="#{actionController.model.cardDeM2m}" itemValue="#{actionController.model.cardDeM2m}">
-								<h:inputHidden id="comment3" value="#{actionController.model.cardDeM2mCmt}"/>
+								<h:inputHidden id="comment1" value="#{actionController.model.cardDeM2mCmt}"/>
+							</f:selectItem>
+							<f:selectItem itemLabel="#{actionController.model.cardDeM2MOtis}" itemValue="#{actionController.model.cardDeM2MOtis}">
+								<h:inputHidden id="comment2" value="#{actionController.model.cardDeM2MOtisCmt}"/>
 							</f:selectItem>
 							<f:selectItem itemLabel="#{actionController.model.cardDeHbn}" itemValue="#{actionController.model.cardDeHbn}">
-								<h:inputHidden id="comment4" value="#{actionController.model.cardDeHbnCmt}"/>
+								<h:inputHidden id="comment3" value="#{actionController.model.cardDeHbnCmt}"/>
 							</f:selectItem>
 							<f:selectItem itemLabel="#{actionController.model.cardDeTc}" itemValue="#{actionController.model.cardDeTc}">
-								<h:inputHidden id="comment5" value="#{actionController.model.cardDeTcCmt}"/>
-							</f:selectItem>
-							<f:selectItem itemLabel="#{actionController.model.cardDeSc}" itemValue="#{actionController.model.cardDeSc}">
-								<h:inputHidden id="comment6" value="#{actionController.model.cardDeScCmt}"/>
-							</f:selectItem>
-							<f:selectItem itemLabel="#{actionController.model.cardDeRc}" itemValue="#{actionController.model.cardDeRc}">
-								<h:inputHidden id="comment7" value="#{actionController.model.cardDeRcCmt}"/>
+								<h:inputHidden id="comment4" value="#{actionController.model.cardDeTcCmt}"/>
 							</f:selectItem>
 						</h:selectOneMenu>
 						<h:inputHidden id="TypeDeHidden" binding="#{cardController.cardTypeDeHidden}" value="#{cardController.cardBean.cardDeType}"></h:inputHidden>

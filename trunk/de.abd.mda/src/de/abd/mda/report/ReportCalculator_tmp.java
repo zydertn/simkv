@@ -57,9 +57,9 @@ import de.abd.mda.util.CustomerNumberComparator;
 import de.abd.mda.util.DateUtils;
 import de.abd.mda.util.FacesUtil;
 
-public class ReportCalculator extends ActionController implements Runnable {
+public class ReportCalculator_tmp extends ActionController implements Runnable {
 
-	private final static Logger LOGGER = Logger.getLogger(ReportCalculator.class .getName()); 
+	private final static Logger LOGGER = Logger.getLogger(ReportCalculator_tmp.class .getName()); 
 
 	HttpSession facesSession;
 	private boolean taskRunning = true;
@@ -96,7 +96,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 	
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
 	
-	public ReportCalculator() {
+	public ReportCalculator_tmp() {
 		LOGGER.info("Instantiate ReportCalculator");
 		Model model = new Model();
 		model.createModel();
@@ -104,19 +104,16 @@ public class ReportCalculator extends ActionController implements Runnable {
 		zipPath = model.getZipPath();
 		LOGGER.info("pdfPath = " + pdfPath + ", zipPath = " + zipPath);
 		cal = Calendar.getInstance();
-//		cal.add(Calendar.MONTH, -1);
 		cal.add(Calendar.MONTH, 2);
 		
 		monthRunMonth = cal.get(Calendar.MONTH);
 		monthRunYear = cal.get(Calendar.YEAR);
 		CustomerController cc = new CustomerController();
 		List<DaoObject> daoList = cc.listObjects();
-
 		customerList = new ArrayList<Customer>();
 		for (DaoObject d: daoList) {
 			customerList.add((Customer) d);
 		}
-		
 		CustomerNumberComparator cusComp = new CustomerNumberComparator();
 		Collections.sort(customerList, cusComp);
 	}
@@ -149,7 +146,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 		Calendar now = Calendar.getInstance();
 		now.setTimeInMillis(System.currentTimeMillis());
-//		 now.set(Calendar.YEAR, 2015);
+//		 now.set(Calendar.YEAR, 2014);
 //		 now.set(Calendar.MONTH, 1);
 //		 now.set(Calendar.DAY_OF_MONTH, 5);
 		// Um den Fehlerfall auszuschließen, wenn jemand exakt am 1. eines
@@ -193,6 +190,9 @@ public class ReportCalculator extends ActionController implements Runnable {
 
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_QUARTERLY)) {
 					if (((cal.get(Calendar.MONTH) + 1) % 3) != 0) {
+						int i = cal.get(Calendar.MONTH) % 3;
+						LOGGER.info("Monat = " + cal.get(Calendar.MONTH));
+						LOGGER.info("Quartalsprüfung = " + i);
 						/*
 						 *  Quartalskunden dürfen nur dann beim Monatslauf berücksichtigt werden, 
 						 *  wenn mit diesem Monat das Quartal beginnt.
@@ -204,6 +204,9 @@ public class ReportCalculator extends ActionController implements Runnable {
 				
 				if (customer.getInvoiceConfiguration().getCreationFrequency().equals(Model.FREQUENCY_HALFYEARLY)) {
 					if (((cal.get(Calendar.MONTH) + 1) % 6) != 0) {
+						int i = cal.get(Calendar.MONTH) % 6;
+						LOGGER.info("Monat = " + cal.get(Calendar.MONTH));
+						LOGGER.info("Halbjahrsprüfung = " + i);
 						/*
 						 *  Halbjahreskunden dürfen nur dann beim Monatslauf berücksichtigt werden, 
 						 *  wenn mit diesem Monat das Halbjahr beginnt.
@@ -367,8 +370,8 @@ public class ReportCalculator extends ActionController implements Runnable {
 				// SORTING
 				if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ACTIVATION_DATE) {
 					LOGGER.info("Card sorting: By activation date");
-					CardComparator cc = new CardComparator();
-					Collections.sort(cusCards, cc);
+					DateComparator dc = new DateComparator();
+					Collections.sort(cusCards, dc);
 				} else if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ALPHABETICAL) {
 					LOGGER.info("Card sorting: Alphabetical (by install address)");
 					AlphabeticalComparator ac = new AlphabeticalComparator();
@@ -618,12 +621,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		LOGGER.info("Method: searchCards");
 		Calendar maxActivationDate = Calendar.getInstance();
 		maxActivationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
-		maxActivationDate = getMaxActivationDate(customer.getInvoiceConfiguration().getCreationFrequency(),	maxActivationDate);
-		Calendar maxDeactivationDate = maxActivationDate;
-		Calendar minDeactivationDate = Calendar.getInstance();
-		minDeactivationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
-		minDeactivationDate = getMinDeactivationDate(customer.getInvoiceConfiguration().getCreationFrequency(), minDeactivationDate);
-		
+		maxActivationDate = addMonthsToMaxActivationDate(customer.getInvoiceConfiguration().getCreationFrequency(),	maxActivationDate);
 		Calendar maxLastCalculationDate = Calendar.getInstance();
 		maxLastCalculationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
 		maxLastCalculationDate.set(Calendar.MILLISECOND, 0);
@@ -635,8 +633,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		switch (calcCase) {
 		// MONTH CALCULATION
 		case 1:
-			System.out.println("maxActDat = " + DateUtils.getCalendarString(maxActivationDate) + "; minDeactivationDate == " + DateUtils.getCalendarString(minDeactivationDate) + "; maxDeactivationDate == " + DateUtils.getCalendarString(maxDeactivationDate));
-			return searchMonth(customer, calcMonth, maxActivationDate, minDeactivationDate, maxDeactivationDate, flatrateCalc, tx, session);
+		return searchMonth(customer, calcMonth, maxActivationDate, flatrateCalc, tx, session);
 		
 		// FULL CALCULATION
 		case 2:
@@ -647,12 +644,11 @@ public class ReportCalculator extends ActionController implements Runnable {
 		return null;
 	}
 
-	private List<DaoObject> searchMonth(Customer customer, Calendar calcMonth, Calendar maxActivationDate, Calendar minDeactivationDate, Calendar maxDeactivationDate, boolean flatrateCalc, Transaction tx, Session session) {
+	private List<DaoObject> searchMonth(Customer customer, Calendar calcMonth, Calendar maxActivationDate, boolean flatrateCalc, Transaction tx, Session session) {
 		LOGGER.info("Method: searchMonth");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String select = "select distinct card from CardBean card where card.customer = '" + customer.getId()
-					+ "' and ((card.status = 'aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime()) + "') or (" +
-							"card.status = 'Inaktiv' and (card.deactivationDate >= '" + sdf.format(minDeactivationDate.getTime()) +"' and card.deactivationDate < '" + sdf.format(maxDeactivationDate.getTime()) + "')))";
+					+ "' and card.status = 'aktiv' and card.activationDate < '"	+ sdf.format(maxActivationDate.getTime()) + "'";
 			if (customer.getInvoiceConfiguration().getCreationFrequency()
 					.equals(Model.FREQUENCY_YEARLY)) {
 				LOGGER.info("YEARLY Calculation for customer " + customer.getCustomernumber());
@@ -676,8 +672,8 @@ public class ReportCalculator extends ActionController implements Runnable {
 			// SORTING
 			if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ACTIVATION_DATE) {
 				LOGGER.info("Card sorting: By activation date");
-				CardComparator cc = new CardComparator();
-				Collections.sort(cardList, cc);
+				DateComparator dc = new DateComparator();
+				Collections.sort(cardList, dc);
 			} else if (customer.getInvoiceConfiguration().getSortingOption() == Model.SORTING_ALPHABETICAL) {
 				LOGGER.info("Card sorting: Alphabetical (by install address)");
 				AlphabeticalComparator ac = new AlphabeticalComparator();
@@ -757,7 +753,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		return null;
 	}
 	
-	private Calendar getMaxActivationDate(String creationFrequency,
+	private Calendar addMonthsToMaxActivationDate(String creationFrequency,
 			Calendar maxActivationDate) {
 		LOGGER.info("Method: addMonthsToActivationDate");
 		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY))
@@ -777,25 +773,6 @@ public class ReportCalculator extends ActionController implements Runnable {
 		return maxActivationDate;
 	}
 
-	private Calendar getMinDeactivationDate(String creationFrequency,
-			Calendar minDeactivationDate) {
-		LOGGER.info("Method: addMonthsToActivationDate");
-		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY)) {
-			// Nothing to be done here
-		} else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY))
-			minDeactivationDate.add(Calendar.MONTH,
-					-minDeactivationDate.get(Calendar.MONTH) % 3);
-		else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY))
-			minDeactivationDate.add(Calendar.MONTH,
-					-minDeactivationDate.get(Calendar.MONTH) % 6);
-		else {
-			// JAHRESKUNDE, zu behandeln wie Monatskunde
-			// Nichts zu tun			
-		}
-		return minDeactivationDate;
-	}
-
-	
 	private Transaction createTransaction(Session session) {
 		Transaction tx = null;
 		tx = session.beginTransaction();
