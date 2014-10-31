@@ -104,8 +104,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		zipPath = model.getZipPath();
 		LOGGER.info("pdfPath = " + pdfPath + ", zipPath = " + zipPath);
 		cal = Calendar.getInstance();
-//		cal.add(Calendar.MONTH, -1);
-		cal.add(Calendar.MONTH, 2);
+		cal.add(Calendar.MONTH, -1);
 		
 		monthRunMonth = cal.get(Calendar.MONTH);
 		monthRunYear = cal.get(Calendar.YEAR);
