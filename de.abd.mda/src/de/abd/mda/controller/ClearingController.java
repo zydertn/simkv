@@ -104,7 +104,7 @@ public class ClearingController extends ActionController {
 			} else {
 				// Deaktivierung wurde geklickt
 				if (screenCard.getDeactivationDate() != null) {
-					if (dbCard.getStatus().equals(Model.STATUS_ACTIVE)) {
+					if (dbCard.getStatus().equalsIgnoreCase(Model.STATUS_ACTIVE)) {
 						if (screenCard.getDeactivationDate().after(dbCard.getActivationDate())) {
 							// Deaktivierung ist ok
 							dbCard = deactivate(dbCard);
@@ -115,7 +115,7 @@ public class ClearingController extends ActionController {
 							return "";
 						}
 					} else {
-						if (dbCard.getStatus().equals(Model.STATUS_INACTIVE)) {
+						if (dbCard.getStatus().equalsIgnoreCase(Model.STATUS_INACTIVE)) {
 							if (screenCard.getDeactivationDate().after(dbCard.getActivationDate())) {
 								// Deaktivierung ist ok
 								dbCard = deactivate(dbCard);

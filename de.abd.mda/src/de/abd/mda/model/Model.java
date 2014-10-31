@@ -94,22 +94,16 @@ public class Model {
 	public static String DEC = "Dezember";
 	
 	
-	public String cardDeAv = "Alt-Voice";
-	public String cardDeAvIp = "Alt-Voice-IP";
-	public String cardDeM2m = "M2M-Voice";
+	public String cardDeM2m = "M2M SW APN";
+	public String cardDeM2MOtis = "M2M OTIS APN";
 	public String cardDeHbn = "HBN-Data";
 	public String cardDeTc = "Testkarte";
-	public String cardDeSc = "Sonderkarte";
-	public String cardDeRc = "Roamingkarte";
 	
 	public String cardDeEmptyCmt = "";
-	public String cardDeAvCmt = "Unsere Karten für normalen Einsatz in D, ohne fixe IP";
-	public String cardDeAvIpCmt = "Unsere Karten für normalen Einsatz in D, mit fixer IP für Monitoring";
 	public String cardDeM2mCmt = "??? Frau Kiesenbauer, hier schauen wir noch ein mal";
+	public String cardDeM2MOtisCmt = "";
 	public String cardDeHbnCmt = "Unsere neue deutsche Karte für das HBN Modul mit fixer IP und ohne Sprachanteil";
 	public String cardDeTcCmt = "Bei Einsatz als Testkarte, zB wird nicht abgerechnet";
-	public String cardDeScCmt = "für speziellen Einsatz, z.B. als Flatratekarte";
-	public String cardDeRcCmt = "deutsche Karte im Ausland im Einsatz , z.B. Hollaus Karte";
 
 	public String cardAut1 = "Ö1";
 	public String cardAut2 = "Ö3";
@@ -409,14 +403,6 @@ public class Model {
 		this.supplierList = supplierList;
 	}
 
-	public String getCardDeAv() {
-		return cardDeAv;
-	}
-
-	public String getCardDeAvIp() {
-		return cardDeAvIp;
-	}
-
 	public String getCardDeM2m() {
 		return cardDeM2m;
 	}
@@ -427,22 +413,6 @@ public class Model {
 
 	public String getCardDeTc() {
 		return cardDeTc;
-	}
-
-	public String getCardDeSc() {
-		return cardDeSc;
-	}
-
-	public String getCardDeRc() {
-		return cardDeRc;
-	}
-
-	public String getCardDeAvCmt() {
-		return cardDeAvCmt;
-	}
-
-	public String getCardDeAvIpCmt() {
-		return cardDeAvIpCmt;
 	}
 
 	public String getCardDeM2mCmt() {
@@ -457,25 +427,6 @@ public class Model {
 		return cardDeTcCmt;
 	}
 
-	public String getCardDeScCmt() {
-		return cardDeScCmt;
-	}
-
-	public String getCardDeRcCmt() {
-		return cardDeRcCmt;
-	}
-
-	public void setCardDeAv(String cardDeAv) {
-		this.cardDeAv = cardDeAv;
-	}
-
-	public void setCardDeAvCmt(String cardDeAvCmt) {
-		this.cardDeAvCmt = cardDeAvCmt;
-	}
-
-	public void setCardDeAvIp(String cardDeAvIp) {
-		this.cardDeAvIp = cardDeAvIp;
-	}
 
 	public void setCardDeM2m(String cardDeM2m) {
 		this.cardDeM2m = cardDeM2m;
@@ -489,17 +440,6 @@ public class Model {
 		this.cardDeTc = cardDeTc;
 	}
 
-	public void setCardDeSc(String cardDeSc) {
-		this.cardDeSc = cardDeSc;
-	}
-
-	public void setCardDeRc(String cardDeRc) {
-		this.cardDeRc = cardDeRc;
-	}
-
-	public void setCardDeAvIpCmt(String cardDeAvIpCmt) {
-		this.cardDeAvIpCmt = cardDeAvIpCmt;
-	}
 
 	public void setCardDeM2mCmt(String cardDeM2mCmt) {
 		this.cardDeM2mCmt = cardDeM2mCmt;
@@ -511,14 +451,6 @@ public class Model {
 
 	public void setCardDeTcCmt(String cardDeTcCmt) {
 		this.cardDeTcCmt = cardDeTcCmt;
-	}
-
-	public void setCardDeScCmt(String cardDeScCmt) {
-		this.cardDeScCmt = cardDeScCmt;
-	}
-
-	public void setCardDeRcCmt(String cardDeRcCmt) {
-		this.cardDeRcCmt = cardDeRcCmt;
 	}
 
 	public String getCardDeEmptyCmt() {
@@ -651,6 +583,22 @@ public class Model {
 
 	public void setZipPath(String zipPath) {
 		this.zipPath = zipPath;
+	}
+
+	public String getCardDeM2MOtis() {
+		return cardDeM2MOtis;
+	}
+
+	public void setCardDeM2MOtis(String cardDeM2MOtis) {
+		this.cardDeM2MOtis = cardDeM2MOtis;
+	}
+
+	public String getCardDeM2MOtisCmt() {
+		return cardDeM2MOtisCmt;
+	}
+
+	public void setCardDeM2MOtisCmt(String cardDeM2MOtisCmt) {
+		this.cardDeM2MOtisCmt = cardDeM2MOtisCmt;
 	}
 
 }

@@ -151,4 +151,44 @@ public class CardController extends DaoController implements IDaoController {
 		}
 		return cards;
 	}
+
+	public List<CardBean> searchCustomerActiveCards(Integer customerID) {
+		LOGGER.info("Method: searchCustomerCards; CustomerID = " + customerID);
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		List<CardBean> cards = null;
+		try {
+			tx = session.beginTransaction();
+			String select = "select distinct card from CardBean card";
+			if (customerID != null) {
+				select += " where card.customer = '" + customerID + "' and card.status = 'aktiv' and card.activationDate < '2014-10-01'";
+			} else {
+				LOGGER.warn("CustomerID missing! No Cards found with this CustomerID");
+				return null;
+			}
+			
+			LOGGER.info("Select = " + select);
+			cards = session.createQuery(select).list();
+			if (cards != null) {
+				LOGGER.info(cards.size() + " cards found");
+			}
+			tx.commit();
+			
+		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
+			if (tx != null && tx.isActive()) {
+				try {
+					// Second try catch as the rollback could fail as well
+					tx.rollback();
+				} catch (HibernateException e1) {
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
+				}
+				// throw again the first exception
+				throw e;
+			}
+
+		}
+		return cards;
+	}
+
 }

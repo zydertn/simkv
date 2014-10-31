@@ -541,6 +541,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			
 			while (iter.hasNext()) {
 				CardBean card = (CardBean) iter.next();
+				if (card.getCardNumberFirst().equals("113399683") && card.getCardNumberSecond().equals("3")) {
+					System.out.println("Jetzt");
+				}
 				BigDecimal simPrice = new BigDecimal("0.0");
 				if (!card.getStandardPrice()) {
 					simPrice = new BigDecimal(""+simPrices.get(card.getSimPrice()));
@@ -558,7 +561,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 //				if (columns.contains(Model.COLUMN_AMOUNT)) {
 				int monthAmount = 1;
 				Calendar periodMaxCalcDate = getPeriodMaxCalcDate(customer.getInvoiceConfiguration().getCreationFrequency(), calcMonth);
-				monthAmount = getMonthAmount(customer.getInvoiceConfiguration().getCreationFrequency(), card.getActivationDate(), periodMaxCalcDate);
+				if (customer.getCustomernumber().equals("20216")) {
+					System.out.println("Jetzt");
+				}
+				monthAmount = getMonthAmount(customer.getInvoiceConfiguration().getCreationFrequency(), card.getStatus(), card.getActivationDate(), card.getDeactivationDate(), periodMaxCalcDate);
 				calcSum = calcSum.add(simPrice.multiply(new BigDecimal(monthAmount)));
 
 				BigDecimal dataOptionPrice = new BigDecimal("0.0");
@@ -1211,7 +1217,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JULY);
 			else {
 				periodMaxCalcDate.add(Calendar.YEAR, 1);
-				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JULY);
+				periodMaxCalcDate.set(Calendar.MONTH, Calendar.JANUARY);
 			}
 		} else {
 			// Jährliche Rechnung - darf aktuell auch erst abgerechnet werden, wenn das Jahr zuende ist
@@ -1222,35 +1228,87 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return periodMaxCalcDate;
 	}
 
-	private int getMonthAmount(String creationFrequency, Date activationDate, Calendar periodMaxCalcDate) {
+	private int getMonthAmount(String creationFrequency, String status, Date activationDate, Date deactivationDate, Calendar periodMaxCalcDate) {
 		LOGGER.info("Method: getMonthAmount");
 		int monthAmount = 0;
-		Calendar activationCal = Calendar.getInstance();
-		activationCal.setTime(activationDate);
+		Calendar activationCal = null;
+		if (activationDate != null) {
+			activationCal = Calendar.getInstance();
+			activationCal.setTime(activationDate);
+		}
+		Calendar deactivationCal = null;
+		if (deactivationDate != null) {
+			deactivationCal = Calendar.getInstance();
+			deactivationCal.setTime(deactivationDate);
+		}
 		if (creationFrequency.equals(Model.FREQUENCY_MONTHLY))
 			return 1;
 		else if (creationFrequency.equals(Model.FREQUENCY_QUARTERLY)) {
-			if (activationCal.get(Calendar.YEAR) == periodMaxCalcDate.get(Calendar.YEAR)) {
-				monthAmount = periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
-				if (monthAmount > 3)
-					return 3;
-			} else if (activationCal.get(Calendar.YEAR)+1 == periodMaxCalcDate.get(Calendar.YEAR)) {
-				monthAmount = 12 + periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
-				if (monthAmount > 3)
-					return 3;
-			} else {
-				return 3;			}
+			if (status.equalsIgnoreCase(Model.STATUS_ACTIVE)) {
+				if (activationCal.get(Calendar.YEAR) == periodMaxCalcDate.get(Calendar.YEAR)) {
+					monthAmount = periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+					if (monthAmount > 3)
+						return 3;
+				} else if (activationCal.get(Calendar.YEAR)+1 == periodMaxCalcDate.get(Calendar.YEAR)) {
+					monthAmount = 12 + periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+					if (monthAmount > 3)
+						return 3;
+				} else {
+					return 3;			}
+			} else if (status.equalsIgnoreCase(Model.STATUS_INACTIVE)) {
+				if (activationCal != null) {
+					// Daten sind alle 0-basiert
+					// QMAX = Maximale Anzahl Monate im Quartal
+					int QMAX = 3;
+					int MAX = periodMaxCalcDate.get(Calendar.MONTH);
+					// Wenn MAX < QMAX ist, dann gibt es einen Jahreswechsel
+					if (MAX < QMAX)
+						MAX = 12;
+					int DEACT = deactivationCal.get(Calendar.MONTH);
+					int ACT = 0;
+					if (activationCal.get(Calendar.YEAR) == deactivationCal.get(Calendar.YEAR)) {
+						ACT = activationCal.get(Calendar.MONTH);
+					}
+					int DEACTRES = QMAX - (MAX-DEACT) + 1;
+					int ACTDIFF = MAX-ACT;
+					int ACTRES = QMAX-ACTDIFF;
+					if (ACTRES < 0) ACTRES = 0;
+					return DEACTRES-ACTRES;
+				}
+			}
 		} else if (creationFrequency.equals(Model.FREQUENCY_HALFYEARLY)) {
-			if (activationCal.get(Calendar.YEAR) == periodMaxCalcDate.get(Calendar.YEAR)) {
-				monthAmount = periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
-				if (monthAmount > 6)
+			if (status.equalsIgnoreCase(Model.STATUS_ACTIVE)) {
+				if (activationCal.get(Calendar.YEAR) == periodMaxCalcDate.get(Calendar.YEAR)) {
+					monthAmount = periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+					if (monthAmount > 6)
+						return 6;
+				} else if (activationCal.get(Calendar.YEAR)+1 == periodMaxCalcDate.get(Calendar.YEAR)) {
+					monthAmount = 12 + periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
+					if (monthAmount > 6)
+						return 6;
+				} else {
 					return 6;
-			} else if (activationCal.get(Calendar.YEAR)+1 == periodMaxCalcDate.get(Calendar.YEAR)) {
-				monthAmount = 12 + periodMaxCalcDate.get(Calendar.MONTH) - activationCal.get(Calendar.MONTH);
-				if (monthAmount > 6)
-					return 6;
-			} else {
-				return 6;
+				}
+			} else if (status.equalsIgnoreCase(Model.STATUS_INACTIVE)) {
+				if (activationCal != null) {
+					// Daten sind alle 0-basiert
+					// QMAX = Maximale Anzahl Monate im Quartal
+					int QMAX = 6;
+					int MAX = periodMaxCalcDate.get(Calendar.MONTH);
+					// Wenn MAX < QMAX ist, dann gibt es einen Jahreswechsel
+					if (MAX < QMAX)
+						MAX = 12;
+					int DEACT = deactivationCal.get(Calendar.MONTH);
+					int ACT = 0;
+					if (activationCal.get(Calendar.YEAR) == deactivationCal.get(Calendar.YEAR)) {
+						ACT = activationCal.get(Calendar.MONTH);
+					}
+					int DEACTRES = QMAX - (MAX-DEACT) + 1;
+					int ACTDIFF = MAX-ACT;
+					int ACTRES = QMAX-ACTDIFF;
+					if (ACTRES < 0) ACTRES = 0;
+					return DEACTRES-ACTRES;
+				}
 			}
 		} else if (creationFrequency.equals(Model.FREQUENCY_YEARLY)) {
 			if (activationCal.get(Calendar.YEAR) + 1 == periodMaxCalcDate.get(Calendar.YEAR))
@@ -1258,7 +1316,6 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			else 
 				monthAmount = 12;
 		}
-		
 		return monthAmount;
 	}
 	
