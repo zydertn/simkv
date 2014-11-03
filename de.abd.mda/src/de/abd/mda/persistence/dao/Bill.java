@@ -1,6 +1,9 @@
 package de.abd.mda.persistence.dao;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
 public class Bill extends DaoObject {
 
@@ -20,6 +23,13 @@ public class Bill extends DaoObject {
 	private int mapCount;
 	private boolean flatrate;
 	private boolean finalized;
+	private BigDecimal bruttoPrice;
+	private BigDecimal nettoPrice;
+	private BigDecimal vat;
+	private Calendar calcDate;
+	private Timestamp updateTime;
+	
+	
 	
 	public Bill() {
 		
@@ -103,5 +113,45 @@ public class Bill extends DaoObject {
 
 	public void setFlatrate(boolean flatrate) {
 		this.flatrate = flatrate;
+	}
+
+	public BigDecimal getBruttoPrice() {
+		return bruttoPrice;
+	}
+
+	public void setBruttoPrice(BigDecimal bruttoPrice) {
+		this.bruttoPrice = bruttoPrice;
+	}
+
+	public BigDecimal getNettoPrice() {
+		return nettoPrice;
+	}
+
+	public void setNettoPrice(BigDecimal nettoPrice) {
+		this.nettoPrice = nettoPrice;
+	}
+
+	public BigDecimal getVat() {
+		return vat;
+	}
+
+	public void setVat(BigDecimal vat) {
+		this.vat = vat;
+	}
+
+	public Calendar getCalcDate() {
+		return calcDate;
+	}
+
+	public void setCalcDate(Calendar calcDate) {
+		this.calcDate = calcDate;
+	}
+
+	public Timestamp getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Timestamp updateTime) {
+		this.updateTime = updateTime;
 	}
 }

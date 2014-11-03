@@ -1,5 +1,7 @@
 package de.abd.mda.persistence.dao.controller;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,15 +49,18 @@ public class BillController extends DaoController {
 	public boolean createOrUpdateObject(Bill bill) {
 		LOGGER.info("Method: createOrUpdateObject");
 		Bill dbBill = findBill(bill);
+		Date date = new Date();
 		if (dbBill == null) {
 			LOGGER.warn("No bill found... creating new bill...");
 			increaseBillNumber();
 			bill.setBillNumber(getMaxBillNumber());
+			bill.setUpdateTime(new Timestamp(date.getTime()));
 			createObject(bill);
 			LOGGER.info("Bill created successfully with billNumber = " + bill.getBillNumber());
 			return true;
 		} else {
 			dbBill.setFile(bill.getFile());
+			dbBill.setUpdateTime(new Timestamp(date.getTime()));
 			LOGGER.info("Updated file for bill " + dbBill.getBillNumber());
 			return false;
 		}
