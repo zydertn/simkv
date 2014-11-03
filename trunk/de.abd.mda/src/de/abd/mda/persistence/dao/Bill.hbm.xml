@@ -14,5 +14,10 @@
 	 	<property name="file" column="BILL_FILE" type="binary" length="1048576" />
 	 	<property name="filename" column="BILL_FILENAME" type="string" />
 	 	<property name="mapCount" column="BILL_MAP_COUNT" type="int" length="3" />
+	 	<property name="bruttoPrice" column="BILL_BRUTTO_PRICE" type="big_decimal" />
+	 	<property name="nettoPrice" column="BILL_NETTO_PRICE" type="big_decimal" />
+	 	<property name="vat" column="BILL_VAT" type="big_decimal" />
+	 	<property name="calcDate" type="calendar_date" column="BILL_CALC_DATE" />
+	 	<property name="updateTime" type="timestamp" column="BILL_UPDATE_TIME" />
 	 </class>
  </hibernate-mapping>

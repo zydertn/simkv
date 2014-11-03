@@ -210,7 +210,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			LOGGER.info("genRep Teil 4 = " + diff4);
 
 			long time9 = System.currentTimeMillis();
-			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber, calcDate);
+			boolean generatedWithErrors = generateBody(writer, document, customerCards, customer, calcMonth, flatrateCalc, severalBills, invoiceNumber, calcDate, bill);
 			if (generatedWithErrors) {
 				LOGGER.warn("Error in creation of bill body!");
 				return false;
@@ -339,7 +339,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		return footer;
 	}
 
-	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber, Date calcDate) {
+	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber, Date calcDate, Bill bill) {
 		LOGGER.info("Method: generateBody");
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
@@ -430,7 +430,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			SimpleDateFormat df = new SimpleDateFormat(bundle.getString("Report.dateformat"));
 			df.setTimeZone(TimeZone.getDefault());
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, df.format(calcDate), 425, 630-dateY, 0);
-
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(calcDate);
+			bill.setCalcDate(cal);
+			
 			// Rechnungsnummer
 			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, bundle.getString("Report.invoicenumber"), 425, 600-dateY, 0);
 			
@@ -646,7 +649,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 				tableRowList.add(new TableRow(card.getInvoiceRows(), invoiceRow));
 			}
 
-			tableRowList = addCalculationRows(tableRowList, customerCards, customer, calcSum, calcMonth);
+			tableRowList = addCalculationRows(tableRowList, customerCards, customer, calcSum, calcMonth, bill);
 			
 //			tableRowList = addDummyRows(tableRowList);
 			
@@ -777,7 +780,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	private ArrayList<TableRow> addCalculationRows(
 			ArrayList<TableRow> tableRowList,
-			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum, Calendar calcMonth) {
+			List<DaoObject> customerCards, Customer customer, BigDecimal nettoSum, Calendar calcMonth, Bill bill) {
 
 		LOGGER.info("Method: addCalculationRows");
 		DecimalFormat df = new DecimalFormat("#0.00");
@@ -818,9 +821,14 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		}
 		String[] cr2 = createCalcRow(firstcols, bundle.getString("Report.vat"), "" + df.format(mwst).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));
 		String[] cr3 = createCalcRow(firstcols, "", "");
-		String[] cr4 = createCalcRow(firstcols, bundle.getString("Report.final_amount"), df.format(mwst.add(nettoSum)).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));
+		BigDecimal finalAmount = mwst.add(nettoSum);
+		String[] cr4 = createCalcRow(firstcols, bundle.getString("Report.final_amount"), df.format(finalAmount).replace(".", ",") + " " + bundle.getString("Report.euro_sign"));
 //		String[] cr4 = createCalcRow(firstcols, "Endbetrag", df.format(mwst.add(netSumAfterVoucher)).replace(".", ",") + " €");
 
+		bill.setNettoPrice(nettoSum);
+		bill.setVat(mwst);
+		bill.setBruttoPrice(finalAmount);
+		
 		tableRowList.add(new TableRow(1, cr2));
 		tableRowList.add(new TableRow(1, cr3));
 		tableRowList.add(new TableRow(1, cr4));
