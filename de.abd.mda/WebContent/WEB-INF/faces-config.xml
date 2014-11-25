@@ -74,6 +74,11 @@
 		<managed-bean-class>de.abd.mda.report.ReportCalculator</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>exportController</managed-bean-name>
+		<managed-bean-class>de.abd.mda.report.ExportController</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
 
 	<navigation-rule>
 		<display-name>Actions</display-name>

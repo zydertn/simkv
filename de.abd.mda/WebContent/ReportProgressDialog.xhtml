@@ -122,6 +122,41 @@
 				</h:panelGrid>
 			</h:panelGrid>
 
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:250px; width: 490px; margin-right: 20px">
+				<div align="center" style="color:#848484">
+					<h1>Export</h1>
+				</div>
+				<hr/>
+				<h:panelGrid columns="3">
+					<h:outputText value="Export für Monat: "/>
+					<h:selectOneMenu
+						binding="#{exportController.monthBinding}"
+						value="#{exportController.month}">
+						<f:selectItems value="#{actionController.model.months.entrySet()}" var="monthVar" itemLabel="#{monthVar.value}" itemValue="#{monthVar.key}" />
+					</h:selectOneMenu>
+					<h:selectOneMenu
+						binding="#{exportController.yearBinding}"
+						value="#{exportController.year}">
+						<f:selectItems
+							value="#{actionController.model.years}" />
+					</h:selectOneMenu>
+
+				</h:panelGrid>
+				<!-- h:panelGrid columns="2">
+					<h:outputText value="Format: "/>
+					<h:selectOneMenu
+						binding="#{exportController.formatBinding}"
+						value="#{exportController.format}">
+						<f:selectItems value="#{actionController.model.formats.entrySet()}" var="formatsVar" itemLabel="#{formatsVar.value}" itemValue="#{formatsVar.key}" />
+					</h:selectOneMenu>
+				</h:panelGrid-->
+				<h:panelGrid>
+					<h:commandButton value="Export starten" action="#{exportController.startExport}">
+					   <f:ajax disabled="true"/>
+					</h:commandButton>
+				</h:panelGrid>
+			</h:panelGrid>
+
 			<!-- h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px">
 				<div align="center" style="color:#848484">
 					<h1>Kompletter Rechnungslauf</h1>
