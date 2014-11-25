@@ -285,7 +285,32 @@ public class ReportCalculator extends ActionController implements Runnable {
 			file = new File(pdfPath + dbBill.getFilename());
 			LOGGER.info("Download file: " + file.getPath());
 
+			FacesContext facesContext = FacesContext.getCurrentInstance();
+			ExternalContext externalContext = facesContext.getExternalContext();
+
+			String filename = "Test.pdf";
+
+			externalContext.responseReset();
+			externalContext.setResponseContentType("application/pdf");
+			externalContext.setResponseHeader("Content-Disposition",
+					"attachment; filename=\"" + filename + "\"");
+
 			try {
+				OutputStream output = externalContext.getResponseOutputStream();
+
+				output.write(dbBill.getFile());
+
+				output.flush();
+				output.close();
+
+				facesContext.responseComplete();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+
+			
+			
+/*			try {
 				FileOutputStream fos2 = new FileOutputStream(file);
 				fos2.write(dbBill.getFile());
 				fos2.flush();
@@ -301,10 +326,38 @@ public class ReportCalculator extends ActionController implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+*/		}
 		return true;
 	}
 
+	private void download(List<String> csvLines, int month, int year) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+
+		String filename = "Rechnungen_"+year+"_"+(month+1)+".csv";
+
+		externalContext.responseReset();
+		externalContext.setResponseContentType("text/comma-separated-values");
+		externalContext.setResponseHeader("Content-Disposition",
+				"attachment; filename=\"" + filename + "\"");
+
+		try {
+			OutputStream output = externalContext.getResponseOutputStream();
+
+			for (String s : csvLines) {
+				output.write(s.getBytes());
+			}
+
+			output.flush();
+			output.close();
+
+			facesContext.responseComplete();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+
+	
 	public int monthCalc(Customer customer, int reportCount, int month, int year) {
 		return monthCalculation(customer, reportCount, month, year, null);
 	}
@@ -841,7 +894,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 			LOGGER.warn(message);
 		}
 		
-		getRequest().setAttribute("message", message);
+//		getRequest().setAttribute("message", message);
 		
 		return "";
 	}

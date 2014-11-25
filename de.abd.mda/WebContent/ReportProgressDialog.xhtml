@@ -111,14 +111,16 @@
 					<h:inputText value="#{reportCalculator.reportNumber}" size="9"/>
 				</h:panelGrid>
 				<h:panelGrid columns="3">
-					<h:commandButton id="singleInvRun" action="#{reportCalculator.startSingleInvTask}" rendered="true" value="STARTEN"></h:commandButton>
+					<h:commandButton id="singleInvRun" action="#{reportCalculator.startSingleInvTask}" rendered="true" value="STARTEN">
+						<f:ajax disabled="true"/>
+					</h:commandButton>
 		            <!-- h:commandButton id="monatsRechnungen" actionListener="#{reportCalculator.downloadMonthBills}" rendered="true" value="Monatsrechnungen runterladen"></h:commandButton-->
-		            <ice:outputResource id="pdfDownloadLink" rendered="false" binding="#{reportCalculator.outputLinkPdfBinding}"
+		            <!-- ice:outputResource id="pdfDownloadLink" rendered="false" binding="#{reportCalculator.outputLinkPdfBinding}"
             					resource="#{reportCalculator.pdfResource}"
             					attachment="true"
             					label="Download PDF"
             					mimeType="application/pdf"
-            					type="text"/>
+            					type="text"/-->
 				</h:panelGrid>
 			</h:panelGrid>
 
