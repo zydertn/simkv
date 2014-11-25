@@ -21,5 +21,9 @@ public class DateUtils {
 	public static String getCalendarString(Calendar cal) {
 		return (cal.get(Calendar.DATE) + ". " + getMonthAsString(cal.get(Calendar.MONTH)) + " " + cal.get(Calendar.YEAR));
 	}
+
+	public static String getCalendarExportString(Calendar cal) {
+		return (cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE));
+	}
 	
 }

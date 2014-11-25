@@ -93,6 +93,9 @@ public class Model {
 	public static String NOV = "November";
 	public static String DEC = "Dezember";
 	
+	public static String CSV = "CSV";
+	public static String EXC = "EXCEL";
+	
 	
 	public String cardDeM2m = "M2M SW APN";
 	public String cardDeM2MOtis = "M2M OTIS APN";
@@ -134,9 +137,11 @@ public class Model {
 	private List<String> billingCriteria;
 	private HashMap<Integer, String> months;
 	private List<Integer> years;
+	private HashMap<Integer, String> formats;
 	
 	private String pdfPath = "";
 	private String zipPath = "";
+	private String exportPath = "";
 	
 	public static int SORTING_ACTIVATION_DATE = 1;
 	public static int SORTING_ALPHABETICAL = 2; 
@@ -255,6 +260,10 @@ public class Model {
 		
 		years = addYears();
 		
+		formats = new HashMap<Integer, String>();
+		formats.put(0, CSV);
+		formats.put(1, EXC);
+		
 		String hostname = "";
 		try {
 			hostname = java.net.InetAddress.getLocalHost().getHostName();
@@ -266,16 +275,18 @@ public class Model {
 		if (hostname.equals("accounting")) {
 			pdfPath = "E:/tmp/Invoices/pdf/";
 			zipPath = "E:/tmp/Invoices/zip/";
+			exportPath = "E:/tmp/Invoices/export/";
 		} else {
 			pdfPath = "C:/Siwaltec/Invoices/pdf/";
 			zipPath = "C:/Siwaltec/Invoices/zip/";
+			exportPath = "C:/Siwaltec/Invoices/export/";
 		}
 
 	}
 
 	private List<Integer> addYears() {
 		ArrayList<Integer> years = new ArrayList<Integer>();
-		int year = 2010;
+		int year = 2013;
 		Calendar d = Calendar.getInstance();
 		
 		while (year <= d.get(Calendar.YEAR)) {
@@ -599,6 +610,22 @@ public class Model {
 
 	public void setCardDeM2MOtisCmt(String cardDeM2MOtisCmt) {
 		this.cardDeM2MOtisCmt = cardDeM2MOtisCmt;
+	}
+
+	public HashMap<Integer, String> getFormats() {
+		return formats;
+	}
+
+	public void setFormats(HashMap<Integer, String> formats) {
+		this.formats = formats;
+	}
+
+	public String getExportPath() {
+		return exportPath;
+	}
+
+	public void setExportPath(String exportPath) {
+		this.exportPath = exportPath;
 	}
 
 }
