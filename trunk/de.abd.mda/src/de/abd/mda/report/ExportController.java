@@ -110,14 +110,6 @@ public class ExportController extends ActionController {
 		}
 	}
 
-	private void close(Closeable stream) {
-		try {
-			stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public HtmlSelectOneMenu getMonthBinding() {
 		return monthBinding;
 	}
