@@ -83,6 +83,10 @@ public class ActionController implements ActionListener {
 		return "Report";
 	}
 
+	public String openInvoicesStatus() {
+		return "InvoiceStatus";
+	}
+
 	public String openAddCustomerDialog() {
 		cardBean = new CardBean();
 		return "openAddCustomerDialog";

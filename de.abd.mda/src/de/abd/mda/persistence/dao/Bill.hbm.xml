@@ -19,5 +19,8 @@
 	 	<property name="vat" column="BILL_VAT" type="big_decimal" />
 	 	<property name="calcDate" type="calendar_date" column="BILL_CALC_DATE" />
 	 	<property name="updateTime" type="timestamp" column="BILL_UPDATE_TIME" />
+	 	<property name="paymentStatus" column="BILL_PAYMENT_STATUS" type="boolean" />
+	 	<property name="paymentDate" type="calendar_date" column="BILL_PAYMENT_DATE" />
+	 	<property name="reminderStatus" column="BILL_REMINDER_STATUS" type="int" length="2" />
 	 </class>
  </hibernate-mapping>

@@ -29,7 +29,7 @@
                 <h:outputText id="completed" value="completed" rendered="#{longtask.progress eq 100}" style="font-weight: bold;"/>
             </h:panelGrid>
             
-            <ace:progressBar id="myProgressBar" value="#{longtask.progress}" usePolling="true" pollingInterval="1000" />
+            <ace:progressBar id="myProgressBar" value="#{longtask.progress}" usePolling="true" pollingInterval="1110" />
                                
             <!-- h:commandButton id="start" actionListener="#{reportCalculator.startTask}" rendered="#{!longtask.taskRunning}" value="start"></h:commandButton>
 
@@ -44,7 +44,7 @@
             					type="text"/-->
 		</h:panelGrid>
 
-		<h:panelGrid width="1000" style="text-align: center;" columns="2">
+		<h:panelGrid width="1110" style="text-align: center;" columns="2">
 			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:250px; width: 490px; margin-right: 20px">
 				<div align="center" style="color:#848484">
 					<h1>Monatslauf</h1>
@@ -124,7 +124,7 @@
 				</h:panelGrid>
 			</h:panelGrid>
 
-			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:250px; width: 490px; margin-right: 20px">
+			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:250px; width: 490px; margin-right: 20px; margin-top: 20px;">
 				<div align="center" style="color:#848484">
 					<h1>Export</h1>
 				</div>
@@ -142,7 +142,6 @@
 						<f:selectItems
 							value="#{actionController.model.years}" />
 					</h:selectOneMenu>
-
 				</h:panelGrid>
 				<!-- h:panelGrid columns="2">
 					<h:outputText value="Format: "/>
@@ -167,10 +166,10 @@
 			</h:panelGrid>
 		</h:panelGrid>
 
-		<h:panelGrid width="1000" style="text-align: center; margin-top:20px"-->
+		<h:panelGrid width="1110" style="text-align: center; margin-top:20px"-->
 		</h:panelGrid>
 		
-		<!-- h:panelGrid width="1000" style="text-align: center;" columns="2">
+		<!-- h:panelGrid width="1110" style="text-align: center;" columns="2">
 
 			<h:panelGrid columns="1" bgcolor="#E0E6F8" style="height:200px; width: 490px; margin-right: 20px">
 				<div align="center" style="color:#848484">
@@ -197,8 +196,12 @@
 
 
 		</h:panelGrid-->
+		<h:outputText value="#{exportController.testValue}"></h:outputText>
 	</h:form>		
-</h:body>
+	<!-- h:form id="form1">
+	    <h:inputText value="#{exportController.inputTest}" onkeypress="if (event.keyCode == 13) document.getElementById('form1:search').click();"/>
+	    <h:commandButton id="search" type="submit" value="Search" action="#{exportController.submitQuery()}"/>
+	</h:form--></h:body>
 <!-- h:outputStylesheet library="org.icefaces.component.skins"
 	name="rime.css" /-->
 </html>

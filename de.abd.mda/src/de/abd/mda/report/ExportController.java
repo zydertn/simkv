@@ -42,12 +42,22 @@ public class ExportController extends ActionController {
 	private int month;
 	private int year;
 	private int format;
+	private String inputTest;
+	private String testValue;
 
 	private OutputResource outputLinkExportBinding;
 
 	public ExportController() {
+		testValue = "Mein Text";
 	}
 
+	public String submitQuery() {
+		System.out.println("Methode wurde jetzt aufgerufen!");
+		System.out.println("Test: " + inputTest);
+		testValue = "Ausgabe verändert";
+		return "";
+	}
+	
 	public String startExport() {
 		List<String> csvLines = generateCsvLines(this.month, this.year);
 		download(csvLines, this.month, this.year);
@@ -156,6 +166,22 @@ public class ExportController extends ActionController {
 
 	public void setFormat(int format) {
 		this.format = format;
+	}
+
+	public String getInputTest() {
+		return inputTest;
+	}
+
+	public void setInputTest(String inputTest) {
+		this.inputTest = inputTest;
+	}
+
+	public String getTestValue() {
+		return testValue;
+	}
+
+	public void setTestValue(String testValue) {
+		this.testValue = testValue;
 	}
 
 }

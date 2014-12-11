@@ -24,6 +24,7 @@ import org.hibernate.Transaction;
 
 
 import de.abd.mda.persistence.dao.Address;
+import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.CardBean;
 import de.abd.mda.persistence.dao.Country;
 import de.abd.mda.persistence.dao.Customer;
@@ -31,6 +32,7 @@ import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.InvoiceConfiguration;
 import de.abd.mda.persistence.dao.Person;
 import de.abd.mda.persistence.dao.Voucher;
+import de.abd.mda.persistence.dao.controller.BillController;
 import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.dao.controller.CountryController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
@@ -82,6 +84,7 @@ public class CustomerActionController extends ActionController {
 	private HtmlSelectOneMenu invoiceconfigSortingBinding;
 	private String countryName;
 	private HtmlInputText paymentTargetBinding;
+	private List<Bill> bills;
 	
 	
 	private String relation;
@@ -172,6 +175,16 @@ public class CustomerActionController extends ActionController {
 			getRequest().setAttribute("message", "Kein Customer gefunden; " + customer.getCustomernumber() + "; " + customer.getName());
 		}
 	}
+	
+	public String showInvoices() {
+		LOGGER.info("Method: showInvoices; Kundennummer: " + customer.getCustomernumber());
+		BillController bc = new BillController();
+		bills = bc.findCustomerBills(Integer.parseInt(customer.getCustomernumber()));
+		getSession().setAttribute("invoicesCustomerNumber", customer.getCustomernumber());
+		LOGGER.info(bills.size() + " Rechnungen gefunden!");
+		return "";
+	}
+
 	
 	private void disableComponents(boolean b) {
 		LOGGER.info("Method: disableComponents");
@@ -843,6 +856,25 @@ public class CustomerActionController extends ActionController {
 	public void setInvoiceconfigSortingBinding(
 			HtmlSelectOneMenu invoiceconfigSortingBinding) {
 		this.invoiceconfigSortingBinding = invoiceconfigSortingBinding;
+	}
+	
+	private void updateBillList() {
+		BillController bc = new BillController();
+		if (getSession().getAttribute("invoicesCustomerNumber") != null) {
+			int customerNumber = Integer.parseInt((String) getSession().getAttribute("invoicesCustomerNumber"));
+			bills = bc.findCustomerBills(customerNumber);
+		}
+	}
+
+	public List<Bill> getBills() {
+		if (getRequest().getAttribute("billListUpdate") != null && (Boolean) getRequest().getAttribute("billListUpdate")) {
+			updateBillList();
+		}
+		return bills;
+	}
+
+	public void setBills(List<Bill> bills) {
+		this.bills = bills;
 	}
 
 
