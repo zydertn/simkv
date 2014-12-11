@@ -5,6 +5,17 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import javax.faces.component.html.HtmlInputHidden;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+
+import de.abd.mda.controller.BillActionController;
+import de.abd.mda.persistence.dao.controller.BillController;
+import de.abd.mda.util.DateUtils;
+
 public class Bill extends DaoObject {
 
 	
@@ -13,6 +24,8 @@ public class Bill extends DaoObject {
 	 */
 	private static final long serialVersionUID = 6907539712172216071L;
 
+	private final static Logger LOGGER = Logger.getLogger(Bill.class .getName());
+	
 	private int billId;
 	private int billNumber;
 	private int customerNumber;
@@ -28,13 +41,98 @@ public class Bill extends DaoObject {
 	private BigDecimal vat;
 	private Calendar calcDate;
 	private Timestamp updateTime;
+	private boolean paymentStatus;
+	private Calendar paymentDate;
+	private String statusString;
+	private int reminderStatus;
+	private String action;
 	
-	
+
 	
 	public Bill() {
-		
+		paymentStatus = false;
+		reminderStatus = -1;
+	}
+	
+	public String processStatusAction() {
+		BillActionController bac = new BillActionController();
+		if (action.equals("Action_empty")) {
+			LOGGER.warn("BillController.processAction clicked with empty action!");
+		} else if (action.equals("Action_payment")) {
+			LOGGER.info("BillController.processAction payment.");
+			if (paymentStatus == false)
+				bac.processPaymentAction(this);
+			else
+				((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).setAttribute("message", "Diese Rechnung wurde bereits bezahlt!");
+		} else if (action.equals("Action_FriendlyReminder")) {
+			LOGGER.info("BillController.processAction FriendlyReminder.");
+			bac.processReminderAction(this, 0);
+		} else if (action.equals("Action_1stReminder")) {
+			LOGGER.info("BillController.processAction 1stReminder.");
+			bac.processReminderAction(this, 0);
+		} else if (action.equals("Action_2ndReminder")) {
+			LOGGER.info("BillController.processAction 2ndReminder.");
+			bac.processReminderAction(this, 0);
+		}
+		return "";
+	}
+	
+
+	public String getBillMonthString() {
+		return DateUtils.getMonthAsString(month) + " " + year;
+	}
+	
+	public String getCalcDateString() {
+		if (calcDate != null) {
+			return DateUtils.getCalendarString(calcDate);
+		} else return "";
 	}
 
+	public String getPaymentDateString() {
+		if (paymentDate != null) {
+			return DateUtils.getCalendarString(paymentDate);
+		} else return "";
+	}
+	
+	public String getReminderStatusColor() {
+		String style="";
+		switch (reminderStatus) {
+			case -1: break;
+			case 0:	style = "background-color:yellow";
+					break;
+			case 1: style = "background-color:#E55B3C";
+					break;
+			case 2: style = "background-color:red";
+					break;
+		}
+		return style;
+	}
+	
+	public String getStatusImage() {
+		if (paymentStatus) {
+			statusString = "Bezahlt";
+			return "images/haken_transp.png";
+		} else {
+			statusString = "Offen";
+			return "images/cancel_transp.png";
+		}
+	}
+	
+	public String getReminderStatusString() {
+		String reminderString = "";
+		switch (reminderStatus) {
+		case -1: 	reminderString = "-";
+					break;
+		case 0:		reminderString = "Freundliche Erinnerung";
+					break;
+		case 1:		reminderString = "1. Mahnung";
+					break;
+		case 2: 	reminderString = "2. Mahnung";
+					break;
+		}
+		return reminderString;
+	}
+	
 	public int getBillNumber() {
 		return billNumber;
 	}
@@ -153,5 +251,69 @@ public class Bill extends DaoObject {
 
 	public void setUpdateTime(Timestamp updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Calendar getPaymentDate() {
+		return paymentDate;
+	}
+
+	public void setPaymentDate(Calendar paymentDate) {
+		this.paymentDate = paymentDate;
+	}
+
+	public boolean getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(boolean paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
+	public String getStatusString() {
+		return statusString;
+	}
+
+	public void setStatusString(String statusString) {
+		this.statusString = statusString;
+	}
+
+	public int getReminderStatus() {
+		return reminderStatus;
+	}
+
+	public void setReminderStatus(int reminderStatus) {
+		this.reminderStatus = reminderStatus;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public String getActionColumnStyle() {
+		String style = "";
+		if (BillController.rowCountNum == 0) {
+			style = "background-color: #FFFFFF";
+		} else {
+			style = "background-color: #F7F7F7";
+		}
+		return style;
+	}
+
+	public String getActionSelectStyle() {
+		String style = "";
+		if (BillController.rowCountNum == 0) {
+			style = "border: none; background-color: #FFFFFF";
+			BillController.rowCountNum = 1;
+		} else {
+			style = "border: none; background-color: #F7F7F7";
+			BillController.rowCountNum = 0;
+		}
+		return style;
+
+		
 	}
 }

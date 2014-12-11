@@ -36,6 +36,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.icesoft.faces.component.ext.HtmlCommandLink;
+import com.icesoft.faces.component.ext.HtmlInputHidden;
 import com.icesoft.faces.component.outputresource.OutputResource;
 import com.icesoft.faces.component.outputresource.OutputResourceTag;
 import com.icesoft.faces.context.Resource;
@@ -288,45 +289,31 @@ public class ReportCalculator extends ActionController implements Runnable {
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 			ExternalContext externalContext = facesContext.getExternalContext();
 
-			String filename = "Test.pdf";
-
-			externalContext.responseReset();
-			externalContext.setResponseContentType("application/pdf");
-			externalContext.setResponseHeader("Content-Disposition",
-					"attachment; filename=\"" + filename + "\"");
 
 			try {
-				OutputStream output = externalContext.getResponseOutputStream();
+				String filename = dbBill.getFilename();
+				if (filename != null && filename.length() > 0) {
+					externalContext.responseReset();
+					externalContext.setResponseContentType("application/pdf");
+					externalContext.setResponseHeader("Content-Disposition",
+							"attachment; filename=\"" + filename + "\"");
 
-				output.write(dbBill.getFile());
+					OutputStream output = externalContext.getResponseOutputStream();
 
-				output.flush();
-				output.close();
+					output.write(dbBill.getFile());
 
-				facesContext.responseComplete();
+					output.flush();
+					output.close();
+
+					facesContext.responseComplete();
+				} else {
+					return false;
+				}
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
+				return false;
 			}
-
-			
-			
-/*			try {
-				FileOutputStream fos2 = new FileOutputStream(file);
-				fos2.write(dbBill.getFile());
-				fos2.flush();
-				fos2.close();
-
-								
-				outputLinkPdfBinding.setResource(new MyResource(dbBill.getFilename(), "pdf"));
-				outputLinkPdfBinding.setFileName(dbBill.getFilename());
-				outputLinkPdfBinding.setRendered(true);
-				
-//				getRequest().setAttribute("message", "Keine Karte in der Datenbank gefunden!");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-*/		}
+		}
 		return true;
 	}
 
@@ -890,11 +877,10 @@ public class ReportCalculator extends ActionController implements Runnable {
 			message += " File steht zum Download bereit!";
 			LOGGER.info(message);
 		} else {
-			message += " Der Report konnte jedoch nicht lokal zum Download bereitgestellt werden!";
+			message += " Der Report konnte nicht lokal zum Download bereitgestellt werden!";
 			LOGGER.warn(message);
+			getRequest().setAttribute("message", message);
 		}
-		
-//		getRequest().setAttribute("message", message);
 		
 		return "";
 	}
@@ -1008,7 +994,6 @@ public class ReportCalculator extends ActionController implements Runnable {
 		}
 
 	}
-	
 	
 	public Resource getZipResource() {
 		return ZIP_RESOURCE;
@@ -1200,5 +1185,6 @@ public class ReportCalculator extends ActionController implements Runnable {
 	public void setReportNumber(String reportNumber) {
 		this.reportNumber = reportNumber;
 	}
+
 
 }

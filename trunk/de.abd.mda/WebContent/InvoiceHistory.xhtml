@@ -15,14 +15,14 @@
 		href="./xmlhttp/css/rime/rime.css" />
 </h:head>
 <h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
-	<h:form>
+	<h:form id="upper">
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
-
+	</h:form>
 		<p>
 			<h:panelGrid columns="2">
 				<h:outputText style="font-weight:bolder; margin-right:15px"
-					value="Alle Karten anzeigen" />
+					value="Rechnungsstatus" />
 				<h:outputText escape="false" style="color: red"
 					value="#{actionController.requestMessage}" />
 			</h:panelGrid>
@@ -30,91 +30,98 @@
 
 		<h:panelGrid columns="2">
 			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1110">
-				<h:outputText style="font-weight:bold" value="Kundendaten:" />
+				<h:form id="cusNumForm">
+					<h:outputText style="font-weight:bold" value="Kundendaten:" />
+					<h:panelGrid columns="3">
+						<h:outputText value="Kundennummer:" />
+					    <h:inputText size="12" maxlength="15" value="#{customerController.customer.customernumber}" onkeypress="if (event.keyCode == 13) document.getElementById('cusNumForm:showInvoicesButton').click();"/>
+					    <h:commandButton id="showInvoicesButton" type="submit" value="Anzeigen" action="#{customerController.showInvoices()}"/>
+					</h:panelGrid>
 
-				<h:panelGrid columns="3">
-					<h:outputText value="Beziehung" />
-					<h:selectOneMenu value="#{customerController.relation}">
-						<f:selectItems value="#{actionController.model.relationList}" />
-					</h:selectOneMenu>
-					<h:outputText />
-
-					<h:outputText value="Kundennummer:" />
-					<h:inputText size="12" maxlength="15"
-						value="#{customerController.customer.customernumber}" />
-					<ice:commandButton value="Suchen"
-						actionListener="#{customerController.searchCustomerCards}"></ice:commandButton>
-
-				</h:panelGrid>
+					<h:commandButton id="downloadPdfTest" image="images/button_invisible.png" action="#{billController.downloadPdf}" rendered="true" value="Download">
+						<f:ajax disabled="true"/>
+					</h:commandButton>
+					<h:inputHidden id="bnHidden" binding="#{billController.billNumberHidden}" value="Test"/>
+				</h:form>
 			</h:panelGrid>
 		</h:panelGrid>
 
+	<h:form id="tableForm">
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1500">
-				<h:outputText style="font-weight:bold" value="Karten:" />
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1110">
+				<h:outputText style="font-weight:bold" value="Rechnungen:" />
 				<h:panelGrid>
-					<ice:dataTable id="cardTable" value="#{customerController.cardList}" var="card" rows="25" width="100%" cellspacing="1" cellpadding="5">
+					<ice:dataTable id="billTable" value="#{customerController.bills}" var="bill" rows="25" width="100%" cellspacing="1" cellpadding="5">
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Kartennummer" value="Kartennummer"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Rechnungsmonat" value="Rechnungsmonat"></ice:commandSortHeader>
 							</f:facet>
-							#{card.cardNumberFirst}
+							#{bill.billMonthString}
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Prüfziffer" value="Prüfziffer"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Rechnungsnummer" value="Rechnungsnummer"></ice:commandSortHeader>
 							</f:facet>
-							#{card.cardNumberSecond}
+							#{bill.billNumber}
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Rufnummer" value="Rufnummer"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Rechnungsdatum" value="Rechnungsdatum"></ice:commandSortHeader>
 							</f:facet>
-							#{card.phoneNrInclMinus}
+							#{bill.calcDateString}
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Status" value="Status"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Bezahlstatus" value="Bezahlstatus"></ice:commandSortHeader>
 							</f:facet>
-							#{card.status}
+							<ice:graphicImage value="#{bill.statusImage}" alt="#{bill.statusString}" height="12" width="12" style="margin-left: 30px"></ice:graphicImage>
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="(De-)aktivierungsdatum" value="(De-)aktivierungsdatum"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Bezahlt am" value="Bezahlt am"></ice:commandSortHeader>
 							</f:facet>
-							#{card.deOrActivationDate}
+							#{bill.paymentDateString}
+						</ice:column>
+
+						<ice:column style="#{bill.reminderStatusColor}">
+							<f:facet name="header">
+								<ice:commandSortHeader columnName="Mahnstatus" value="Mahnstatus"></ice:commandSortHeader>
+							</f:facet>
+							#{bill.reminderStatusString}
+						</ice:column>
+
+
+						<ice:column style="#{bill.actionColumnStyle}">
+							<f:facet name="header">
+								<ice:commandSortHeader columnName="Aktion" value="Aktion"></ice:commandSortHeader>
+							</f:facet>
+							<h:selectOneMenu value="#{bill.action}" style="#{bill.actionSelectStyle}">
+								<f:selectItem itemValue="Action_empty" itemLabel="" />
+								<f:selectItem itemValue="Action_payment" itemLabel="Auf bezahlt setzen" itemDisabled="#{bill.paymentStatus}"/>
+								<f:selectItem itemValue="Action_FriendlyReminder" itemLabel="Freundliche Erinnerung erstellen" itemDisabled="#{bill.reminderStatus != -1}" />
+								<f:selectItem itemValue="Action_1stReminder" itemLabel="1. Mahnung erstellen" itemDisabled="#{bill.reminderStatus != 0}" />
+								<f:selectItem itemValue="Action_2ndReminder" itemLabel="2. Mahnung erstellen" itemDisabled="#{bill.reminderStatus != 1}" />
+							</h:selectOneMenu>
+							<h:commandButton action="#{bill.processStatusAction}" image="images/submit_transp.png" style="height: 12px; width: 12px; margin-left: 2px;"/>
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Installationsadresse" value="Installationsadresse"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Download PDF" value="Download PDF"></ice:commandSortHeader>
 							</f:facet>
-							#{card.installAddress.addressString}
+						    <h:graphicImage value="images/pdfDownload_transp.png" alt="#{bill.statusString}" height="12" width="12" style="margin-left: 30px" onclick="document.getElementById('cusNumForm:bnHidden').value=#{bill.billNumber}; document.getElementById('cusNumForm:downloadPdfTest').click();"/>
 						</ice:column>
+						
+						
 
-						<ice:column>
-							<f:facet name="header">
-								<ice:commandSortHeader columnName="SIM-Preis" value="SIM-Preis"></ice:commandSortHeader>
-							</f:facet>
-							#{card.simPriceDouble} €
-						</ice:column>
-
-						<ice:column>
-							<f:facet name="header">
-								<ice:commandSortHeader columnName="Kommentar" value="Kommentar"></ice:commandSortHeader>
-							</f:facet>
-							#{card.comment}
-						</ice:column>
-
-					
 					</ice:dataTable>
 					
 		           <ice:dataPaginator id="paginator"
-                            for="cardTable" 
+                            for="billTable" 
                             fastStep="4"
                             paginator="true"
                             paginatorMaxPages="5">
@@ -152,7 +159,7 @@
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
-
 	</h:form>
+	<!--/h:form-->
 </h:body>
 </html>

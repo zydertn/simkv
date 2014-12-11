@@ -1,5 +1,7 @@
 package de.abd.mda.persistence.dao.controller;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,10 +9,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import com.icesoft.faces.component.ext.HtmlInputHidden;
 
 import de.abd.mda.controller.CardActionController;
 import de.abd.mda.persistence.dao.Bill;
@@ -26,6 +33,8 @@ public class BillController extends DaoController {
 
 	private int maxBillNumber;
 	private Bill bill;
+	public static int rowCountNum = 0;
+
 
 	public BillController() {
 		LOGGER.info("Instatiate: BillController");
@@ -74,6 +83,19 @@ public class BillController extends DaoController {
 		select += " and bill.month = '" + bill.getMonth() +"'";
 		select += " and bill.mapCount = '" + bill.getMapCount() + "'"; 
 		
+		List<Bill> list = createListQuery(select);
+		Iterator it = list.iterator();
+		Bill dbBill = null;
+		if (list.size() > 0) {
+			dbBill = list.get(0);
+			LOGGER.info("Bill found: Bill number = " + dbBill.getBillNumber());
+		}
+		
+		return dbBill;
+	}
+
+	public Bill findBill(int billNumber) {
+		String select = "select distinct bill from Bill bill where bill.billNumber = '" + billNumber + "'";
 		List<Bill> list = createListQuery(select);
 		Iterator it = list.iterator();
 		Bill dbBill = null;
@@ -151,7 +173,6 @@ public class BillController extends DaoController {
 		
 		return false;
 	}
-
 	
 	public Bill getBill() {
 		return bill;
@@ -165,6 +186,6 @@ public class BillController extends DaoController {
 		this.maxBillNumber = maxBillNumber;
 	}
 
-	
+
 
 }
