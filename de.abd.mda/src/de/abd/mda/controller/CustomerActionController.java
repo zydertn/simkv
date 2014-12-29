@@ -38,6 +38,7 @@ import de.abd.mda.persistence.dao.controller.CountryController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.FacesUtil;
+import de.abd.mda.util.HibernateUtil;
 
 public class CustomerActionController extends ActionController {
 
@@ -179,7 +180,9 @@ public class CustomerActionController extends ActionController {
 	public String showInvoices() {
 		LOGGER.info("Method: showInvoices; Kundennummer: " + customer.getCustomernumber());
 		BillController bc = new BillController();
-		bills = bc.findCustomerBills(Integer.parseInt(customer.getCustomernumber()));
+		Session session = HibernateUtil.getSession();
+		Transaction transaction = session.getTransaction();
+		bills = bc.findCustomerBills(session, transaction, Integer.parseInt(customer.getCustomernumber()));
 		getSession().setAttribute("invoicesCustomerNumber", customer.getCustomernumber());
 		LOGGER.info(bills.size() + " Rechnungen gefunden!");
 		return "";
@@ -862,7 +865,9 @@ public class CustomerActionController extends ActionController {
 		BillController bc = new BillController();
 		if (getSession().getAttribute("invoicesCustomerNumber") != null) {
 			int customerNumber = Integer.parseInt((String) getSession().getAttribute("invoicesCustomerNumber"));
-			bills = bc.findCustomerBills(customerNumber);
+			Session session = HibernateUtil.getSession();
+			Transaction transaction = session.getTransaction();
+			bills = bc.findCustomerBills(session, transaction, customerNumber);
 		}
 	}
 

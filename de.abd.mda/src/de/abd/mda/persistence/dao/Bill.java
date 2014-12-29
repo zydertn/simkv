@@ -5,12 +5,15 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+
+import com.icesoft.faces.component.ext.HtmlSelectOneMenu;
+
 
 import de.abd.mda.controller.BillActionController;
 import de.abd.mda.persistence.dao.controller.BillController;
@@ -46,12 +49,13 @@ public class Bill extends DaoObject {
 	private String statusString;
 	private int reminderStatus;
 	private String action;
-	
+	private int actionHidden;
 
 	
 	public Bill() {
 		paymentStatus = false;
 		reminderStatus = -1;
+		actionHidden = 1;
 	}
 	
 	public String processStatusAction() {
@@ -64,19 +68,22 @@ public class Bill extends DaoObject {
 				bac.processPaymentAction(this);
 			else
 				((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).setAttribute("message", "Diese Rechnung wurde bereits bezahlt!");
-		} else if (action.equals("Action_FriendlyReminder")) {
-			LOGGER.info("BillController.processAction FriendlyReminder.");
-			bac.processReminderAction(this, 0);
-		} else if (action.equals("Action_1stReminder")) {
-			LOGGER.info("BillController.processAction 1stReminder.");
-			bac.processReminderAction(this, 0);
-		} else if (action.equals("Action_2ndReminder")) {
-			LOGGER.info("BillController.processAction 2ndReminder.");
-			bac.processReminderAction(this, 0);
+		} else if (action.equals("Action_FriendlyReminder")) {//			LOGGER.info("BillController.processAction FriendlyReminder.");
+//			bac.processReminderAction(this, customerNumber, 0);
+//		} else if (action.equals("Action_1stReminder")) {
+//			LOGGER.info("BillController.processAction 1stReminder.");
+//			bac.processReminderAction(this, customerNumber, 1);
+//		} else if (action.equals("Action_2ndReminder")) {
+//			LOGGER.info("BillController.processAction 2ndReminder.");
+//			bac.processReminderAction(this, customerNumber, 2);
 		}
 		return "";
 	}
 	
+	public void actionChanged(ValueChangeEvent event) {
+		String value = ""+ event.getNewValue();
+		actionHidden = 2;
+	}
 
 	public String getBillMonthString() {
 		return DateUtils.getMonthAsString(month) + " " + year;
@@ -316,4 +323,13 @@ public class Bill extends DaoObject {
 
 		
 	}
+
+	public int getActionHidden() {
+		return actionHidden;
+	}
+
+	public void setActionHidden(int actionHidden) {
+		this.actionHidden = actionHidden;
+	}
+
 }
