@@ -1,8 +1,12 @@
 package de.abd.mda.controller;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.ExternalContext;
@@ -10,15 +14,23 @@ import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
 
+import com.itextpdf.text.pdf.PRTokeniser;
+import com.itextpdf.text.pdf.PdfReader;
+
 
 import de.abd.mda.persistence.dao.Bill;
+import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.controller.BillController;
+import de.abd.mda.persistence.dao.controller.CustomerController;
+import de.abd.mda.report.FriendlyReminderGenerator;
+import de.abd.mda.util.DateUtils;
 
 public class BillActionController extends ActionController {
 
 	private final static Logger LOGGER = Logger.getLogger(BillActionController.class .getName());
 	
 	private HtmlInputHidden billNumberHidden;
+	private HtmlInputHidden actionHidden;
 	
 	public BillActionController() {
 	}
@@ -67,6 +79,32 @@ public class BillActionController extends ActionController {
 		this.billNumberHidden = billNumberHidden;
 	}
 
+//	public String processReminderAction(Bill bill, int customerNumber, int i) {
+	public String processAction() {
+		Integer billNumber = Integer.parseInt(""+billNumberHidden.getValue());
+		String actionString = ""+actionHidden.getValue();
+		if (!actionString.contains(""+billNumber)) {
+			// Action-Auswahl und Buttonauswahl stimmen nicht überein.
+			return "";
+		}
+
+		if (actionString.contains("Action_empty")) {
+			// Keine Aktion ausgewählt
+			return "";
+		}
+		
+		BillController bc = new BillController();
+		Bill bill = bc.findBill(billNumber);
+		
+		if (actionString.contains("Action_payment")) {
+			processPaymentAction(bill);
+		} else {
+			processReminderAction(bill);
+		}
+
+		return "";		
+	}
+
 	public void processPaymentAction(Bill bill) {
 		// TODO Auto-generated method stub
 		BillController bc = new BillController();
@@ -77,9 +115,55 @@ public class BillActionController extends ActionController {
 		getRequest().setAttribute("billListUpdate", true);
 	}
 
-	public void processReminderAction(Bill bill, int i) {
-		// TODO Auto-generated method stub
-		
+	private void processReminderAction(Bill bill) {
+	// TODO Auto-generated method stub
+		BillController bc = new BillController();
+		Bill dbBill = bc.findBill(bill);
+		int reminderStatus = bill.getReminderStatus();
+		CustomerController cc = new CustomerController();
+		Customer customer = cc.findCustomer("" + dbBill.getCustomerNumber());
+		FriendlyReminderGenerator frg = new FriendlyReminderGenerator();
+		HashMap<String, Object> retVals = frg.generateReport(bill, customer);
+		if (retVals != null) {
+			dbBill.setReminderStatus(0);
+			bc.updateObject(dbBill);
+		}
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+
+
+		try {
+			String filename = (String) retVals.get("Filename");
+			if (filename != null && filename.length() > 0) {
+				externalContext.responseReset();
+				externalContext.setResponseContentType("application/pdf");
+				externalContext.setResponseHeader("Content-Disposition",
+						"attachment; filename=\"" + filename + "\"");
+
+				OutputStream output = externalContext.getResponseOutputStream();
+
+				output.write((byte[]) retVals.get("File"));
+
+				output.flush();
+				output.close();
+
+				getRequest().setAttribute("billListUpdate", true);
+
+				facesContext.responseComplete();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+	}
+
+	public HtmlInputHidden getActionHidden() {
+		return actionHidden;
+	}
+
+	public void setActionHidden(HtmlInputHidden actionHidden) {
+		this.actionHidden = actionHidden;
 	}
 
 }

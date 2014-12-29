@@ -38,10 +38,15 @@
 					    <h:commandButton id="showInvoicesButton" type="submit" value="Anzeigen" action="#{customerController.showInvoices()}"/>
 					</h:panelGrid>
 
-					<h:commandButton id="downloadPdfTest" image="images/button_invisible.png" action="#{billController.downloadPdf}" rendered="true" value="Download">
+					<h:commandButton id="downloadPdf" image="images/button_invisible.png" action="#{billController.downloadPdf}" rendered="true" value="Download">
 						<f:ajax disabled="true"/>
 					</h:commandButton>
+					<h:commandButton id="processAction" image="images/button_invisible.png" action="#{billController.processAction}" rendered="true" value="processAction">
+						<f:ajax disabled="true"/>
+					</h:commandButton>
+					
 					<h:inputHidden id="bnHidden" binding="#{billController.billNumberHidden}" value="Test"/>
+					<h:inputHidden id="actionHidden" binding="#{billController.actionHidden}" value="Test"/>
 				</h:form>
 			</h:panelGrid>
 		</h:panelGrid>
@@ -99,21 +104,21 @@
 							<f:facet name="header">
 								<ice:commandSortHeader columnName="Aktion" value="Aktion"></ice:commandSortHeader>
 							</f:facet>
-							<h:selectOneMenu value="#{bill.action}" style="#{bill.actionSelectStyle}">
+							<ice:selectOneMenu id="ActionSelector" value="#{bill.action}" onchange="document.getElementById('cusNumForm:actionHidden').value=this.value+'--'+#{bill.billNumber};" style="#{bill.actionSelectStyle}">
 								<f:selectItem itemValue="Action_empty" itemLabel="" />
 								<f:selectItem itemValue="Action_payment" itemLabel="Auf bezahlt setzen" itemDisabled="#{bill.paymentStatus}"/>
 								<f:selectItem itemValue="Action_FriendlyReminder" itemLabel="Freundliche Erinnerung erstellen" itemDisabled="#{bill.reminderStatus != -1}" />
 								<f:selectItem itemValue="Action_1stReminder" itemLabel="1. Mahnung erstellen" itemDisabled="#{bill.reminderStatus != 0}" />
 								<f:selectItem itemValue="Action_2ndReminder" itemLabel="2. Mahnung erstellen" itemDisabled="#{bill.reminderStatus != 1}" />
-							</h:selectOneMenu>
-							<h:commandButton action="#{bill.processStatusAction}" image="images/submit_transp.png" style="height: 12px; width: 12px; margin-left: 2px;"/>
+							</ice:selectOneMenu>
+							<h:graphicImage value="images/submit_transp.png" height="12" width="12" style="margin-left: 2px" onclick="document.getElementById('cusNumForm:bnHidden').value=#{bill.billNumber}; document.getElementById('cusNumForm:processAction').click();"/>
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
 								<ice:commandSortHeader columnName="Download PDF" value="Download PDF"></ice:commandSortHeader>
 							</f:facet>
-						    <h:graphicImage value="images/pdfDownload_transp.png" alt="#{bill.statusString}" height="12" width="12" style="margin-left: 30px" onclick="document.getElementById('cusNumForm:bnHidden').value=#{bill.billNumber}; document.getElementById('cusNumForm:downloadPdfTest').click();"/>
+						    <h:graphicImage value="images/pdfDownload_transp.png" alt="#{bill.statusString}" height="12" width="12" style="margin-left: 30px" onclick="document.getElementById('cusNumForm:bnHidden').value=#{bill.billNumber}; document.getElementById('cusNumForm:downloadPdf').click();"/>
 						</ice:column>
 						
 						

@@ -22,6 +22,24 @@ public class DateUtils {
 		return (cal.get(Calendar.DATE) + ". " + getMonthAsString(cal.get(Calendar.MONTH)) + " " + cal.get(Calendar.YEAR));
 	}
 
+	public static String getCalendarNumString(Calendar cal) {
+		if (cal == null)
+			return "";
+
+		String calString = "";
+
+		if (cal.get(Calendar.DATE) < 10) {
+			calString = "0";
+		}
+		calString += cal.get(Calendar.DATE) + ".";
+		if (cal.get(Calendar.MONTH) < 10) {
+			calString += "0";
+		}
+		calString += cal.get(Calendar.MONTH) + "." + cal.get(Calendar.YEAR);
+		
+		return calString;
+	}
+
 	public static String getCalendarExportString(Calendar cal) {
 		return (cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE));
 	}

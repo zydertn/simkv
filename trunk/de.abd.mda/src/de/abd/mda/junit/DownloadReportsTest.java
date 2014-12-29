@@ -28,6 +28,7 @@ import de.abd.mda.report.ReportCalculator;
 import de.abd.mda.report.ReportGenerator_portrait;
 import de.abd.mda.report.ReportGenerator_landscape;
 import de.abd.mda.report.ReportCalculator.DateComparator;
+import de.abd.mda.util.HibernateUtil;
 
 public class DownloadReportsTest {
 
@@ -123,7 +124,9 @@ public class DownloadReportsTest {
 	
 	private void testCustomerQuery(int customerNumber) {
 		BillController bc = new BillController();
-		List<Bill> bills = bc.findCustomerBills(customerNumber);
+		Session session = HibernateUtil.getSession();
+		Transaction transaction = session.getTransaction();
+		List<Bill> bills = bc.findCustomerBills(session, transaction, customerNumber);
 		
 		if (bills != null) {
 

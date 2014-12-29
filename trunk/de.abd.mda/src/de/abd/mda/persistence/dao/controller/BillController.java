@@ -26,6 +26,8 @@ import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Util;
 import de.abd.mda.persistence.dao.controller.DaoController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.util.FacesUtil;
+import de.abd.mda.util.HibernateUtil;
 
 public class BillController extends DaoController {
 
@@ -83,11 +85,13 @@ public class BillController extends DaoController {
 		select += " and bill.month = '" + bill.getMonth() +"'";
 		select += " and bill.mapCount = '" + bill.getMapCount() + "'"; 
 		
-		List<Bill> list = createListQuery(select);
-		Iterator it = list.iterator();
+		Session session = HibernateUtil.getSession();
+		Transaction transaction = session.getTransaction();
+		List<Bill> bills = createListQuery(transaction, session, select);
+		Iterator it = bills.iterator();
 		Bill dbBill = null;
-		if (list.size() > 0) {
-			dbBill = list.get(0);
+		if (bills.size() > 0) {
+			dbBill = bills.get(0);
 			LOGGER.info("Bill found: Bill number = " + dbBill.getBillNumber());
 		}
 		
@@ -96,22 +100,24 @@ public class BillController extends DaoController {
 
 	public Bill findBill(int billNumber) {
 		String select = "select distinct bill from Bill bill where bill.billNumber = '" + billNumber + "'";
-		List<Bill> list = createListQuery(select);
-		Iterator it = list.iterator();
+		Session session = HibernateUtil.getSession();
+		Transaction transaction = session.getTransaction();
+		List<Bill> bills = createListQuery(transaction, session, select);
+		Iterator it = bills.iterator();
 		Bill dbBill = null;
-		if (list.size() > 0) {
-			dbBill = list.get(0);
+		if (bills.size() > 0) {
+			dbBill = bills.get(0);
 			LOGGER.info("Bill found: Bill number = " + dbBill.getBillNumber());
 		}
 		
 		return dbBill;
 	}
 	
-	public List<Bill> findCustomerBills(int customerNumber) {
+	public List<Bill> findCustomerBills(Session session, Transaction transaction, int customerNumber) {
 		LOGGER.info("Method: findCustomerBills");
 		String select = "select distinct bill from Bill bill";
 		select += " where bill.customerNumber = '" + customerNumber + "'";
-		List<Bill> bills = createListQuery(select);
+		List<Bill> bills = createListQuery(transaction, session, select);
 		if (bills != null) {
 			LOGGER.info(bills.size() + " bills found");
 		}
@@ -124,7 +130,9 @@ public class BillController extends DaoController {
 		select += " where bill.customerNumber = '" + customerNumber + "'";
 		select += " and bill.year = '" + year + "'";
 		select += " and bill.month = '" + month + "'";
-		List<Bill> bills = createListQuery(select);
+		Session session = HibernateUtil.getSession();
+		Transaction transaction = session.getTransaction();
+		List<Bill> bills = createListQuery(transaction, session, select);
 		if (bills != null) {
 			LOGGER.info(bills.size() + " bills found");
 		}
@@ -137,18 +145,17 @@ public class BillController extends DaoController {
 		String select = "select distinct bill from Bill bill";
 		select += " where bill.year = '" + year + "'";
 		select += " and bill.month = '" + month + "'";
-		List<Bill> bills = createListQuery(select);
+		Session session = HibernateUtil.getSession();
+		Transaction transaction = session.getTransaction();
+		List<Bill> bills = createListQuery(transaction, session, select);
 		if (bills != null) {
 			LOGGER.info(bills.size() + " bills found");
 		}
 		return bills;
 	}
 	
-	private List<Bill> createListQuery(String select) {
+	private List<Bill> createListQuery(Transaction tx, Session session, String select) {
 		LOGGER.info("Method: createListQuery; Select = " + select);
-		Transaction tx = null;
-		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		tx = session.getTransaction();
 		
 		if (!(tx != null && tx.isActive())) {
 			tx = session.beginTransaction();
