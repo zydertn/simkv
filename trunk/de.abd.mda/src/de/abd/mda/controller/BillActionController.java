@@ -22,7 +22,7 @@ import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.controller.BillController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
-import de.abd.mda.report.FriendlyReminderGenerator;
+import de.abd.mda.report.ReminderGenerator;
 import de.abd.mda.util.DateUtils;
 
 public class BillActionController extends ActionController {
@@ -119,13 +119,22 @@ public class BillActionController extends ActionController {
 	// TODO Auto-generated method stub
 		BillController bc = new BillController();
 		Bill dbBill = bc.findBill(bill);
-		int reminderStatus = bill.getReminderStatus();
 		CustomerController cc = new CustomerController();
 		Customer customer = cc.findCustomer("" + dbBill.getCustomerNumber());
-		FriendlyReminderGenerator frg = new FriendlyReminderGenerator();
+		ReminderGenerator frg = new ReminderGenerator();
 		HashMap<String, Object> retVals = frg.generateReport(bill, customer);
 		if (retVals != null) {
-			dbBill.setReminderStatus(0);
+			if (bill.getReminderStatus() == -1) {
+				dbBill.setReminderStatus(0);
+				dbBill.setFriendlyReminderDate(Calendar.getInstance());
+			} else if (bill.getReminderStatus() == 0) {
+				dbBill.setReminderStatus(1);
+				dbBill.setFirstReminderDate(Calendar.getInstance());
+			} else {
+				dbBill.setReminderStatus(2);
+			}
+
+
 			bc.updateObject(dbBill);
 		}
 

@@ -22,5 +22,7 @@
 	 	<property name="paymentStatus" column="BILL_PAYMENT_STATUS" type="boolean" />
 	 	<property name="paymentDate" type="calendar_date" column="BILL_PAYMENT_DATE" />
 	 	<property name="reminderStatus" column="BILL_REMINDER_STATUS" type="int" length="2" />
+	 	<property name="friendlyReminderDate" type="calendar_date" column="BILL_FR_REM_DATE" />
+	 	<property name="firstReminderDate" type="calendar_date" column="BILL_FIRST_REM_DATE" />
 	 </class>
  </hibernate-mapping>

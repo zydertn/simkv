@@ -32,16 +32,16 @@ public class DateUtils {
 			calString = "0";
 		}
 		calString += cal.get(Calendar.DATE) + ".";
-		if (cal.get(Calendar.MONTH) < 10) {
+		if (cal.get(Calendar.MONTH) + 1 < 10) {
 			calString += "0";
 		}
-		calString += cal.get(Calendar.MONTH) + "." + cal.get(Calendar.YEAR);
+		calString += cal.get(Calendar.MONTH) + 1 + "." + cal.get(Calendar.YEAR);
 		
 		return calString;
 	}
 
 	public static String getCalendarExportString(Calendar cal) {
-		return (cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE));
+		return (cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + 1 + "-" + cal.get(Calendar.DATE));
 	}
 	
 }

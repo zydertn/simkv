@@ -50,7 +50,9 @@ public class Bill extends DaoObject {
 	private int reminderStatus;
 	private String action;
 	private int actionHidden;
-
+	private Calendar friendlyReminderDate;
+	private Calendar firstReminderDate;
+	
 	
 	public Bill() {
 		paymentStatus = false;
@@ -330,6 +332,22 @@ public class Bill extends DaoObject {
 
 	public void setActionHidden(int actionHidden) {
 		this.actionHidden = actionHidden;
+	}
+
+	public Calendar getFriendlyReminderDate() {
+		return friendlyReminderDate;
+	}
+
+	public void setFriendlyReminderDate(Calendar friendlyReminderDate) {
+		this.friendlyReminderDate = friendlyReminderDate;
+	}
+
+	public Calendar getFirstReminderDate() {
+		return firstReminderDate;
+	}
+
+	public void setFirstReminderDate(Calendar firstReminderDate) {
+		this.firstReminderDate = firstReminderDate;
 	}
 
 }
