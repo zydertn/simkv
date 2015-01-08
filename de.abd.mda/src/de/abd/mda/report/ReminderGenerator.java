@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,9 +61,9 @@ import de.abd.mda.persistence.dao.controller.BillController;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
 import de.abd.mda.util.DateUtils;
 
-public class FriendlyReminderGenerator {
+public class ReminderGenerator {
 
-	private final static Logger LOGGER = Logger.getLogger(FriendlyReminderGenerator.class .getName()); 
+	private final static Logger LOGGER = Logger.getLogger(ReminderGenerator.class .getName()); 
 	
 	BaseFont bf_broadway = null;
 	BaseFont bf_arial = null;
@@ -77,7 +78,7 @@ public class FriendlyReminderGenerator {
 	private ResourceBundle bundle = null;
 
 	
-	public FriendlyReminderGenerator() {
+	public ReminderGenerator() {
 		LOGGER.info("Instantiate: FriendlyReminderGenerator");
 		loadBaseFonts();
 	}
@@ -107,7 +108,16 @@ public class FriendlyReminderGenerator {
 				month = "0" + (calcMonth.get(Calendar.MONTH) + 1);
 			}
 			
-			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + "_r00.pdf";
+			String appendix = "";
+			if (bill.getReminderStatus() == -1) {
+				appendix = "_r00.pdf";
+			} else if (bill.getReminderStatus() == 0) {
+				appendix = "_r01.pdf";
+			} else {
+				appendix = "_r02.pdf";
+			}
+			
+			String filename = customer.getCustomernumber() + "_" + calcMonth.get(Calendar.YEAR) + "-" + month + appendix;
 
 			File dir = new File("C:/Temp/report/" + calcMonth.get(Calendar.YEAR) + "/" + month);
 			dir.mkdirs();
@@ -316,66 +326,174 @@ public class FriendlyReminderGenerator {
 			y = 715;
 
 			Font invoiceFont = new Font(bf_arial, 12, Font.BOLD);
-			String invoiceS = bundle.getString("Reminder.reminder");
-			Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
-			Phrase phrase = new Phrase();
-			phrase.add(invoice);
-			doc.add(phrase);
-			
-			for (int i=1; i < 7; i++) {
-				Chunk c = new Chunk(addNewLines(2) + bundle.getString("Reminder.string" + i));
-				Phrase p = new Phrase();
-				p.add(c);
-				doc.add(p);
+			String invoiceS = "";
+			if (bill.getReminderStatus() == -1) {
+				invoiceS = bundle.getString("Reminder.reminder");
+				Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
+				Phrase phrase = new Phrase();
+				phrase.add(invoice);
+				doc.add(phrase);
+			} else if (bill.getReminderStatus() == 0) {
+				invoiceS = bundle.getString("Reminder.firstReminder");
+				Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
+				Phrase phrase = new Phrase();
+				phrase.add(invoice);
+				doc.add(phrase);
+			} else {
+				invoiceS = bundle.getString("Reminder.secondReminder");
+				Chunk invoice = new Chunk(addNewLines(15) + invoiceS, invoiceFont);
+				Phrase phrase = new Phrase();
+				phrase.add(invoice);
+				doc.add(phrase);
+				Chunk subSubject = new Chunk(addNewLines(1) + bundle.getString("Reminder.subSubject") + " " + 
+						bill.getBillNumber() + " " +
+						bundle.getString("Reminder.subSubject2") + " " +
+						bill.getCalcDateString(), invoiceFont);
+				Phrase subPhrase = new Phrase();
+				subPhrase.add(subSubject);
+				doc.add(subPhrase);
 			}
 
+			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
+			dfs.setDecimalSeparator(',');
+			DecimalFormat df = new DecimalFormat("0.00", dfs);
 			
-			Chunk cu = new Chunk(addNewLines(2));
-			Phrase ph = new Phrase();
-			ph.add(cu);
-			doc.add(ph);
+			if (bill.getReminderStatus() == -1) {
+				// Noch keine Mahnung; Friendly Reminder erstellen
+				for (int i=1; i < 7; i++) {
+					Chunk c = new Chunk(addNewLines(2) + bundle.getString("Reminder.string" + i));
+					Phrase p = new Phrase();
+					p.add(c);
+					doc.add(p);
+				}
+			} else if (bill.getReminderStatus() == 0) {
+				// Friendly Reminder bereits erstellt; 1. Mahnung erstellen
+				Chunk c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm1string1"));
+				addChunk(c, doc);
+				
+				Calendar paymentDate = Calendar.getInstance();
+				paymentDate.add(Calendar.DATE, Integer.parseInt(bundle.getString("Reminder.daysTillPayment")));
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm1string2") + " " + 
+						DateUtils.getCalendarNumString(bill.getFriendlyReminderDate()) + " " + 
+						bundle.getString("Reminder.rm1string3") + " " +
+						DateUtils.getCalendarNumString(paymentDate) + " " +
+						bundle.getString("Reminder.rm1string4")
+						);
+				addChunk(c, doc);
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm1string5"));
+				addChunk(c, doc);
+			} else {
+				Chunk c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm2string1"));
+				addChunk(c, doc);
+				
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm2string2_1") + " " +
+						DateUtils.getCalendarNumString(bill.getFriendlyReminderDate()) + " " +
+						bundle.getString("Reminder.rm2string2_2") + " " +
+						DateUtils.getCalendarNumString(bill.getFirstReminderDate()) + " " +
+						bundle.getString("Reminder.rm2string2_3"));
+				addChunk(c, doc);
+				
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm2string3"));
+				addChunk(c, doc);
+				
+				String brutto = df.format(bill.getBruttoPrice());
+				int spaces = Integer.parseInt(bundle.getString("Reminder.rm3string1_2")) - brutto.length();
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm3string1_1") + 
+						addSpaces(spaces) +
+						brutto + " €" + addNewLines(1));
+				addChunk(c, doc);
 
-			Font tableFontBold = new Font(bf_arial, 9);
-			tableFontBold.setStyle(Font.BOLD);
+				Font tableUnderlineFont = new Font(bf_arial, 12, Font.UNDERLINE);
+				Font tableUnderlineFontBold = new Font(bf_arial, 12, Font.BOLD|Font.UNDERLINE);
+				
+				BigDecimal fee = new BigDecimal(bundle.getString("Reminder.rm3string2_3"));
+				
+				c = new Chunk(bundle.getString("Reminder.rm3string2_1") + 
+						addSpaces(Integer.parseInt(bundle.getString("Reminder.rm3string2_2"))) +
+						df.format(fee) + " €" + addNewLines(1), tableUnderlineFont);
+				addChunk(c, doc);
+				
 
-			// Tabellenheader erzeugen
-			PdfPTable tableHeader = new PdfPTable(3);
-			tableHeader.setWidthPercentage(100f);
-			tableHeader.getDefaultCell().setBorder(1);
-			Color headerColor = new Color(146, 205, 220);
-			Color bodyColor = new Color(218, 238, 243);
+				BigDecimal netto = bill.getBruttoPrice().add(fee);
+				spaces = Integer.parseInt(bundle.getString("Reminder.rm3string3_2")) - (""+netto).length();
+				c = new Chunk(bundle.getString("Reminder.rm3string3_1") + 
+						addSpaces(spaces) +
+						df.format(netto) + " €", tableUnderlineFontBold);
+				c.setUnderline(+1f, -2f);
+				addChunk(c, doc);
+
+				Calendar paymentDate = Calendar.getInstance();
+				paymentDate.add(Calendar.DATE, Integer.parseInt(bundle.getString("Reminder.daysTillPayment")));
+
+				c = new Chunk(addNewLines(3) + bundle.getString("Reminder.rm4string1_1") + " " +
+						DateUtils.getCalendarNumString(paymentDate) + " " +
+						bundle.getString("Reminder.rm4string1_2")
+						);
+				addChunk(c, doc);
+
+				
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm4string2"));
+				addChunk(c, doc);
+				
+				c = new Chunk(addNewLines(2) + bundle.getString("Reminder.rm4string3"));
+				addChunk(c, doc);
+				
+			}
+
+			if (bill.getReminderStatus() < 1) {
+				Chunk cu = new Chunk(addNewLines(2));
+				Phrase ph = new Phrase();
+				ph.add(cu);
+				doc.add(ph);
+
+				Font tableFont = new Font(bf_arial, 9);
+				Font tableFontBold = new Font(bf_arial, 9);
+				tableFontBold.setStyle(Font.BOLD);
+
+				// Tabellenheader erzeugen
+				PdfPTable tableHeader = new PdfPTable(3);
+				tableHeader.setWidthPercentage(100f);
+				tableHeader.getDefaultCell().setBorder(1);
+				Color headerColor = new Color(146, 205, 220);
+				Color bodyColor = new Color(218, 238, 243);
+				
+				PdfPCell cell = new PdfPCell();
+				cell.setBackgroundColor(headerColor);
+				cell.setPhrase(new Phrase(bundle.getString("Reminder.billnumber"), tableFontBold));
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				tableHeader.addCell(cell);
+
+				cell.setPhrase(new Phrase(bundle.getString("Reminder.billdate"), tableFontBold));
+				tableHeader.addCell(cell);
+
+				cell.setPhrase(new Phrase(bundle.getString("Reminder.billamount"), tableFontBold));
+				tableHeader.addCell(cell);
+
+
+				PdfPCell bodyCell = new PdfPCell();
+				bodyCell.setBackgroundColor(bodyColor);
+				bodyCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				bodyCell.setPhrase(new Phrase(bundle.getString("Reminder.billnumber"), tableFont));
+				bodyCell.setPhrase(new Phrase(""+bill.getBillNumber(), tableFontBold));
+				tableHeader.addCell(bodyCell);
+				bodyCell.setPhrase(new Phrase(DateUtils.getCalendarNumString(bill.getCalcDate()), tableFont));
+				tableHeader.addCell(bodyCell);
+				bodyCell.setPhrase(new Phrase(df.format(bill.getBruttoPrice()) + " €", tableFont));
+				tableHeader.addCell(bodyCell);
+				
+				doc.add(tableHeader);
+			}
 			
-			PdfPCell cell = new PdfPCell();
-			cell.setBackgroundColor(headerColor);
-			cell.setPhrase(new Phrase(bundle.getString("Reminder.billnumber"), tableFontBold));
-			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			tableHeader.addCell(cell);
-
-			cell.setPhrase(new Phrase(bundle.getString("Reminder.billdate"), tableFontBold));
-			tableHeader.addCell(cell);
-
-			cell.setPhrase(new Phrase(bundle.getString("Reminder.billamount"), tableFontBold));
-			tableHeader.addCell(cell);
-
-
-			PdfPCell bodyCell = new PdfPCell();
-			bodyCell.setBackgroundColor(bodyColor);
-			bodyCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			bodyCell.setPhrase(new Phrase(bundle.getString("Reminder.billnumber"), tableFontBold));
-			bodyCell.setPhrase(new Phrase(""+bill.getBillNumber(), tableFontBold));
-			tableHeader.addCell(bodyCell);
-			bodyCell.setPhrase(new Phrase(DateUtils.getCalendarNumString(bill.getCalcDate()), tableFontBold));
-			tableHeader.addCell(bodyCell);
-			bodyCell.setPhrase(new Phrase("" + bill.getBruttoPrice() + " €", tableFontBold));
-			tableHeader.addCell(bodyCell);
-			
-			doc.add(tableHeader);
-
-			for (int i=7; i < 10; i++) {
+			int i = 7;
+			if (bill.getReminderStatus() > -1) {
+				i = 8;
+			}
+			while (i < 10) {
 				Chunk c = new Chunk(addNewLines(2) + bundle.getString("Reminder.string" + i));
 				Phrase p = new Phrase();
 				p.add(c);
 				doc.add(p);
+				i++;
 			}
 
 			cb.endText();
@@ -389,6 +507,13 @@ public class FriendlyReminderGenerator {
 		return false;
 	}
 	
+	private void addChunk(Chunk c, Document doc) throws DocumentException {
+		// TODO Auto-generated method stub
+		Phrase p = new Phrase();
+		p.add(c);
+		doc.add(p);
+	}
+
 	private String addSpaces(int i) {
 		String s = "";
 		if (i > 0) {
@@ -420,5 +545,5 @@ public class FriendlyReminderGenerator {
 			LOGGER.error("IOException: " + e);
 		}
 	}
-	
+
 }

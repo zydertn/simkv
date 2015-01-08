@@ -92,8 +92,10 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		LOGGER.info("Method: generateReport");
 		String baseName = "de.abd.mda.locale.report";
 		String reportLocale = customer.getCountry().getShortName();
-		if (reportLocale.toLowerCase().equals("de") || reportLocale.toLowerCase().equals("at")) {
-			Locale.setDefault(new Locale(reportLocale.toLowerCase()));
+		if (reportLocale.toLowerCase().equals("de")) {
+			Locale.setDefault(new Locale("de", "DE"));
+		} else if (reportLocale.toLowerCase().equals("at")) {
+			Locale.setDefault(new Locale("de", "AT"));
 		} else {
 			Locale.setDefault(new Locale("en"));
 		}
