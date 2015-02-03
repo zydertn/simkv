@@ -1,9 +1,12 @@
 package de.abd.mda.controller;
 
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +16,7 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
@@ -37,6 +41,8 @@ import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.dao.controller.CountryController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
+import de.abd.mda.report.CustomerReportGenerator;
+import de.abd.mda.util.CustomerNumberComparator;
 import de.abd.mda.util.FacesUtil;
 import de.abd.mda.util.HibernateUtil;
 
@@ -465,6 +471,52 @@ public class CustomerActionController extends ActionController {
 		return customer;
 	}
 
+	public List<Customer> getAllCustomers(){
+		CustomerController cc = new CustomerController();
+		List<DaoObject> list = cc.listObjects();
+		List<Customer> customers = new ArrayList<Customer>();
+		for (DaoObject d : list) {
+			customers.add((Customer) d);
+		}
+		CustomerNumberComparator cusComp = new CustomerNumberComparator();
+		Collections.sort(customers, cusComp);
+
+		return customers;
+	}
+	
+	public String downloadCustomerList() {
+		List<Customer> customers =  getAllCustomers();
+
+		CustomerReportGenerator crg = new CustomerReportGenerator();
+		crg.generateReport(customers);
+//		FacesContext facesContext = FacesContext.getCurrentInstance();
+//		ExternalContext externalContext = facesContext.getExternalContext();
+//
+//		String filename = "CustomerList.pdf";
+//
+//		externalContext.responseReset();
+//		externalContext.setResponseContentType("application/pdf");
+//		externalContext.setResponseHeader("Content-Disposition",
+//				"attachment; filename=\"" + filename + "\"");
+//
+//		try {
+//			OutputStream output = externalContext.getResponseOutputStream();
+//
+//			for (Customer cus : customers) {
+//				output.write(cus.getCustomernumber().getBytes());
+//			}
+//
+//			output.flush();
+//			output.close();
+//
+//			facesContext.responseComplete();
+//		} catch (IOException ioe) {
+//			ioe.printStackTrace();
+//		}
+		return "";
+	}
+
+	
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}

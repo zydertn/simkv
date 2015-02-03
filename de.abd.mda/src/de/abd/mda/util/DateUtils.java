@@ -43,5 +43,9 @@ public class DateUtils {
 	public static String getCalendarExportString(Calendar cal) {
 		return (cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + 1 + "-" + cal.get(Calendar.DATE));
 	}
-	
+
+	public static String getCalendarExportStringWithTime(Calendar cal) {
+		return (cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + 1 + "-" + cal.get(Calendar.DATE) + "_" + cal.get(Calendar.HOUR) + "." + cal.get(Calendar.MINUTE) + "." + cal.get(Calendar.SECOND)) ;
+	}
+
 }

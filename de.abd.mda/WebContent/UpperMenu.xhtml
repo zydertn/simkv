@@ -8,7 +8,7 @@
 	xmlns:ace="http://www.icefaces.org/icefaces/components"
 	xmlns:ice="http://www.icesoft.com/icefaces/component">
 
-	<h:panelGrid columns="11" cellspacing="5" border="0" style="text-align: center" width="1110" bgcolor="#E0E6F8">
+	<h:panelGrid columns="12" cellspacing="5" border="0" style="text-align: center" width="1200" bgcolor="#E0E6F8">
 		<h:commandButton id="createNewCard"
 			action="#{actionController.openCreateNewCardDialog}"
 			actionListener="#{actionController.processAction}"
@@ -25,6 +25,10 @@
 			action="#{actionController.openUpdateCustomerDialog}"
 			actionListener="#{actionController.processAction}"
 			value="Kunde ändern" style="width:100%; height:40px" />
+		<h:commandButton id="showCustomers"
+			action="#{actionController.openShowCustomersDialog}"
+			actionListener="#{actionController.processAction}"
+			value="Kundenliste" style="width:100%; height:40px" />
 		<h:commandButton id="deliveryBill"
 			action="#{actionController.openDeliveryBillDialog}"
 			actionListener="#{actionController.processAction}"
