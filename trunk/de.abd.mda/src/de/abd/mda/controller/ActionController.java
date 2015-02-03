@@ -92,6 +92,11 @@ public class ActionController implements ActionListener {
 		return "openAddCustomerDialog";
 	}
 
+	public String openShowCustomersDialog() {
+		return "openShowCustomersDialog";
+	}
+	
+	
 	public String openUpdateCustomerDialog() {
 		getRequest().setAttribute("newCustomer", true);
 		getRequest().setAttribute("componentDisabled", true);

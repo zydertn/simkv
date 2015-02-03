@@ -191,4 +191,5 @@ public class CardController extends DaoController implements IDaoController {
 		return cards;
 	}
 
+
 }

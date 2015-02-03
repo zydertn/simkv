@@ -15,106 +15,56 @@
 		href="./xmlhttp/css/rime/rime.css" />
 </h:head>
 <h:body styleClass="ice-skin-rime" style="background-color:#D8D8D8">
-	<h:form>
+	<h:form id="form1">
 		<!-- ui:include src="CustomerTable.xhtml"></ui:include-->
 		<ui:include src="UpperMenu.xhtml"></ui:include>
 
 		<p>
 			<h:panelGrid columns="2">
 				<h:outputText style="font-weight:bolder; margin-right:15px"
-					value="Alle Karten anzeigen" />
+					value="Kundenliste" />
 				<h:outputText escape="false" style="color: red"
 					value="#{actionController.requestMessage}" />
 			</h:panelGrid>
 		</p>
 
 		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1200">
-				<h:outputText style="font-weight:bold" value="Kundendaten:" />
-
-				<h:panelGrid columns="3">
-					<h:outputText value="Beziehung" />
-					<h:selectOneMenu value="#{customerController.relation}">
-						<f:selectItems value="#{actionController.model.relationList}" />
-					</h:selectOneMenu>
-					<h:outputText />
-
-					<h:outputText value="Kundennummer:" />
-					<h:inputText size="12" maxlength="15"
-						value="#{customerController.customer.customernumber}" />
-					<ice:commandButton value="Suchen"
-						actionListener="#{customerController.searchCustomerCards}"></ice:commandButton>
-
-				</h:panelGrid>
-			</h:panelGrid>
-		</h:panelGrid>
-
-		<h:panelGrid columns="2">
-			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1500">
-				<h:outputText style="font-weight:bold" value="Karten:" />
+			<h:panelGrid bgcolor="#E0E6F8" cellspacing="1" width="1150">
+				<h:outputText style="font-weight:bold" value="Kunden:" />
 				<h:panelGrid>
-					<ice:dataTable id="cardTable" value="#{customerController.cardList}" var="card" rows="25" width="100%" cellspacing="1" cellpadding="5">
+					<ice:dataTable id="customerTable" value="#{customerController.allCustomers}" var="customer" rows="20" width="100%" cellspacing="1" cellpadding="5">
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Kartennummer" value="Kartennummer"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Kundennummer" value="Kundennummer"></ice:commandSortHeader>
 							</f:facet>
-							#{card.cardNumberFirst}
+							#{customer.customernumber}
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Prüfziffer" value="Prüfziffer"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Kunde" value="Kunde"></ice:commandSortHeader>
 							</f:facet>
-							#{card.cardNumberSecond}
+							#{customer.name}
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Rufnummer" value="Rufnummer"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Adresse" value="Adresse"></ice:commandSortHeader>
 							</f:facet>
-							#{card.phoneNrInclMinus}
+							#{customer.address.addressString}
 						</ice:column>
 
 						<ice:column>
 							<f:facet name="header">
-								<ice:commandSortHeader columnName="Status" value="Status"></ice:commandSortHeader>
+								<ice:commandSortHeader columnName="Land" value="Land"></ice:commandSortHeader>
 							</f:facet>
-							#{card.status}
+							#{customer.country.name}
 						</ice:column>
 
-						<ice:column>
-							<f:facet name="header">
-								<ice:commandSortHeader columnName="(De-)aktivierungsdatum" value="(De-)aktivierungsdatum"></ice:commandSortHeader>
-							</f:facet>
-							#{card.deOrActivationDate}
-						</ice:column>
-
-						<ice:column>
-							<f:facet name="header">
-								<ice:commandSortHeader columnName="Installationsadresse" value="Installationsadresse"></ice:commandSortHeader>
-							</f:facet>
-							#{card.installAddress.addressString}
-						</ice:column>
-
-						<ice:column>
-							<f:facet name="header">
-								<ice:commandSortHeader columnName="SIM-Preis" value="SIM-Preis"></ice:commandSortHeader>
-							</f:facet>
-							#{card.simPriceDouble} €
-						</ice:column>
-
-						<ice:column>
-							<f:facet name="header">
-								<ice:commandSortHeader columnName="Kommentar" value="Kommentar"></ice:commandSortHeader>
-							</f:facet>
-							#{card.comment}
-						</ice:column>
-
-					
 					</ice:dataTable>
 					
 		           <ice:dataPaginator id="paginator"
-                            for="cardTable" 
+                            for="customerTable" 
                             fastStep="4"
                             paginator="true"
                             paginatorMaxPages="5">
@@ -153,6 +103,13 @@
 			</h:panelGrid>
 		</h:panelGrid>
 
+	</h:form>
+	<h:form id="form2">
+		<h:panelGrid>
+			<h:commandButton value="Tabelle exportieren" action="#{customerController.downloadCustomerList}">
+			   <f:ajax disabled="true"/>
+			</h:commandButton>
+		</h:panelGrid>
 	</h:form>
 </h:body>
 </html>

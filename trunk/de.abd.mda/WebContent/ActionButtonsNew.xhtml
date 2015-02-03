@@ -61,11 +61,15 @@
 					<h:commandButton id="addCustomer"
 						action="#{actionController.openAddCustomerDialog}"
 						actionListener="#{actionController.processAction}"
-						value="Anlegen" style="width:100%; height:40px; margin-bottom:71px" />
+						value="Anlegen" style="width:100%; height:40px; margin-bottom:15px" />
 					<h:commandButton id="updateCustomer"
 						action="#{actionController.openUpdateCustomerDialog}"
 						actionListener="#{actionController.processAction}"
-						value="Ändern/löschen" style="width:100%; height:40px; margin-bottom:71px" />
+						value="Ändern/löschen" style="width:100%; height:40px; margin-bottom:15px" />
+					<h:commandButton id="showCustomers"
+						action="#{actionController.openShowCustomersDialog}"
+						actionListener="#{actionController.processAction}"
+						value="Kundenliste" style="width:100%; height:40px; margin-bottom:15px" />
 				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>

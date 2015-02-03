@@ -141,6 +141,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -197,6 +201,10 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
@@ -262,6 +270,10 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
@@ -332,6 +344,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -385,6 +401,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -437,6 +457,10 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
@@ -500,6 +524,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -560,6 +588,10 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
@@ -623,6 +655,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -680,6 +716,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -732,6 +772,10 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
@@ -798,6 +842,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 
@@ -860,6 +908,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -912,6 +964,10 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 	
@@ -966,6 +1022,10 @@
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
@@ -1018,6 +1078,67 @@
 		<navigation-case>
 			<from-outcome>InvoiceStatus</from-outcome>
 			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<display-name>Kundenübersicht</display-name>
+		<from-view-id>/ShowCustomers.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>createCard</from-outcome>
+			<to-view-id>/CreateCardDialog.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>searchCard</from-outcome>
+			<to-view-id>/ViewCardDetailsSearch.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>updateCard</from-outcome>
+			<to-view-id>/UpdateCardDialogSearch.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>viewDetails</from-outcome>
+			<to-view-id>/ViewCardDetails.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openClearingDialog</from-outcome>
+			<to-view-id>/ClearingDialogSearch.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openDeliveryBillDialog</from-outcome>
+			<to-view-id>/DeliveryBillDialogSearch.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openAddCustomerDialog</from-outcome>
+			<to-view-id>/AddCustomerDialog.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openUpdateCustomerDialog</from-outcome>
+			<to-view-id>/UpdateCustomerDialogSearch.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>Report</from-outcome>
+			<to-view-id>/ReportProgressDialog.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openConfigureDialog</from-outcome>
+			<to-view-id>/ConfigureDialog.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>showCards</from-outcome>
+			<to-view-id>/ShowCustomerCards.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>InvoiceStatus</from-outcome>
+			<to-view-id>/InvoiceHistory.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>openShowCustomersDialog</from-outcome>
+			<to-view-id>/ShowCustomers.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
