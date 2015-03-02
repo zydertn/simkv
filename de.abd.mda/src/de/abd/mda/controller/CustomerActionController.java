@@ -187,7 +187,7 @@ public class CustomerActionController extends ActionController {
 		LOGGER.info("Method: showInvoices; Kundennummer: " + customer.getCustomernumber());
 		BillController bc = new BillController();
 		Session session = HibernateUtil.getSession();
-		Transaction transaction = session.getTransaction();
+		Transaction transaction = session.beginTransaction();
 		bills = bc.findCustomerBills(session, transaction, Integer.parseInt(customer.getCustomernumber()));
 		getSession().setAttribute("invoicesCustomerNumber", customer.getCustomernumber());
 		LOGGER.info(bills.size() + " Rechnungen gefunden!");
