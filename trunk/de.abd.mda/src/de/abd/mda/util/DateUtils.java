@@ -3,6 +3,7 @@ package de.abd.mda.util;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class DateUtils {
 
@@ -15,7 +16,7 @@ public class DateUtils {
 	public static String getMonthAsString(int month) {
 		if (month > 12)
 			month = 12;
-	    return new DateFormatSymbols().getMonths()[month];
+	    return new DateFormatSymbols(new Locale("de", "DE")).getMonths()[month];
 	}
 
 	public static String getCalendarString(Calendar cal) {

@@ -343,6 +343,11 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 	private boolean generateBody(PdfWriter writer, Document doc, List<DaoObject> customerCards, Customer customer, Calendar calcMonth, Boolean flatrateCalc, boolean severalBills, int invoiceNumber, Date calcDate, Bill bill) {
 		LOGGER.info("Method: generateBody");
+
+		if (customer.getCustomernumber().equals("20125")) {
+			System.out.println("Jetzt");
+		}
+		
 		try {
 			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 

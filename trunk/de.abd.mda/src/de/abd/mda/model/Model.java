@@ -207,9 +207,9 @@ public class Model {
 		columnSize = new HashMap<String, Float>();
 		columnSize.put(COLUMN_POS, 1.8f);
 		columnSize.put(COLUMN_AMOUNT, 2.5f);
-		columnSize.put(COLUMN_DESCRIPTION, 12.5f);
-		columnSize.put(COLUMN_CARD_NR, 5f);
-		columnSize.put(COLUMN_TEL_NR, 6f);
+		columnSize.put(COLUMN_DESCRIPTION, 12.4f);
+		columnSize.put(COLUMN_CARD_NR, 4.9f);
+		columnSize.put(COLUMN_TEL_NR, 5.9f);
 		columnSize.put(COLUMN_INST_PLZ, 1.5f);
 		columnSize.put(COLUMN_EINSATZORT, 5f);
 		columnSize.put(COLUMN_INST_STREET, 8f);
@@ -222,7 +222,7 @@ public class Model {
 		columnSize.put(COLUMN_WE_NR, 4f);
 		columnSize.put(COLUMN_COST_CENTER, 4f);
 //		columnSize.put(COLUMN_SINGLE_PRICE, 4f);
-		columnSize.put(COLUMN_TOTAL_PRICE, 3f);
+		columnSize.put(COLUMN_TOTAL_PRICE, 3.3f);
 
 		billingCriteria = new ArrayList<String>();
 		billingCriteria.add(BILLING_WE_NR);

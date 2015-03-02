@@ -156,6 +156,9 @@ public class CardController extends DaoController implements IDaoController {
 		LOGGER.info("Method: searchCustomerCards; CustomerID = " + customerID);
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		if (!session.isOpen()) {
+			session = SessionFactoryUtil.getInstance().openSession();
+		}
 		List<CardBean> cards = null;
 		try {
 			tx = session.beginTransaction();
@@ -191,5 +194,34 @@ public class CardController extends DaoController implements IDaoController {
 		return cards;
 	}
 
+	public void updateCardLastCalc(CardBean card) {
+		// TODO Auto-generated method stub
+		String select = "select distinct card from CardBean card";
+		select += " where card.cardNumberFirst = '" + card.getCardNumberFirst() + "'";
+		select += " and card.cardNumberSecond = '" + card.getCardNumberSecond() +"'";
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		try {
+			tx = session.beginTransaction();
+			CardBean dbCard = (CardBean) session.createQuery(select).list().get(0);
+			dbCard.setLastCalculationMonth(card.getLastCalculationMonth());
+			dbCard.setLastCalculationYear(card.getLastCalculationYear());
+			tx.commit();
+		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
+			if (tx != null && tx.isActive()) {
+				try {
+					// Second try catch as the rollback could fail as well
+					tx.rollback();
+				} catch (HibernateException e1) {
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
+				}
+				// throw again the first exception
+				throw e;
+			}
+
+		}
+		
+	}
 
 }
