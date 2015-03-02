@@ -50,6 +50,7 @@ import de.abd.mda.persistence.dao.Configuration;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.controller.BillController;
+import de.abd.mda.persistence.dao.controller.CardController;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.CardComparator;
@@ -392,7 +393,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		LOGGER.info("Method: createReport for customer " + customer.getCustomernumber() + ", reportCount = " + reportCount);
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		Transaction tx = createTransaction(session);
-
+		
 		List<DaoObject> customerCards = searchCards(customer, calcMonth, tx, session, false, calcCase);
 
 		if (customerCards != null && customerCards.size() > 0) {
@@ -436,7 +437,6 @@ public class ReportCalculator extends ActionController implements Runnable {
 			}
 		}
 
-//		tx.commit();
 		
 		return reportCount;
 	}
@@ -566,6 +566,8 @@ public class ReportCalculator extends ActionController implements Runnable {
 					CardBean card = (CardBean) cIt.next();
 					card.setLastCalculationYear(calcMonth.get(Calendar.YEAR));
 					card.setLastCalculationMonth(calcMonth.get(Calendar.MONTH));
+					CardController cc = new CardController();
+					cc.updateCardLastCalc(card);
 				}
 			} else {
 				/*
@@ -653,7 +655,7 @@ public class ReportCalculator extends ActionController implements Runnable {
 		return customerList;
 	}
 
-	private List<DaoObject> searchCards(Customer customer, Calendar calcMonth, Transaction tx, Session session, boolean flatrateCalc, int calcCase) {
+	public List<DaoObject> searchCards(Customer customer, Calendar calcMonth, Transaction tx, Session session, boolean flatrateCalc, int calcCase) {
 		LOGGER.info("Method: searchCards");
 		Calendar maxActivationDate = Calendar.getInstance();
 		maxActivationDate.set(new Integer(calcMonth.get(Calendar.YEAR)), new Integer(calcMonth.get(Calendar.MONTH)), 1, 0, 0, 0);
@@ -837,6 +839,9 @@ public class ReportCalculator extends ActionController implements Runnable {
 	
 	private Transaction createTransaction(Session session) {
 		Transaction tx = null;
+		if (!session.isOpen()) {
+			System.out.println("Bla");
+		}
 		tx = session.beginTransaction();
 		return tx;
 	}
