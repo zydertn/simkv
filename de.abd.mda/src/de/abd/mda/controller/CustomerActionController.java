@@ -216,6 +216,7 @@ public class CustomerActionController extends ActionController {
 		invoiceconfigSimpriceBinding.setDisabled(b);
 		invoiceconfigFormatBinding.setDisabled(b);
 		invoiceconfigCreationFrequencyBinding.setDisabled(b);
+		invoiceconfigSeparateBillingBinding.setDisabled(b);
 		emailBinding.setDisabled(b);
 		de_mailBinding.setDisabled(b);
 		commentBinding.setDisabled(b);

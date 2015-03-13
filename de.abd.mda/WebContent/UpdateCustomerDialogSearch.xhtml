@@ -218,7 +218,11 @@
 					</h:selectOneMenu>
 					<h:outputText value="Einzelrechnungen: " />
 					<h:panelGrid style="margin-right: 90px;">
-						<h:selectBooleanCheckbox value="#{customerController.customer.invoiceConfiguration.separateBilling}" disabled="#{customerController.componentDisabled}" binding="#{customerController.invoiceconfigSeparateBillingBinding}" style="margin-left: 14px;"/>
+						<h:selectBooleanCheckbox 
+							value="#{customerController.customer.invoiceConfiguration.separateBilling}" 
+							disabled="#{customerController.componentDisabled}" 
+							binding="#{customerController.invoiceconfigSeparateBillingBinding}" 
+							style="margin-left: 14px;"/>
 					</h:panelGrid>
 
 					<h:outputText value="Einzelrechnungskriterien:" />
