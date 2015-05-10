@@ -96,6 +96,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Locale.setDefault(new Locale("de", "DE"));
 		} else if (reportLocale.toLowerCase().equals("at")) {
 			Locale.setDefault(new Locale("de", "AT"));
+		} else if (reportLocale.toLowerCase().equals("no")) {
+			Locale.setDefault(new Locale("no"));
 		} else {
 			Locale.setDefault(new Locale("en"));
 		}
