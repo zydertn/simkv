@@ -49,6 +49,7 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.codec.BmpImage;
 
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Bill;
@@ -328,7 +329,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			arialFontBold.setSize(8);
 			arialFontBold.setStyle(Font.BOLD);
 
-			Image logo = Image.getInstance("images/SiwalTec_Kontaktdaten_Hochformat.wmf");
+//			Image logo = Image.getInstance("images/SiwalTec_Kontaktdaten_Hochformat.wmf");
+			Image logo = Image.getInstance("images/Briefpapier_Fuﬂzeile_klein.jpg");
+			logo.scalePercent(26);
 			Chunk logoChunk = new Chunk(logo, 0, -20);
 			Phrase phrase = new Phrase(logoChunk);
 
@@ -351,21 +354,26 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		}
 		
 		try {
-			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile.wmf");
 
+			PdfContentByte cb = writer.getDirectContent();
+
+
+//			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile2.wmf");
+			Image sender = Image.getInstance("images/Briefpapier_Kopfzeile.jpg");
+			sender.scalePercent(24);
+			
 			Chunk senderChunk = new Chunk(sender, 0, -80);
 			Phrase headPhrase = new Phrase(senderChunk);
 			doc.add(headPhrase);
 			
-			int x = 60;
-			int y = 700;
-
-			PdfContentByte cb = writer.getDirectContent();
-
-			// Firma
 			cb.beginText();
 			cb.setColorFill(Color.BLACK);
 			cb.setFontAndSize(bf_arial, 11);
+			
+			int x = 60;
+			int y = 700;
+
+			// Firma
 			String companyString = "";
 			y = y - 9;
 			int d = 11;
