@@ -36,17 +36,22 @@ import de.abd.mda.util.DateUtils;
 
 public class CustomerReportGenerator {
 
-	private final static Logger LOGGER = Logger.getLogger(ReminderGenerator.class .getName()); 
+	private final static Logger LOGGER = Logger.getLogger(CustomerReportGenerator.class .getName()); 
 	BaseFont bf_arial = null;
+	Font arialFont;
+	Font arialFontBoldLarge;
 	
 	public CustomerReportGenerator() {
 		loadBaseFonts();
 	}
 	
-	public void generateReport(List<Customer> customers) {
-		Font arialFont = new Font(bf_arial);
+	public void generateReport(List<Customer> customers, List<Customer> monthly, List<Customer> quarterly, List<Customer> halfyearly, List<Customer> yearly, List<Customer> directDebit) {
+		arialFont = new Font(bf_arial, 8);
 		arialFont.setColor(Color.BLACK);
-		arialFont.setSize(8);
+		
+		arialFontBoldLarge = new Font(bf_arial, 10, Font.BOLD);
+		arialFontBoldLarge.setColor(Color.BLACK);
+		
 
 		Document document = new Document(PageSize.A4, 60, 25, 40, 40);
 		
@@ -67,15 +72,44 @@ public class CustomerReportGenerator {
 			PdfWriter writer = PdfWriter.getInstance(document, fos);
 			
 			document.open();
-			
-			for (Customer customer: customers) {
+
+			if (customers != null) {
 				Paragraph p = new Paragraph();
-				p.add(new Chunk(customer.getCustomernumber()));
-				p.add("           ");
-				p.add(new Chunk(customer.getName()));
-				p.add(Chunk.NEWLINE);
+				p.add(new Chunk("Alle Kunden (" + customers.size() + ")", arialFontBoldLarge));
 				document.add(p);
+				document = writeLines(customers, document);
+			} else {
+				Paragraph p = new Paragraph();
+				p.add(new Chunk("Kunden mit monatlicher Zahlung (" + monthly.size() + ")", arialFontBoldLarge));
+				document.add(p);
+				document = writeLines(monthly, document);
+				document.newPage();
+				
+				p = new Paragraph();
+				p.add(new Chunk("Kunden mit Quartalszahlung (" + quarterly.size() + ")", arialFontBoldLarge));
+				document.add(p);
+				document = writeLines(quarterly, document);
+				document.newPage();
+				
+				p = new Paragraph();
+				p.add(new Chunk("Kunden mit halbjährlicher Zahlung (" + halfyearly.size() + ")", arialFontBoldLarge));
+				document.add(p);
+				document = writeLines(halfyearly, document);
+				document.newPage();
+				
+				p = new Paragraph();
+				p.add(new Chunk("Kunden mit Jahreszahlung (" + yearly.size() + ")", arialFontBoldLarge));
+				document.add(p);
+				document = writeLines(yearly, document);
+				document.newPage();
+				
+				p = new Paragraph();
+				p.add(new Chunk("Kunden mit Einzugsermächtigung (" + directDebit.size() + ")", arialFontBoldLarge));
+				document.add(p);
+				document = writeLines(directDebit, document);
+				document.newPage();
 			}
+
 			
 			document.close();
 			fos.flush();
@@ -119,6 +153,19 @@ public class CustomerReportGenerator {
 			e.printStackTrace();
 		}
 
+	}
+
+	private Document writeLines(List<Customer> customers, Document document) throws DocumentException {
+		// TODO Auto-generated method stub
+		for (Customer customer: customers) {
+			Paragraph p = new Paragraph();
+			p.add(new Chunk(customer.getCustomernumber(), arialFont));
+			p.add("           ");
+			p.add(new Chunk(customer.getName(), arialFont));
+			p.add(Chunk.NEWLINE);
+			document.add(p);
+		}
+		return document;
 	}
 
 	private void loadBaseFonts() {

@@ -33,10 +33,13 @@ public class CardActionController extends ActionController {
 	private HtmlInputHidden cardTypeDeHidden;	
 	private HtmlInputHidden cardActivatedAsHidden;
 	private boolean selected = true;
+	private String firstName = "";
 
 	public CardActionController() {
 		LOGGER.info("Instatiate: CardActionController");
 	}
+	
+
 	
 	public void createCard() {
 		LOGGER.info("Method: createCard");
@@ -334,4 +337,18 @@ public class CardActionController extends ActionController {
 	public void setCcCardBean(CardBean ccCardBean) {
 		this.ccCardBean = ccCardBean;
 	}
+
+
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+
 }

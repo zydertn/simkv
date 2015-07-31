@@ -95,6 +95,10 @@ public class ActionController implements ActionListener {
 	public String openShowCustomersDialog() {
 		return "openShowCustomersDialog";
 	}
+
+	public String openShowCustomerPaymentModaltiesDialog() {
+		return "openShowCustomerPaymentModaltiesDialog";
+	}
 	
 	
 	public String openUpdateCustomerDialog() {

@@ -52,7 +52,7 @@
   	<servlet-name>ZIPAccessServlet</servlet-name>
   	<url-pattern>/downloadZip/*</url-pattern>
   </servlet-mapping>
-  <security-role>
+  <!-- security-role>
     <role-name>abduser</role-name>
   </security-role>
   <security-constraint>
@@ -67,7 +67,7 @@
   <login-config>
     <auth-method>DIGEST</auth-method>
     <realm-name>UserDatabase</realm-name>
-  </login-config>
+  </login-config-->
   <error-page>
     <error-code>401</error-code>
     <location>/WEB-INF/jsp/401.jsp</location>

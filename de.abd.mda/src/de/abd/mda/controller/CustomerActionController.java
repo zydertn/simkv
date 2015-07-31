@@ -27,6 +27,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 
+
+
+import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Address;
 import de.abd.mda.persistence.dao.Bill;
 import de.abd.mda.persistence.dao.CardBean;
@@ -92,7 +95,8 @@ public class CustomerActionController extends ActionController {
 	private String countryName;
 	private HtmlInputText paymentTargetBinding;
 	private List<Bill> bills;
-	
+	private String chosenPaymentModalty;
+	private List<Customer> modaltyCustomers;
 	
 	private String relation;
 	private List<CardBean> cardList;
@@ -463,6 +467,26 @@ public class CustomerActionController extends ActionController {
 		return "";
 	}
 	
+	public void modaltyChange(ValueChangeEvent event) {
+		changeModaltyList((String) event.getNewValue());
+	}
+	
+	private void changeModaltyList(String modalty) {
+        if (modalty != null && modalty.length() > 0) {
+        	System.out.println("Chosen Payment Modalty: " + modalty);
+        	CustomerController cac = new CustomerController();
+        	List<DaoObject> list = cac.findCustomersByPaymentModalty(modalty);
+    		modaltyCustomers = new ArrayList<Customer>();
+    		for (DaoObject d : list) {
+    			modaltyCustomers.add((Customer) d);
+    		}
+    		CustomerNumberComparator cusComp = new CustomerNumberComparator();
+    		Collections.sort(modaltyCustomers, cusComp);
+    		String message = modaltyCustomers.size() + " Kunden gefunden. Tabelle wurde aktualisiert.";
+    		getRequest().setAttribute("message", message);
+        }
+	}
+	
 	public Customer getCustomer() {
 		if (getRequest().getAttribute("newCustomer") != null) {
 			customer = new Customer();
@@ -485,11 +509,37 @@ public class CustomerActionController extends ActionController {
 		return customers;
 	}
 	
-	public String downloadCustomerList() {
-		List<Customer> customers =  getAllCustomers();
+	public List<Customer> getModaltyCustomers(){
+		if (modaltyCustomers == null) {
+			changeModaltyList(Model.PAYMENT_MODALTY_MONTHLY);
+		}
+		return modaltyCustomers;
+	}
+	
+	public List<Customer> getModaltyCustomers(String modality){
+		changeModaltyList(modality);
+		return modaltyCustomers;
+	}
+	
+	
+	public String downloadPaymentModalityList() {
+		List<Customer> monthly =  getModaltyCustomers(Model.PAYMENT_MODALTY_MONTHLY);
+		List<Customer> quarterly =  getModaltyCustomers(Model.PAYMENT_MODALTY_QUARTERLY);
+		List<Customer> halfyearly =  getModaltyCustomers(Model.PAYMENT_MODALTY_HALFYEARLY);
+		List<Customer> yearly =  getModaltyCustomers(Model.PAYMENT_MODALTY_YEARLY);
+		List<Customer> directDebit =  getModaltyCustomers(Model.PAYMENT_MODALTY_DIRECT_DEBIT);
 
 		CustomerReportGenerator crg = new CustomerReportGenerator();
-		crg.generateReport(customers);
+		crg.generateReport(null, monthly, quarterly, halfyearly, yearly, directDebit);
+		return "";
+	}
+	
+	public String downloadCustomerList() {
+		List<Customer> customers =  getAllCustomers();
+//		List<Customer> customers =  getModaltyCustomers();
+
+		CustomerReportGenerator crg = new CustomerReportGenerator();
+		crg.generateReport(customers, null, null, null, null, null);
 //		FacesContext facesContext = FacesContext.getCurrentInstance();
 //		ExternalContext externalContext = facesContext.getExternalContext();
 //
@@ -933,6 +983,18 @@ public class CustomerActionController extends ActionController {
 
 	public void setBills(List<Bill> bills) {
 		this.bills = bills;
+	}
+
+	public String getChosenPaymentModalty() {
+		return chosenPaymentModalty;
+	}
+
+	public void setChosenPaymentModalty(String chosenPaymentModalty) {
+		this.chosenPaymentModalty = chosenPaymentModalty;
+	}
+
+	public void setModaltyCustomers(List<Customer> modaltyCustomers) {
+		this.modaltyCustomers = modaltyCustomers;
 	}
 
 

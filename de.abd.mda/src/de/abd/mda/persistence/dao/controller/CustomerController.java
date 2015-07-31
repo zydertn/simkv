@@ -11,6 +11,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
@@ -71,6 +72,62 @@ public class CustomerController extends DaoController implements IDaoController 
 		}
 		
 		return customers;
+	}
+	
+	public List<DaoObject> findCustomersByPaymentModalty(String modalty) {
+		LOGGER.info("Method listObjects");
+		Transaction tx = null;
+		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
+		List<DaoObject> customers = null;
+		try {
+			tx = session.beginTransaction();
+
+			
+			String select = "from Customer as customer "
+			+ "where customer.name != '' and customer.invoiceConfiguration in ( ";
+
+			if (!modalty.equals(Model.PAYMENT_MODALTY_DIRECT_DEBIT)) {
+				select += "select ic.id from InvoiceConfiguration as ic where ic.creationFrequency = '" + modalty + "')";	
+			} else {
+				select += "select ic.id from InvoiceConfiguration as ic where ic.debtOrder = 1)";
+			}
+
+			
+			
+			LOGGER.info("Select = " + select);
+			List<Customer> list = session.createQuery(select).list();
+			if (list != null) {
+				LOGGER.info(list.size() + " customers found");
+			} else {
+				LOGGER.warn("No customers found!");
+			}
+			customers = new ArrayList<DaoObject>();
+			for (Iterator it=list.iterator();it.hasNext();) {
+				Customer customer = (Customer) it.next();
+				customers.add(customer);
+			}
+
+			tx.commit();
+			
+			Comparator<DaoObject> comparator = new CustomerComparator();
+			Collections.sort(customers, comparator);
+			
+		} catch (RuntimeException e) {
+			LOGGER.error("RuntimeException: " + e);
+			if (tx != null && tx.isActive()) {
+				try {
+					// Second try catch as the rollback could fail as well
+					tx.rollback();
+				} catch (HibernateException e1) {
+					LOGGER.error("HibernateException: Error rolling back transaction; " + e1);
+				}
+				// throw again the first exception
+				throw e;
+			}
+
+		}
+		
+		return customers;		
 	}
 	
 	@SuppressWarnings("unchecked")

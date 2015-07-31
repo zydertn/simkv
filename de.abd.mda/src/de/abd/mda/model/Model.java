@@ -30,6 +30,7 @@ public class Model {
 	private List<Country> countries;
 	private List<String> statusList;
 	private List<String> supplierList;
+	private List<String> paymentModaltyList;
 		
 	public static String COUNTRY_GERMANY = "DE";
 	public static String COUNTRY_AUSTRIA = "AT";
@@ -123,6 +124,14 @@ public class Model {
 
 	public String paymentInvoice = "Rechnung";
 	public String paymentDebit = "Lastschrift";
+	
+	public static String PAYMENT_MODALTY_MONTHLY = "monatlich";
+	public static String PAYMENT_MODALTY_QUARTERLY = "quartalsweise";
+	public static String PAYMENT_MODALTY_HALFYEARLY = "halbjährlich";
+	public static String PAYMENT_MODALTY_YEARLY = "jährlich";
+	public static String PAYMENT_MODALTY_DIRECT_DEBIT = "Einzugsermächtigung";
+
+	
 	
 	public Map<Integer, Double> simPrices;
 	public Map<Integer, Double> dataOptionSurcharges;
@@ -259,6 +268,13 @@ public class Model {
 		months.put(11, DEC);
 		
 		years = addYears();
+		
+		paymentModaltyList = new ArrayList<String>();
+		paymentModaltyList.add(PAYMENT_MODALTY_MONTHLY);
+		paymentModaltyList.add(PAYMENT_MODALTY_QUARTERLY);
+		paymentModaltyList.add(PAYMENT_MODALTY_HALFYEARLY);
+		paymentModaltyList.add(PAYMENT_MODALTY_YEARLY);
+		paymentModaltyList.add(PAYMENT_MODALTY_DIRECT_DEBIT);
 		
 		formats = new HashMap<Integer, String>();
 		formats.put(0, CSV);
@@ -626,6 +642,14 @@ public class Model {
 
 	public void setExportPath(String exportPath) {
 		this.exportPath = exportPath;
+	}
+
+	public List<String> getPaymentModaltyList() {
+		return paymentModaltyList;
+	}
+
+	public void setPaymentModaltyList(List<String> paymentModaltyList) {
+		this.paymentModaltyList = paymentModaltyList;
 	}
 
 }
