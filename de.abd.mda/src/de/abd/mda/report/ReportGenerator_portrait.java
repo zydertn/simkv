@@ -330,8 +330,9 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			arialFontBold.setStyle(Font.BOLD);
 
 //			Image logo = Image.getInstance("images/SiwalTec_Kontaktdaten_Hochformat.wmf");
-			Image logo = Image.getInstance("images/Briefpapier_Fuﬂzeile_klein.jpg");
-			logo.scalePercent(26);
+//			Image logo = Image.getInstance("images/Briefpapier_Fuﬂzeile_klein.jpg");
+			Image logo = Image.getInstance("images/Briefpapier_FuﬂzeileGimpLinear.jpg");
+			logo.scalePercent(70);
 			Chunk logoChunk = new Chunk(logo, 0, -20);
 			Phrase phrase = new Phrase(logoChunk);
 

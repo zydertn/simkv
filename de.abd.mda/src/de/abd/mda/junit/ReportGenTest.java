@@ -45,7 +45,7 @@ public class ReportGenTest {
 		tx.commit();
 			
 		Calendar calcMonth = Calendar.getInstance();
-		calcMonth.set(2013, Calendar.JULY, 1, 0, 0, 0);
+		calcMonth.set(2015, Calendar.AUGUST, 1, 0, 0, 0);
 
 		rg.generateReports(customerList, calcMonth);
 //		for (DaoObject dao : customerList) {
