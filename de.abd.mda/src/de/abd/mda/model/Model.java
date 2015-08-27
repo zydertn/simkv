@@ -16,6 +16,7 @@ import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
+import de.abd.mda.persistence.dao.controller.UtilController;
 import de.abd.mda.controller.SearchCardController;
 import de.abd.mda.persistence.dao.Country;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
@@ -298,6 +299,8 @@ public class Model {
 			exportPath = "C:/Siwaltec/Invoices/export/";
 		}
 
+//		UtilController uc = new UtilController();
+//		uc.saveLogoToDB();
 	}
 
 	private List<Integer> addYears() {

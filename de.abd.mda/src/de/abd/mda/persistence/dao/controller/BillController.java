@@ -63,7 +63,8 @@ public class BillController extends DaoController {
 		Date date = new Date();
 		if (dbBill == null) {
 			LOGGER.warn("No bill found... creating new bill...");
-			increaseBillNumber();
+			UtilController uc = new UtilController();
+			uc.increaseBillNumber();
 			bill.setBillNumber(getMaxBillNumber());
 			bill.setUpdateTime(new Timestamp(date.getTime()));
 			createObject(bill);
@@ -162,23 +163,6 @@ public class BillController extends DaoController {
 		}
 
 		return session.createQuery(select).list();
-	}
-	
-	public boolean increaseBillNumber() {
-		LOGGER.info("Method: increaseBillNumber in utils");
-		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		
-		List<Util> utils = session.createQuery("from Util as util").list();
-		if (utils != null && utils.size() > 0) {
-			Util util = utils.get(0);
-			int mbn = util.getMaxBillNumber();
-			mbn++;
-			util.setMaxBillNumber(mbn);
-			LOGGER.info("New maxBillNumber = " + mbn);
-			return true;
-		}
-		
-		return false;
 	}
 	
 	public Bill getBill() {

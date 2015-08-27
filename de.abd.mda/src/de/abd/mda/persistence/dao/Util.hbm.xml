@@ -8,5 +8,15 @@
 			<generator class="native"/>
 		</id>
 	 	<property name="maxBillNumber" column="MAX_BILL_NUMBER" type="int" length="7" />
+		<property name="header"  type="binary">
+			<column name="HEADER" />
+		</property>
+		<property name="address"  type="binary">
+			<column name="ADDRESS" />
+		</property>
+		<property name="footer"  type="binary">
+			<column name="FOOTER" />
+		</property>
+		
 	 </class>
  </hibernate-mapping>

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -18,6 +20,7 @@ import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.controller.CustomerController;
 import de.abd.mda.persistence.dao.controller.DaoController;
 import de.abd.mda.persistence.dao.controller.IDaoController;
+import de.abd.mda.persistence.dao.controller.UtilController;
 import de.abd.mda.persistence.hibernate.SessionFactoryUtil;
 import de.abd.mda.util.CustomerComparator;
 
@@ -28,8 +31,23 @@ public class ConfigureMDA extends DaoController implements IDaoController {
 	 */
 	public static void main(String[] args) {
 		ConfigureMDA cmda = new ConfigureMDA();
+//		cmda.configurePrices();
+		cmda.uploadReportImagesToDB();
 
 
+	}
+
+	private void uploadReportImagesToDB() {
+		UtilController uc = new UtilController();
+		String path = "C:\\temp\\images\\SiwalTec_Logo.wmf";
+		uc.saveImageToDB(path, 0);
+		path = "images/Briefpapier_Kopfzeile.jpg";
+		uc.saveImageToDB(path, 1);
+		path = "images/Briefpapier_FuﬂzeileGimpLinear.jpg";
+		uc.saveImageToDB(path, 2);
+	}
+	
+	private void configurePrices() {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
 		tx = session.beginTransaction();
@@ -56,7 +74,7 @@ public class ConfigureMDA extends DaoController implements IDaoController {
 		c.setDataOptionPrices(dataOptionMap);
 		c.setReportProgress(10);
 		if (list.size() == 0) {
-			cmda.createObject(c);
+			createObject(c);
 		}
 
 		
@@ -88,7 +106,7 @@ public class ConfigureMDA extends DaoController implements IDaoController {
 		}
 		reconfigureCustomerInvoiceConf();
 	}
-
+	
 	private static void reconfigureCustomerInvoiceConf() {
 		Transaction tx = null;
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();

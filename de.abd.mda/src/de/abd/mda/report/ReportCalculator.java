@@ -41,6 +41,7 @@ import com.icesoft.faces.component.outputresource.OutputResource;
 import com.icesoft.faces.component.outputresource.OutputResourceTag;
 import com.icesoft.faces.context.Resource;
 import com.icesoft.faces.context.effects.JavascriptContext;
+import com.lowagie.text.Image;
 
 import de.abd.mda.controller.ActionController;
 import de.abd.mda.model.Model;
@@ -533,12 +534,14 @@ public class ReportCalculator extends ActionController implements Runnable {
 			List<DaoObject> customerCards, Calendar calcMonth,
 			boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate) {
 		LOGGER.info("Method: generateReport for customer " + customer.getCustomernumber() + ", calcMonth = " + DateUtils.getCalendarString(calcMonth) + ", Cards = " + customerCards.size());
+		
 		IReportGenerator rp = null;
 		rp = new ReportGenerator_portrait();
 
 		long time1 = System.currentTimeMillis();
-		boolean generatedWithoutError = rp.generateReport(customerCards,
-				customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate, reportNumber);
+		boolean	generatedWithoutError = rp.generateReport(customerCards,
+					customer, calcMonth, flatrateCalc, severalBills, mapCount, calcDate, reportNumber);
+		
 		long time2 = System.currentTimeMillis();
 		long diff = time2 - time1;
 		LOGGER.info("Inner generateReport Dauer = "+ diff);
