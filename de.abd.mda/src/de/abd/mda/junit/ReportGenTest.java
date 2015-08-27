@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -36,21 +38,22 @@ public class ReportGenTest {
 		// TODO Auto-generated method stub
 
 		ReportGenTest rg = new ReportGenTest();
-		
+		rg.executeTest();
+
+	}
+	
+	public void executeTest() {
 		Session session = SessionFactoryUtil.getInstance().getCurrentSession();
-		Transaction tx = rg.createTransaction(session);
+		Transaction tx = createTransaction(session);
 //		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20063', '20125', '20051', '20029', '20030', '20031', '20074')";
 		String select = "select distinct customer from Customer customer where customer.customernumber IN ('20276')";
-		List<DaoObject> customerList = rg.searchObjects(select, tx, session);
+		List<DaoObject> customerList = searchObjects(select, tx, session);
 		tx.commit();
 			
 		Calendar calcMonth = Calendar.getInstance();
 		calcMonth.set(2015, Calendar.AUGUST, 1, 0, 0, 0);
 
-		rg.generateReports(customerList, calcMonth);
-//		for (DaoObject dao : customerList) {
-//			rg.showFile((Customer) dao, calcMonth);
-//		}
+		generateReports(customerList, calcMonth);
 	}
 
 	private void showFile(Customer customer, Calendar calcMonth) {

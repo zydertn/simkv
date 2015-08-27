@@ -1,12 +1,8 @@
 package de.abd.mda.report;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.math.BigDecimal;
@@ -23,17 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 
-import javax.persistence.Column;
-
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Paragraph;
-import com.lowagie.text.Anchor;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -49,7 +38,6 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.codec.BmpImage;
 
 import de.abd.mda.model.Model;
 import de.abd.mda.persistence.dao.Bill;
@@ -59,6 +47,7 @@ import de.abd.mda.persistence.dao.DaoObject;
 import de.abd.mda.persistence.dao.Voucher;
 import de.abd.mda.persistence.dao.controller.BillController;
 import de.abd.mda.persistence.dao.controller.ConfigurationController;
+import de.abd.mda.persistence.dao.controller.UtilController;
 import de.abd.mda.util.DateUtils;
 
 public class ReportGenerator_portrait implements IReportGenerator {
@@ -76,11 +65,13 @@ public class ReportGenerator_portrait implements IReportGenerator {
 	private boolean billContainsVoucher = false;
 	private boolean writeToDB = true;
 	private ResourceBundle bundle = null;
+	private UtilController uc;
 
 	
 	public ReportGenerator_portrait() {
 		LOGGER.info("Instantiate: ReportGenerator_portrait");
 		loadBaseFonts();
+		uc = new UtilController();
 	}
 	
 	public boolean generateReportDirect(List<DaoObject> customerCards, Customer customer, Calendar calcMonth, boolean flatrateCalc, boolean severalBills, int mapCount, Date calcDate, String reportNumber) {
@@ -99,6 +90,8 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			Locale.setDefault(new Locale("de", "AT"));
 		} else if (reportLocale.toLowerCase().equals("no")) {
 			Locale.setDefault(new Locale("no"));
+		} else if (reportLocale.toLowerCase().equals("fi")) {
+			Locale.setDefault(new Locale("fi"));
 		} else {
 			Locale.setDefault(new Locale("en"));
 		}
@@ -294,8 +287,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 		LOGGER.info("Method: generateHeader");
 		try {
 
-			Image logo = Image.getInstance("images/SiwalTec_Logo.wmf");
-			
+			Image logo = Image.getInstance(uc.getUtil().getHeader());
 			
 			Chunk logoChunk = new Chunk(logo, -25, -20);
 			Phrase phrase = new Phrase(logoChunk);
@@ -329,9 +321,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 			arialFontBold.setSize(8);
 			arialFontBold.setStyle(Font.BOLD);
 
-//			Image logo = Image.getInstance("images/SiwalTec_Kontaktdaten_Hochformat.wmf");
-//			Image logo = Image.getInstance("images/Briefpapier_Fuﬂzeile_klein.jpg");
-			Image logo = Image.getInstance("images/Briefpapier_FuﬂzeileGimpLinear.jpg");
+			Image logo = Image.getInstance(uc.getUtil().getFooter());
 			logo.scalePercent(70);
 			Chunk logoChunk = new Chunk(logo, 0, -20);
 			Phrase phrase = new Phrase(logoChunk);
@@ -360,7 +350,7 @@ public class ReportGenerator_portrait implements IReportGenerator {
 
 
 //			Image sender = Image.getInstance("images/SiwalTec_Absenderzeile2.wmf");
-			Image sender = Image.getInstance("images/Briefpapier_Kopfzeile.jpg");
+			Image sender = Image.getInstance(uc.getUtil().getAddress());
 			sender.scalePercent(24);
 			
 			Chunk senderChunk = new Chunk(sender, 0, -80);

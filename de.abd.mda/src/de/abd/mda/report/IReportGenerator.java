@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.hibernate.Session;
 
+import com.lowagie.text.Image;
+
 import de.abd.mda.persistence.dao.Customer;
 import de.abd.mda.persistence.dao.DaoObject;
 
