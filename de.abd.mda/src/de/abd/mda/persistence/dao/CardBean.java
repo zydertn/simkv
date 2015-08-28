@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import de.abd.mda.model.Model;
 
@@ -71,6 +72,12 @@ public class CardBean extends DaoObject {
 	private boolean actAsDisabled;
 	private String pin;
 	private String baNummer;
+	private String ipAddress;
+	private String ipFirst;
+	private String ipSecond;
+	private String ipThird;
+	private String ipFourth;
+	
 	
 	private Map<Integer, Double> simPriceMap;
 	
@@ -87,6 +94,7 @@ public class CardBean extends DaoObject {
 	public CardBean() {	
 		this.cardNumberFirst = "";
 		this.cardNumberSecond = "";
+		this.ipAddress = "";
 		this.countryCode = "";
 		this.country = "";
 		this.phoneNrFirst = "";
@@ -672,6 +680,73 @@ public class CardBean extends DaoObject {
 
 	public void setLastCalculationMonth(int lastCalculationMonth) {
 		this.lastCalculationMonth = lastCalculationMonth;
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public boolean setIPAdressString() throws NumberFormatException {
+		if (ipFirst != null && ipSecond != null && ipThird != null && ipFourth != null) {
+			if (checkIP(ipFirst) && checkIP(ipSecond) && checkIP(ipThird) && checkIP(ipFourth)) {
+				setIpAddress(ipFirst + "." + ipSecond + "." + ipThird + "." + ipFourth);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean checkIP(String ipStringSegment) throws NumberFormatException {
+		int ipSegment = Integer.parseInt(ipStringSegment);
+		if (ipSegment < 0 || ipSegment > 255) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void extractIPSegments() {
+		StringTokenizer st2 = new StringTokenizer(ipAddress, ".");
+		ipFirst = ""+ st2.nextElement();
+		ipSecond = ""+ st2.nextElement();
+		ipThird = ""+ st2.nextElement();
+		ipFourth = ""+ st2.nextElement();
+	}
+
+
+	public String getIpFirst() {
+		return ipFirst;
+	}
+
+	public void setIpFirst(String ipFirst) {
+		this.ipFirst = ipFirst;
+	}
+
+	public String getIpSecond() {
+		return ipSecond;
+	}
+
+	public void setIpSecond(String ipSecond) {
+		this.ipSecond = ipSecond;
+	}
+
+	public String getIpThird() {
+		return ipThird;
+	}
+
+	public void setIpThird(String ipThird) {
+		this.ipThird = ipThird;
+	}
+
+	public String getIpFourth() {
+		return ipFourth;
+	}
+
+	public void setIpFourth(String ipFourth) {
+		this.ipFourth = ipFourth;
 	}
 
 //	public int getId() {
