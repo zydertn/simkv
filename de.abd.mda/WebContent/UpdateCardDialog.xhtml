@@ -97,7 +97,7 @@
  						action="#{cardController.createCardSearch}" />
 
 					<h:outputText value="Rufnummer:" />
-					<h:panelGrid columns="5">
+					<h:panelGrid columns="3">
 						<h:inputText size="1" maxlength="5"
 							value="#{cardController.cardBean.phoneNrFirst}" />
 						<h:outputText value="/" />
@@ -106,6 +106,17 @@
 					</h:panelGrid>
 					<h:outputText/>
 					<h:outputText/>
+
+					<h:outputText value="IP-Adresse:"/>
+					<h:panelGrid columns="7">
+						<h:inputText value="#{cardController.cardBean.ipFirst}" size="1" maxlength="3"/>
+						<h:outputText value="."/>
+						<h:inputText value="#{cardController.cardBean.ipSecond}" size="1" maxlength="3"/>
+						<h:outputText value="."/>
+						<h:inputText value="#{cardController.cardBean.ipThird}" size="1" maxlength="3"/>
+						<h:outputText value="."/>
+						<h:inputText value="#{cardController.cardBean.ipFourth}" size="1" maxlength="3"/>
+					</h:panelGrid>
 				</h:panelGrid>
 					
 				<h:panelGrid columns="5">		

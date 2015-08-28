@@ -21,6 +21,7 @@
 	 	<property name="cardNumberSecond" type="string" column="CARD_NUMBER_SECOND" length="4" not-null="true" /-->
 	 	<property name="phoneNrFirst" type="string" column="CARD_PHONE_NR_FIRST" length="5" not-null="true" />
 	 	<property name="phoneNrSecond" type="string" column="CARD_PHONE_NR_SECOND" length="11" not-null="true" />
+	 	<property name="ipAddress" type="string" column="CARD_IP_ADDRESS" length="15" not-null="true" />	
 	 	<property name="customerOrderNumber" type="string" column="CARD_CUSTOMER_ORDER_NUMBER" length="50" />
 	 	<property name="supplier" type="string" column="CARD_SUPPLIER" length="15" />
 	 	<property name="status" type="string" column="CARD_STATUS" length="15" />

@@ -2,6 +2,7 @@ package de.abd.mda.controller;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.component.html.HtmlSelectOneMenu;
@@ -94,6 +95,17 @@ public class CardActionController extends ActionController {
 			}
 						
 			ccCardBean.setSequenceNumber(currentSequenceNumber);
+			try {
+				if (!ccCardBean.setIPAdressString()) {
+					message = "Inkorrekte IP-Adresse! Karte wurde nicht angelegt.";
+					getRequest().setAttribute("message", message);
+					return;
+				}
+			} catch (NumberFormatException nfe) {
+				message = "Inkorrekte IP-Adresse! Karte wurde nicht angelegt.";
+				getRequest().setAttribute("message", message);
+				return;
+			}
 			updateTypeInfo();
 			String retMessage = cardController.createObject(ccCardBean);
 			if (retMessage != null && retMessage.length() == 0) {
@@ -130,6 +142,21 @@ public class CardActionController extends ActionController {
 				card = (CardBean) list.get(0);
 				card.setPhoneNrFirst(ccCardBean.getPhoneNrFirst());
 				card.setPhoneNrSecond(ccCardBean.getPhoneNrSecond());
+				card.setIpFirst(ccCardBean.getIpFirst());
+				card.setIpSecond(ccCardBean.getIpSecond());
+				card.setIpThird(ccCardBean.getIpThird());
+				card.setIpFourth(ccCardBean.getIpFourth());
+				try {
+					if (!card.setIPAdressString()) {
+						String message = "Inkorrekte IP-Adresse! Karte wurde nicht angelegt.";
+						getRequest().setAttribute("message", message);
+						return "";
+					}
+				} catch (NumberFormatException nfe) {
+					String message = "Inkorrekte IP-Adresse! Karte wurde nicht angelegt.";
+					getRequest().setAttribute("message", message);
+					return "";
+				}
 				card.setSupplier(ccCardBean.getSupplier());
 				card.setStatus(ccCardBean.getStatus());
 				card.setStandardPrice(ccCardBean.getStandardPrice());
@@ -222,6 +249,7 @@ public class CardActionController extends ActionController {
 			return "noCardFound";
 		}
 		if (ccCardBean != null) {
+			ccCardBean.extractIPSegments();
 			return "cardFound";
 		} else {
 			ccCardBean = new CardBean();
@@ -230,6 +258,9 @@ public class CardActionController extends ActionController {
 			return "noCardFound";
 		}
 	}
+
+
+
 
 	public String createCardNext() {
 		LOGGER.info("Method: createCardNext");
@@ -349,6 +380,5 @@ public class CardActionController extends ActionController {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-
 
 }
