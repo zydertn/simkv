@@ -692,6 +692,11 @@ public class CardBean extends DaoObject {
 
 	public boolean setIPAdressString() throws NumberFormatException {
 		if (ipFirst != null && ipSecond != null && ipThird != null && ipFourth != null) {
+			if (ipFirst.length() == 0 && ipSecond.length() == 0 && ipThird.length() == 0 && ipFourth.length() == 0) {
+				// IP-Adresse ist nicht mandatory. Karte darf angelegt werden, wenn alle vier Felder leer sind.
+				return true;
+			}
+			
 			if (checkIP(ipFirst) && checkIP(ipSecond) && checkIP(ipThird) && checkIP(ipFourth)) {
 				setIpAddress(ipFirst + "." + ipSecond + "." + ipThird + "." + ipFourth);
 				return true;
