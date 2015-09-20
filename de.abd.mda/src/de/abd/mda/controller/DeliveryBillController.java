@@ -124,7 +124,8 @@ public class DeliveryBillController extends ActionController {
 
 		}
 
-		getRequest().setAttribute("message", "Karte <font color=#000BF><i>"+card.getCardNumberFirst() + "-" + card.getCardNumberSecond() +"; " + card.getPhoneString() + "</i></font> wurde erfolgreich aktualisiert.");
+		if (getRequest() != null && card != null)
+			getRequest().setAttribute("message", "Karte <font color=#000BF><i>"+card.getCardNumberFirst() + "-" + card.getCardNumberSecond() +"; " + card.getPhoneString() + "</i></font> wurde erfolgreich aktualisiert.");
 		ccCardBean = new CardBean();
 	}
 

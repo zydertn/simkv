@@ -715,10 +715,19 @@ public class CardBean extends DaoObject {
 	
 	public void extractIPSegments() {
 		StringTokenizer st2 = new StringTokenizer(ipAddress, ".");
-		ipFirst = ""+ st2.nextElement();
-		ipSecond = ""+ st2.nextElement();
-		ipThird = ""+ st2.nextElement();
-		ipFourth = ""+ st2.nextElement();
+		ipFirst = "";
+		ipSecond = "";
+		ipThird = "";
+		ipFourth = "";
+		
+		if (st2.hasMoreElements())
+			ipFirst += st2.nextElement();
+		if (st2.hasMoreElements())
+			ipSecond += st2.nextElement();
+		if (st2.hasMoreElements())
+			ipThird += st2.nextElement();
+		if (st2.hasMoreElements())
+			ipFourth += st2.nextElement();
 	}
 
 
